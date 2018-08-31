@@ -1,0 +1,99 @@
+div.center, p.center {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    float: none !important;
+    display: block;
+    text-align: center;
+}
+
+#main_wrapper
+{
+
+    padding-right: 20px;
+    padding-left: 20px;
+}
+
+.login-header{
+    width:100%;
+}
+
+.alert {
+    padding: 8px 35px 8px 14px;
+    margin-bottom: 18px;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    background-color: #8bc5e8;
+    border: 1px solid #7ed0e5;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    color: #1c628b;
+}
+
+.alert-info {
+    background-color: #edebe1;
+    border-color: #e0d9cb;
+    color: #817b58;
+}
+
+form {
+    margin: 0 0 18px;
+}
+
+.login_box
+{
+    width:40%;
+    padding:10px;
+    background-color:#f5f5f5;
+}
+
+.login_box input[type="text"],input[type="password"]
+{
+    width:60%;
+    height:25px;
+    border-radius:2px;
+    font-size:17px;
+    padding-left:5px;
+    border:none;
+}
+.login_box input[type="submit"]
+{
+    width:auto;
+    height:40px;
+    border:#0000001a;
+    border-radius:2px;
+    font-size:17px;
+    background-color:#7F8C8D;
+    border-bottom:3px solid #616A6B;
+    color:white;
+    font-weight:bold;
+}
+
+@media all and (min-width:960px) and (max-width: 1024px) {
+    /* put your css styles in here */
+}
+
+@media all and (min-width:801px) and (max-width: 959px) {
+    /* put your css styles in here */
+}
+
+@media all and (min-width:769px) and (max-width: 800px) {
+    /* put your css styles in here */
+}
+
+@media all and (min-width:569px) and (max-width: 768px) {
+    /* put your css styles in here */
+}
+
+@media all and (min-width:481px) and (max-width: 568px) {
+    /* put your css styles in here */
+}
+
+@media all and (min-width:321px) and (max-width: 480px) {
+    /* put your css styles in here */
+    .login_box { width:auto; }
+}
+
+@media all and (min-width:0px) and (max-width: 320px) {
+    /* put your css styles in here */
+
+}

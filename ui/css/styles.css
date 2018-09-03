@@ -173,6 +173,10 @@ form {
     color: #d74b36;
 }
 
+.add-button-section{
+    float: right;
+}
+
 table {
     border-collapse: collapse;
     width: 100%;

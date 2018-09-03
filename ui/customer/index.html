@@ -13,8 +13,9 @@
     <div class="main-menu">
         <div class="sidebar-nav">
             <ul class="nav nav-tabs nav-menu">
-                <li><a class="nav-link" href="index.html"> Order for Food</a></li>
+                <li><a class="nav-link active" href="index.html"> Home</a></li>
                 <li><a class="nav-link" href="order_history.html">Order History</a></li>
+                <li><a class="nav-link" href="../index.html">Logout</a></li>
             </ul>
         </div>
 
@@ -63,6 +64,21 @@
     </div>
 
 </div>
+
+<script>
+    window.onscroll = function() {myFunction()};
+
+    var navbar = document.getElementById("navbar");
+    var sticky = navbar.offsetTop;
+
+    function myFunction() {
+        if (window.pageYOffset >= sticky) {
+            navbar.classList.add("sticky")
+        } else {
+            navbar.classList.remove("sticky");
+        }
+    }
+</script>
 
 </body>
 </html>

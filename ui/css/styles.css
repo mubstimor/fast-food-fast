@@ -1,3 +1,54 @@
+body {
+    margin: 0;
+    font-size: 28px;
+}
+
+#main_wrapper
+{
+    margin-left: 180px; /* Same as the width of the sidebar */
+    padding: 0px 10px;
+}
+
+/* The sidebar menu */
+.sidebar-nav {
+    height: 100%; /* Full-height: remove this if you want "auto" height */
+    width: 180px; /* Set the width of the sidebar */
+    position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+    z-index: 1; /* Stay on top */
+    top: 0; /* Stay at the top */
+    left: 0;
+    background-color: #ddd;
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 20px;
+}
+
+/* The navigation menu links */
+.sidebar-nav a {
+    padding: 6px 8px 6px 16px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #369bd7;
+    display: block;
+}
+
+.sidebar-nav > .active > a:hover {
+    color: #555555;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-bottom-color: transparent;
+    cursor: default;
+}
+/* When you mouse over the navigation links, change their color */
+.sidebar-nav a:hover {
+    color: #f1f1f1;
+    /*background-color: #ffffff;*/
+}
+
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+}
+
 div.center, p.center {
     margin-left: auto !important;
     margin-right: auto !important;
@@ -6,12 +57,6 @@ div.center, p.center {
     text-align: center;
 }
 
-#main_wrapper
-{
-
-    padding-right: 20px;
-    padding-left: 20px;
-}
 
 .main-menu{
     width:14%;
@@ -37,30 +82,30 @@ div.center, p.center {
     list-style: none;
 }
 
-.nav-tabs:before, .nav-pills:before, .nav-tabs:after, .nav-pills:after {
-    display: table;
-    content: "";
-}
+/*.nav-tabs:before, .nav-pills:before, .nav-tabs:after, .nav-pills:after {*/
+    /*display: table;*/
+    /*content: "";*/
+/*}*/
 
-.sidebar-nav > ul > li:not(.nav-header) {
-    margin-right: -2px;
-    margin-left: -2px;
-}
+/*.sidebar-nav > ul > li:not(.nav-header) {*/
+    /*margin-right: -2px;*/
+    /*margin-left: -2px;*/
+/*}*/
 
-a {
-    color: #369bd7;
-    text-decoration: none;
-}
+/*a {*/
+    /*color: #369bd7;*/
+    /*text-decoration: none;*/
+/*}*/
 
-.nav-tabs > li > a {
-    padding-top: 8px;
-    padding-bottom: 8px;
-    line-height: 18px;
-    border: 1px solid transparent;
-    -webkit-border-radius: 4px 4px 0 0;
-    -moz-border-radius: 4px 4px 0 0;
-    border-radius: 4px 4px 0 0;
-}
+/*.nav-tabs > li > a {*/
+    /*padding-top: 8px;*/
+    /*padding-bottom: 8px;*/
+    /*line-height: 18px;*/
+    /*border: 1px solid transparent;*/
+    /*-webkit-border-radius: 4px 4px 0 0;*/
+    /*-moz-border-radius: 4px 4px 0 0;*/
+    /*border-radius: 4px 4px 0 0;*/
+/*}*/
 
 
 .box-header {
@@ -193,6 +238,25 @@ th {
     background-color: #4CAF50;
     color: white;
 }
+
+.button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+.button_round_corner {border-radius: 12px;}
+
+.button_green {background-color: #4CAF50;}
+.button_blue {background-color: #008CBA;}
+.button_red {background-color: #f44336;}
 
 @media all and (min-width:960px) and (max-width: 1024px) {
     /* put your css styles in here */

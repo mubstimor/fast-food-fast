@@ -193,9 +193,15 @@ form {
     border-radius:2px;
     font-size:17px;
     padding-left:5px;
-    border:none;
+    border:1px solid #cccccc;
 }
 
+.input{
+    border:1px solid #cccccc;
+    width:90%;
+    height:25px;
+    font-size:17px;
+}
 
 .food_label{
     float: left;
@@ -224,6 +230,7 @@ form {
 
 .links-right-section{
     float: right;
+    padding-right: 15px;
 }
 
 .menu_item{
@@ -259,6 +266,7 @@ th {
     margin: 4px 2px;
     cursor: pointer;
 }
+
 
 .button_round_corner {border-radius: 12px;}
 

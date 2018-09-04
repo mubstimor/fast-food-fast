@@ -1,6 +1,6 @@
 body {
     margin: 0;
-    font-size: 28px;
+    font-size: 22px;
 }
 
 #main_wrapper
@@ -58,11 +58,11 @@ div.center, p.center {
 }
 
 
-.main-menu{
-    width:14%;
-    margin-left: 0;
-    float: left;
-}
+/*.main-menu{*/
+    /*width:14%;*/
+    /*margin-left: 0;*/
+    /*float: left;*/
+/*}*/
 
 .sidebar-nav {
     min-height: 0;
@@ -82,6 +82,10 @@ div.center, p.center {
     list-style: none;
 }
 
+.form-label{
+    text-align: left;
+    padding: 20px 10px 10px 10px;
+}
 /*.nav-tabs:before, .nav-pills:before, .nav-tabs:after, .nav-pills:after {*/
     /*display: table;*/
     /*content: "";*/
@@ -178,25 +182,14 @@ form {
 
 .login_box input[type="text"],input[type="password"]
 {
-    width:60%;
+    width:90%;
     height:25px;
     border-radius:2px;
     font-size:17px;
     padding-left:5px;
     border:none;
 }
-.login_box input[type="submit"]
-{
-    width:auto;
-    height:40px;
-    border:#0000001a;
-    border-radius:2px;
-    font-size:17px;
-    background-color:#7F8C8D;
-    border-bottom:3px solid #616A6B;
-    color:white;
-    font-weight:bold;
-}
+
 
 .food_label{
     float: left;

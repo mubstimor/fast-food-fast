@@ -30,9 +30,9 @@
 </head>
 <body>
 
-<div id="main_wrapper">
+<div id="main_content">
     <div class="center login-header">
-        <h2>Fast Food Fast Login</h2>
+        <h3>Fast Food Fast Login</h3>
     </div>
     <div class="center login_box">
         <div class="alert alert-info">Please login with your email and password.</div>
@@ -41,7 +41,9 @@
             <p><input type="password" placeholder="**********" value="12345678"></p>
             <p><input type="radio" name="user_type" value="customer" checked> Customer
                 <input type="radio" name="user_type" value="admin"> Admin</p>
-            <p><input type="button" value="LOGIN" onclick="redirect_user()"></p>
+            <p>
+                <input type="button" class="button button_round_corner button_blue" onclick="redirect_user()" value="LOGIN">
+            </p>
         </form>
         <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
     </div>

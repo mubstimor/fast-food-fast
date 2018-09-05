@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <title>Home | Fast Food Fast!</title>
+    <link rel="stylesheet" href="../css/styles.css" type="text/css" />
+</head>
+<body>
+
+<div id="main_wrapper">
+
+    <div class="main-menu">
+        <div class="sidebar-nav">
+            <ul class="nav nav-tabs nav-menu">
+                <li><a class="nav-link active" href="index.html"> Home</a></li>
+                <li><a class="nav-link" href="order_history.html">Order History</a></li>
+                <li><a class="nav-link" href="../index.html">Logout</a></li>
+            </ul>
+        </div>
+
+    </div>
+
+    <div class="left_box">
+        <div class="box-header well">
+            <h2>Order for Food</h2>
+        </div>
+        <div class="form_content">
+            <form method="post" action="">
+
+                <div class="menu_item">
+                    <div class="item header">
+                        <h2>Breakfast</h2>
+                    </div>
+
+                    <div class="food_item">
+                        <div class="food_item_label">
+                            <h3><span>Matooke</span></h3>
+                        </div>
+                        <div class="price-right">
+                            <span><a href="#">5000Ush
+                            <div class="circle plus"></div>
+                            </a></span>
+                        </div>
+                    </div>
+
+                    <div class="food_item">
+                        <div class="food_item_label">
+                            <h3><span>Rice + Chapatti</span></h3>
+                        </div>
+                        <div class="price-right">
+                            <span><a href="#">6000Ush
+                            <div class="circle plus"></div>
+                                </a></span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="menu_item">
+                    <div class="item header">
+                        <h2>Lunch</h2>
+                    </div>
+
+                    <div class="food_item">
+                        <div class="food_item_label">
+                            <h3><span>Chips + Chicken </span></h3>
+                        </div>
+                        <div class="price-right">
+                            <span><a href="#">12500Ush
+                            <div class="circle plus"></div>
+                            </a></span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="menu_item">
+                    <div class="btn-submit">
+                        <input type="button" class="center button button_round_corner button_green" value="Proceed to Checkout">
+                    </div>
+                </div>
+
+                <!--<div class="submit-control">-->
+                <!--<p><input type="submit" value="Submit Order"></p>-->
+                <!--</div>-->
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    window.onscroll = function() {myFunction()};
+
+    var navbar = document.getElementById("navbar");
+    var sticky = navbar.offsetTop;
+
+    function myFunction() {
+        if (window.pageYOffset >= sticky) {
+            navbar.classList.add("sticky")
+        } else {
+            navbar.classList.remove("sticky");
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -274,12 +274,57 @@ th {
 .button_blue {background-color: #008CBA;}
 .button_red {background-color: #f44336;}
 
+@media only screen and (min-width : 1025px) {
+    /* ipad pro + landscape */
+    .left_box {
+        width: 100%;
+        margin-left: 0px;
+    }
+
+    .sidebar-nav {
+        position: fixed;
+        z-index: 1;
+        overflow-x: hidden;
+    }
+
+    .price-right {
+        padding-top: 10px;
+    }
+}
+
 @media all and (min-width:960px) and (max-width: 1024px) {
-    /* put your css styles in here */
+    /* ipad landscape */
+    .left_box {
+        width: 100%;
+        margin-left: 0px;
+    }
+
+    .sidebar-nav {
+        position: fixed;
+        z-index: 1;
+        overflow-x: hidden;
+    }
+
+    .price-right {
+        padding-top: 10px;
+    }
 }
 
 @media all and (min-width:801px) and (max-width: 959px) {
-    /* put your css styles in here */
+    .left_box {
+        width: 100%;
+        margin-left: 0px;
+    }
+
+    .sidebar-nav {
+        position: fixed;
+        z-index: 1;
+        overflow-x: hidden;
+    }
+
+    .price-right {
+        padding-top: 10px;
+    }
 }
 
 @media all and (min-width:769px) and (max-width: 800px) {
@@ -287,20 +332,90 @@ th {
 }
 
 @media all and (min-width:569px) and (max-width: 768px) {
-    /* put your css styles in here */
+    /* iphone 5/se portrait */
+    .left_box {
+        width: 100%;
+        margin-left: 0px;
+    }
+
+    .sidebar-nav {
+        position: fixed;
+        z-index: 1;
+        overflow-x: hidden;
+    }
+
+    .price-right {
+        padding-top: 10px;
+    }
+
 }
 
 @media all and (min-width:481px) and (max-width: 568px) {
-    /* put your css styles in here */
+    /* iphone 5/se landscape */
+    .left_box {
+        width: 100%;
+        margin-left: 0px;
+    }
+
+    .sidebar-nav {
+        position: fixed;
+        z-index: 1;
+        overflow-x: hidden;
+    }
+
+    .price-right {
+        padding-top: 10px;
+    }
 }
 
 @media all and (min-width:321px) and (max-width: 480px) {
-    /* put your css styles in here */
+    /* smartphone portrait */
+    body { font-size: 16px; }
     .login_box { width:auto; }
+
+    .price-right {
+        float: right;
+        padding-top: 10px;
+    }
+
+    #main_wrapper { margin-left: 0px; }
+
+    .sidebar-nav {
+         position: relative;
+         z-index: 0;
+         overflow-x: inherit;
+    }
+
+    .left_box{
+        width: 100%;
+        margin-left: 0px;
+    }
+
 }
 
 @media all and (min-width:0px) and (max-width: 320px) {
-    /* put your css styles in here */
+    /* iphone 5/se */
+    body { font-size: 16px; }
+
+    .login_box { width:auto; }
+
+    .price-right {
+        float: right;
+        padding-top: 10px;
+    }
+
+    #main_wrapper { margin-left: 0px; }
+
+    .sidebar-nav {
+        position: relative;
+        z-index: 0;
+        overflow-x: inherit;
+    }
+
+    .left_box{
+        width: 100%;
+        margin-left: 0px;
+    }
 
 }
 

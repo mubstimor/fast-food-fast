@@ -30,27 +30,27 @@
         </div>
         <div class="form_content">
 
-            <table>
+            <table id="food_table">
                 <thead>
                 <th>Item</th>
                 <th>Price</th>
                 <th>Actions</th>
                 </thead>
                 <tbody>
-                <tr class="odd">
+                <tr class="odd" id="row1">
                     <td>Chips</td>
                     <td>7000Ush</td>
                     <td>
                         <a href="edit_food_item.html"><button type="button" class="button button_round_corner button_blue"> Edit </button></a> &nbsp;
-                        <a href="#"> <button type="button" class="button button_round_corner button_red"> Delete</button></a>
+                        <a href="#"> <button type="button" class="button button_round_corner button_red" onclick="deleteRow('row1')"> Delete</button></a>
                         </td>
                 </tr>
-                <tr class="even">
+                <tr class="even" id="row2">
                     <td>Liver</td>
                     <td>5000Ush</td>
                     <td>
                         <a href="edit_food_item.html"><button type="button" class="button button_round_corner button_blue"> Edit </button></a> &nbsp;
-                        <a href="#"> <button type="button" class="button button_round_corner button_red"> Delete</button></a>
+                        <a href="#"> <button type="button" class="button button_round_corner button_red" onclick="deleteRow('row2')"> Delete</button></a>
                     </td>
                 </tr>
 
@@ -63,5 +63,13 @@
 
 </div>
 
+<script type="text/javascript">
+
+    function deleteRow(r) {
+        document.getElementById(r).style.visibility = 'hidden';
+    }
+
+
+</script>
 </body>
 </html>

@@ -28,8 +28,8 @@
         </div>
 
         <div class="center">
-            <div class="alert alert-info">
-                Would you like to accept this order? &nbsp; <button type="submit" class="button button_round_corner button_green">Accept</button> &nbsp; or &nbsp;  <button type="submit" class="button button_round_corner button_red">Reject</button>
+            <div class="alert alert-info" id="btn-group">
+                Would you like to accept this order? &nbsp; <button type="button" class="button button_round_corner button_green" id="accept_btn" onclick="accept_clicked()">Accept</button> &nbsp; or &nbsp;  <button type="button" class="button button_round_corner button_red" id="reject_btn" onclick="reject_clicked()">Reject</button>
             </div>
         </div>
 
@@ -53,12 +53,26 @@
         </div>
 
         <div class="center">
+            <p id="response_label"></p>
             <!--<a href="#"> Complete Order</a>-->
-            <button type="submit" class="button button_round_corner button_blue">Complete Order</button>
+            <button type="button" class="button button_round_corner button_blue" id="complete_btn" style="visibility: hidden">Complete Order</button>
+
         </div>
 
     </div>
 </div>
 
+<script type="text/javascript">
+
+    function accept_clicked(){
+        document.getElementById("btn-group").innerHTML = "Order was accepted";
+        document.getElementById('complete_btn').style.visibility = 'visible';
+    }
+
+    function reject_clicked(){
+        document.getElementById("btn-group").innerHTML = "Order was rejected";
+    }
+
+</script>
 </body>
 </html>

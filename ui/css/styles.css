@@ -51,6 +51,7 @@ div.center, p.center {
     float: none !important;
     display: block;
     text-align: center;
+    padding: 10px;
 }
 
 

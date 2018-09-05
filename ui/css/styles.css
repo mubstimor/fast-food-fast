@@ -275,20 +275,6 @@ th {
 .button_blue {background-color: #008CBA;}
 .button_red {background-color: #f44336;}
 
-/* Create 4 equal columns that floats next to each other */
-.column {
-    float: left;
-    width: 22%;
-    padding: 10px;
-}
-
-/* Clear floats after the columns */
-.row:after {
-    content: "";
-    display: table;
-    clear: both;
-}
-
 @media only screen and (min-width : 1025px) {
     /* ipad pro + landscape */
     .left_box {

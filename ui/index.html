@@ -5,28 +5,6 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <title>Login | Fast Food Fast!</title>
     <link rel="stylesheet" href="css/styles.css" type="text/css" />
-    <script type="text/javascript">
-        function redirect_user(){
-
-            var user_type = document.getElementsByName('user_type');
-
-            for (var i = 0, length = user_type.length; i < length; i++)
-            {
-                if (user_type[i].checked)
-                {
-                    if(user_type[i].value == 'customer'){
-                        window.location.href = "customer/index.html";
-                    }
-                    else if(user_type[i].value == 'admin'){
-                        window.location.href = "admin/index.html";
-                    }
-                    break;
-                }
-            }
-
-        }
-
-    </script>
 </head>
 <body>
 
@@ -49,5 +27,27 @@
     </div>
 </div>
 
+<script type="text/javascript">
+    function redirect_user(){
+
+        var user_type = document.getElementsByName('user_type');
+
+        for (var i = 0, length = user_type.length; i < length; i++)
+        {
+            if (user_type[i].checked)
+            {
+                if(user_type[i].value == 'customer'){
+                    window.location.href = "customer/index.html";
+                }
+                else if(user_type[i].value == 'admin'){
+                    window.location.href = "admin/index.html";
+                }
+                break;
+            }
+        }
+
+    }
+
+</script>
 </body>
 </html>

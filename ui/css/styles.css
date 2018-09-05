@@ -240,6 +240,7 @@ form {
 table {
     border-collapse: collapse;
     width: 100%;
+    display: inline-table;
 }
 
 th, td {
@@ -274,6 +275,20 @@ th {
 .button_blue {background-color: #008CBA;}
 .button_red {background-color: #f44336;}
 
+/* Create 4 equal columns that floats next to each other */
+.column {
+    float: left;
+    width: 22%;
+    padding: 10px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
 @media only screen and (min-width : 1025px) {
     /* ipad pro + landscape */
     .left_box {
@@ -294,6 +309,11 @@ th {
 
 @media all and (min-width:960px) and (max-width: 1024px) {
     /* ipad landscape */
+    body { font-size: 16px; }
+    .button{
+        font-size: 12px;
+        padding: 10px;
+    }
     .left_box {
         width: 100%;
         margin-left: 0px;
@@ -311,6 +331,11 @@ th {
 }
 
 @media all and (min-width:801px) and (max-width: 959px) {
+    body { font-size: 16px; }
+    .button{
+        font-size: 12px;
+        padding: 10px;
+    }
     .left_box {
         width: 100%;
         margin-left: 0px;
@@ -333,6 +358,11 @@ th {
 
 @media all and (min-width:569px) and (max-width: 768px) {
     /* iphone 5/se portrait */
+    body { font-size: 16px; }
+    .button{
+        font-size: 12px;
+        padding: 10px;
+    }
     .left_box {
         width: 100%;
         margin-left: 0px;
@@ -352,6 +382,12 @@ th {
 
 @media all and (min-width:481px) and (max-width: 568px) {
     /* iphone 5/se landscape */
+    body { font-size: 16px; }
+    .button{
+        font-size: 12px;
+        padding: 10px;
+    }
+
     .left_box {
         width: 100%;
         margin-left: 0px;
@@ -371,6 +407,10 @@ th {
 @media all and (min-width:321px) and (max-width: 480px) {
     /* smartphone portrait */
     body { font-size: 16px; }
+    .button{
+        font-size: 12px;
+        padding: 10px;
+    }
     .login_box { width:auto; }
 
     .price-right {
@@ -396,6 +436,10 @@ th {
 @media all and (min-width:0px) and (max-width: 320px) {
     /* iphone 5/se */
     body { font-size: 16px; }
+    .button{
+        font-size: 12px;
+        padding: 10px;
+    }
 
     .login_box { width:auto; }
 

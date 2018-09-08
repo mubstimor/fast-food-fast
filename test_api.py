@@ -1,8 +1,5 @@
 import unittest
-#import api
 from api import app
-# from webapp import home
-
 
 class IndexViewTest(unittest.TestCase):
     

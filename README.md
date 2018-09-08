@@ -20,3 +20,6 @@ Fast-Food-Fast is a food delivery service app for a restaurant.
 ### Heroku Link
 
 [API Home Page](https://tims-fast-food.herokuapp.com/)
+
+### Travis Badge
+[![Build Status](https://travis-ci.com/mubstimor/fast-food-fast.svg?branch=api)](https://travis-ci.com/mubstimor/fast-food-fast)

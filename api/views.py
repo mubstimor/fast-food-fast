@@ -9,7 +9,7 @@ from api import app
 
 @app.route('/',  methods=['GET'])
 def index():
-	return "<h1>App API</h1><p>A rest API for the app.</p>"
+	return jsonify({'Home': 'Index of the API'})
 
 # Create some test data for our catalog in the form of a list of dictionaries.
 tasks = [

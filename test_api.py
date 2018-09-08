@@ -12,7 +12,7 @@ class IndexViewTest(unittest.TestCase):
     
     def test_index_page(self):
         index = self.app.get('/')
-        self.assertIn('Home', str(home.data))
+        self.assertIn('Home', str(index.data))
 
 
 if __name__ == "__main__":

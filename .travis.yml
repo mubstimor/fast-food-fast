@@ -12,7 +12,7 @@ install:
   - pip install codecov
 
 script:
-  - pylint --output-format=text *.py
+#  - pylint --output-format=text *.py
   - pytest
   - python -m unittest discover
   - coverage erase

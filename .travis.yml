@@ -22,6 +22,10 @@ script:
 after_sucess:
   - codecov
 
+branches:
+  only:
+    - api
+
 deploy:
   provider: heroku
   api_key:

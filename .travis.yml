@@ -14,7 +14,6 @@ install:
 script:
   - pytest
   - python -m unittest discover
-  - behave
   - coverage erase
   - coverage run test_api.py && coverage html
   - pylint --output-format=text *.py

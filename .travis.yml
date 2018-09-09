@@ -19,6 +19,7 @@ script:
 
 after_sucess:
   - codecov
+  - coveralls
 
 deploy:
   provider: heroku

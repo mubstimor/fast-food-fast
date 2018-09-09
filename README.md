@@ -26,4 +26,8 @@ Fast-Food-Fast is a food delivery service app for a restaurant.
 
 [![Coverage Status](https://coveralls.io/repos/github/mubstimor/fast-food-fast/badge.svg?branch=api)](https://coveralls.io/github/mubstimor/fast-food-fast?branch=api)
 
-[![Code Climate](https://codeclimate.com/github/codeclimate/codeclimate/badges/gpa.svg)](https://codeclimate.com/github/<github username>/<repo name>)
+[![Code Climate](https://codeclimate.com/github/codeclimate/codeclimate/badges/gpa.svg)](https://codeclimate.com/github/mubstimor/fast-food-fast)
+
+[![Maintainability](https://api.codeclimate.com/v1/badges/24230611fce8192b6279/maintainability)](https://codeclimate.com/github/mubstimor/fast-food-fast/maintainability)
+
+[![Test Coverage](https://api.codeclimate.com/v1/badges/24230611fce8192b6279/test_coverage)](https://codeclimate.com/github/mubstimor/fast-food-fast/test_coverage)

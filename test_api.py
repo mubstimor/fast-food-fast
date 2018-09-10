@@ -10,7 +10,6 @@ class IndexViewTest(unittest.TestCase):
         """ set default values for class. """
         self.app = app.test_client()
         self.app.testing = True
-        self.order = {"user_id": 3, "item": "chips", "quantity":1}
 
     def test_index_page(self):
         """ define test methods for index page. """
@@ -20,7 +19,7 @@ class IndexViewTest(unittest.TestCase):
     def test_create_order(self):
         """ test post method """
         # request = {"user_id": "3", "item": "chips", "quantity":"1"}
-        post = self.app.post('/api/v1/orders', data=json.dumps(self.order, ensure_ascii=False))
+        post = self.app.post('/api/v1/orders', json={"user_id": 3, "item": "chips", "quantity":1})
         self.assertEqual(post.status_code, 201)
 
 if __name__ == "__main__":

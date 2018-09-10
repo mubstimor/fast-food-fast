@@ -4,6 +4,7 @@ from flask import request, jsonify
 from flask import abort
 from flask import make_response
 from flask import url_for
+import models
 
 from api import app
 
@@ -11,8 +12,8 @@ from api import app
 def index():
 	return jsonify({'Home': 'Index of the API'})
 
-# Create some test data for our catalog in the form of a list of dictionaries.
-tasks = [
+# Create some test data for orders in the form of a list of dictionaries.
+orders = [
     {
         'id': 1,
         'title': u'Buy groceries',
@@ -27,13 +28,19 @@ tasks = [
     }
 ]
 
-# A route to return all of the available entries in our catalog.
-@app.route('/api/v1/tasks', methods=['GET'])
+# create task with post request
+@app.route('/api/orders', methods=['POST'])
+def create_task():
+    
+    return jsonify(request.json), 201
+
+# A route to return all of the available orders.
+@app.route('/api/v1/orders', methods=['GET'])
 def api_all():
-    return jsonify({'tasks': [make_public_task(task) for task in tasks]})
+    return jsonify({'orders': [make_public_task(task) for task in tasks]})
 
 # Get a specific task with given id
-@app.route('/api/v1/tasks/<int:task_id>', methods=['GET'])
+@app.route('/api/v1/orders/<int:task_id>', methods=['GET'])
 def get_task(task_id):
     task = [task for task in tasks if task['id'] == task_id]
     if len(task) == 0:
@@ -41,22 +48,22 @@ def get_task(task_id):
     return jsonify({'task': task[0]})
 
 # create task with post request
-@app.route('/api/v1/tasks', methods=['POST'])
+@app.route('/api/v1/orders', methods=['POST'])
 def create_task():
     if not request.json or not 'title' in request.json:
         abort(400)
     task = {
-        'id': tasks[-1]['id'] + 1,
+        'id': orders[-1]['id'] + 1,
         'title': request.json['title'],
         'description': request.json.get('description', ""),
         'done': False
     }
-    tasks.append(task)
+    orders.append(task)
     return jsonify({'task': task}), 201
 
-@app.route('/api/v1/tasks/<int:task_id>', methods=['PUT'])
+@app.route('/api/v1/orders/<int:task_id>', methods=['PUT'])
 def update_task(task_id):
-    task = [task for task in tasks if task['id'] == task_id]
+    task = [task for task in orders if task['id'] == task_id]
     if len(task) == 0:
         abort(404)
     if not request.json:
@@ -72,12 +79,12 @@ def update_task(task_id):
     task[0]['done'] = request.json.get('done', task[0]['done'])
     return jsonify({'task': task[0]})
 
-@app.route('/api/v1/tasks/<int:task_id>', methods=['DELETE'])
+@app.route('/api/v1/orders/<int:task_id>', methods=['DELETE'])
 def delete_task(task_id):
-    task = [task for task in tasks if task['id'] == task_id]
+    task = [task for task in orders if task['id'] == task_id]
     if len(task) == 0:
         abort(404)
-    tasks.remove(task[0])
+    orders.remove(task[0])
     return jsonify({'result': True})
 
 # Specify error message

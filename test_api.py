@@ -1,7 +1,6 @@
 """ Test class for project"""
 import unittest
 from api import app
-from flask import json
 
 class IndexViewTest(unittest.TestCase):
     """ class defines test methods."""
@@ -18,9 +17,9 @@ class IndexViewTest(unittest.TestCase):
 
     def test_create_order(self):
         """ test post method """
-        # request = {"user_id": "3", "item": "chips", "quantity":"1"}
-        post = self.app.post('/api/v1/orders', json={"user_id": 3, "item": "chips", "quantity":1})
-        self.assertEqual(post.status_code, 201)
+        request = self.app.post('/api/v1/orders', \
+        json={"user_id": 3, "item": "chips", "quantity":1})
+        self.assertEqual(request.status_code, 201)
 
 if __name__ == "__main__":
     unittest.main()

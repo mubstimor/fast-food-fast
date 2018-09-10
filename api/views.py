@@ -4,7 +4,7 @@ from flask import request, jsonify
 from flask import abort
 from flask import make_response
 from flask import url_for
-from api import models
+from api.models import Order
 
 from api import app
 
@@ -12,35 +12,23 @@ from api import app
 def index():
 	return jsonify({'Home': 'Index of the API'})
 
-# Create some test data for orders in the form of a list of dictionaries.
-orders = [
-    {
-        'id': 1,
-        'title': u'Buy groceries',
-        'description': u'Milk, Cheese, Pizza, Fruit, Tylenol', 
-        'done': False
-    },
-    {
-        'id': 2,
-        'title': u'Learn Python',
-        'description': u'Need to find a good Python tutorial on the web', 
-        'done': False
-    }
-]
+# Create orders list variable to store information.
+orders = []
 
-# create task with post request
-@app.route('/api/orders', methods=['POST'])
+# create order with post request
+@app.route('/api/v1/orders', methods=['POST'])
 def create_order():
-    if not request.json or not 'user' in request.json:
+
+    if not request.json or not 'item' in request.json:
         abort(400)
-    task = {
-        'id': orders[-1]['id'] + 1,
-        'user': request.json['user'],
-        # 'description': request.json.get('description', ""),
-        # 'done': False
+    order = {
+        'id': len(orders) + 1,
+        'item': request.json['item'],
+        'quantity': request.json['quantity'],
+        'user_id': request.json['user_id']
     }
-    
-    return jsonify(request.json), 201
+    orders.append(order)
+    return jsonify({'order': order}), 201
 
 # A route to return all of the available orders.
 @app.route('/api/v1/orders', methods=['GET'])
@@ -55,19 +43,6 @@ def get_task(task_id):
         abort(404)
     return jsonify({'task': task[0]})
 
-# create task with post request
-@app.route('/api/v1/orders', methods=['POST'])
-def create_task():
-    if not request.json or not 'title' in request.json:
-        abort(400)
-    task = {
-        'id': orders[-1]['id'] + 1,
-        'title': request.json['title'],
-        'description': request.json.get('description', ""),
-        'done': False
-    }
-    orders.append(task)
-    return jsonify({'task': task}), 201
 
 @app.route('/api/v1/orders/<int:task_id>', methods=['PUT'])
 def update_task(task_id):

@@ -35,9 +35,11 @@ class OrderItem():
 
 class Order():
 	"""docstring for Orders"""
-	def __init__(self):
-		self.order_item = OrderItem()
-		self.user = User()
+	def __init__(self, order_item, user):
+		self.order_item = order_item
+		self.user = user
+
+
 		
 
 		

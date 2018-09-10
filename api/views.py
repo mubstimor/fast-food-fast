@@ -1,24 +1,23 @@
+""" manages routes to the app. """
 # from flask import render_template
-import flask
 from flask import request, jsonify
 from flask import abort
 from flask import make_response
 from flask import url_for
-from api.models import Order
-
 from api import app
-
-@app.route('/',  methods=['GET'])
-def index():
-	return jsonify({'Home': 'Index of the API'})
+# from api.models import Order
 
 # Create orders list variable to store information.
 orders = []
 
-# create order with post request
+@app.route('/', methods=['GET'])
+def index():
+    """ route to index of the API. """
+    return jsonify({'Home': 'Index of the API'})
+
 @app.route('/api/v1/orders', methods=['POST'])
 def create_order():
-
+    """ create order with post request. """
     if not request.json or not 'item' in request.json:
         abort(400)
     order = {
@@ -30,57 +29,60 @@ def create_order():
     orders.append(order)
     return jsonify({'order': order}), 201
 
-# A route to return all of the available orders.
+
 @app.route('/api/v1/orders', methods=['GET'])
 def api_all():
-    return jsonify({'orders': [make_public_task(task) for task in tasks]})
+    """ A route to return all of the available orders. """
+    return jsonify({'orders': [make_public_order(order) for order in orders]})
 
-# Get a specific task with given id
-@app.route('/api/v1/orders/<int:task_id>', methods=['GET'])
-def get_task(task_id):
-    task = [task for task in tasks if task['id'] == task_id]
-    if len(task) == 0:
+@app.route('/api/v1/orders/<int:order_id>', methods=['GET'])
+def get_order(order_id):
+    """ Get a specific order with given id."""
+    order = [order for order in orders if order['id'] == order_id]
+    if not order:
         abort(404)
-    return jsonify({'task': task[0]})
+    return jsonify({'order': order[0]})
 
 
-@app.route('/api/v1/orders/<int:task_id>', methods=['PUT'])
-def update_task(task_id):
-    task = [task for task in orders if task['id'] == task_id]
-    if len(task) == 0:
+@app.route('/api/v1/orders/<int:order_id>', methods=['PUT'])
+def update_order(order_id):
+    """ update resource with put request. """
+    order = [order for order in orders if order['id'] == order_id]
+    if not order:
         abort(404)
     if not request.json:
         abort(400)
-    if 'title' in request.json and type(request.json['title']) != unicode:
+    if 'item' in request.json and type(request.json['item']) != unicode:
         abort(400)
-    if 'description' in request.json and type(request.json['description']) is not unicode:
+    if 'quantity' in request.json and type(request.json['quantity']) is not unicode:
         abort(400)
-    if 'done' in request.json and type(request.json['done']) is not bool:
+    if 'user_id' in request.json and type(request.json['user_id']) is not unicode:
         abort(400)
-    task[0]['title'] = request.json.get('title', task[0]['title'])
-    task[0]['description'] = request.json.get('description', task[0]['description'])
-    task[0]['done'] = request.json.get('done', task[0]['done'])
-    return jsonify({'task': task[0]})
+    order[0]['item'] = request.json.get('item', order[0]['item'])
+    order[0]['quantity'] = request.json.get('quantity', order[0]['quantity'])
+    order[0]['user_id'] = request.json.get('user_id', order[0]['user_id'])
+    return jsonify({'order': order[0]})
 
-@app.route('/api/v1/orders/<int:task_id>', methods=['DELETE'])
-def delete_task(task_id):
-    task = [task for task in orders if task['id'] == task_id]
-    if len(task) == 0:
+@app.route('/api/v1/orders/<int:order_id>', methods=['DELETE'])
+def delete_order(order_id):
+    """ delete requested resource from list. """
+    order = [order for order in orders if order['id'] == order_id]
+    if not order: # if order is empty
         abort(404)
-    orders.remove(task[0])
+    orders.remove(order[0])
     return jsonify({'result': True})
 
-# Specify error message
 @app.errorhandler(404)
 def not_found(error):
-    return make_response(jsonify({'error': 'Not found'}), 404) 
+    """ return clean response for not found resources. """
+    return make_response(jsonify({'error': 'Not found'}), 404)
 
-# improve url
-def make_public_task(task):
-    new_task = {}
-    for field in task:
+def make_public_order(order):
+    """ replace id with link to resource. """
+    new_order = {}
+    for field in order:
         if field == 'id':
-            new_task['uri'] = url_for('get_task', task_id=task['id'], _external=True)
+            new_order['uri'] = url_for('get_order', order_id=order['id'], _external=True)
         else:
-            new_task[field] = task[field]
-    return new_task
+            new_order[field] = order[field]
+    return new_order

@@ -4,7 +4,7 @@ from flask import request, jsonify
 from flask import abort
 from flask import make_response
 from flask import url_for
-import models
+from api import models
 
 from api import app
 
@@ -30,7 +30,15 @@ orders = [
 
 # create task with post request
 @app.route('/api/orders', methods=['POST'])
-def create_task():
+def create_order():
+    if not request.json or not 'user' in request.json:
+        abort(400)
+    task = {
+        'id': orders[-1]['id'] + 1,
+        'user': request.json['user'],
+        # 'description': request.json.get('description', ""),
+        # 'done': False
+    }
     
     return jsonify(request.json), 201
 

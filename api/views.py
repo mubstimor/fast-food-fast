@@ -54,7 +54,7 @@ def update_order(order_id):
         abort(400)
     if 'item' in request.json and type(request.json['item']) != unicode:
         abort(400)
-    if 'quantity' in request.json and type(request.json['quantity']) is not unicode:
+    if 'quantity' in request.json and type(request.json['quantity']) != unicode:
         abort(400)
     if 'user_id' in request.json and type(request.json['user_id']) is not unicode:
         abort(400)
@@ -76,6 +76,11 @@ def delete_order(order_id):
 def not_found(error):
     """ return clean response for not found resources. """
     return make_response(jsonify({'error': 'Not found'}), 404)
+
+@app.errorhandler(400)
+def bad_request(error):
+    """ return clean response for bad requests. """
+    return make_response(jsonify({'error': 'Bad Request'}), 400)
 
 def make_public_order(order):
     """ replace id with link to resource. """

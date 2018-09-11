@@ -52,11 +52,11 @@ def update_order(order_id):
         abort(404)
     if not request.json:
         abort(400)
-    if 'item' in request.json and type(request.json['item']) != unicode:
+    if 'item' not in request.json:
         abort(400)
-    if 'quantity' in request.json and type(request.json['quantity']) != unicode:
+    if 'quantity' not in request.json:
         abort(400)
-    if 'user_id' in request.json and type(request.json['user_id']) is not unicode:
+    if 'user_id' not in request.json:
         abort(400)
     order[0]['item'] = request.json.get('item', order[0]['item'])
     order[0]['quantity'] = request.json.get('quantity', order[0]['quantity'])

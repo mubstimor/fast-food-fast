@@ -38,11 +38,3 @@ class OrderItem():
         """ format order item object into a dictionary. """
         return {'food_item':self.food_item.name, \
         'quantity': self.quantity, 'order_value': self.quantity * self.food_item.price}
-
-
-class Order():
-    """docstring for Orders"""
-    def __init__(self, order_item, user):
-        """ define attributes for order. """
-        self.order_item = order_item
-        self.user = user

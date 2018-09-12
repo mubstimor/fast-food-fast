@@ -31,7 +31,7 @@ class IndexViewTest(unittest.TestCase):
         """ test update method """
         self.test_create_order()
         request = self.app.put('/api/v1/orders/1', \
-        json={"user_id": "3", "item": "chips", "quantity":"2"})
+        json={"user_id": "3", "item": "chips", "status":"accepted", "quantity":"2"})
         self.assertIn('quantity', str(request.data))
 
     def test_delete_order(self):

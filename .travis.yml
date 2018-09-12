@@ -7,7 +7,6 @@ python:
 
 install:
   - pip install -r requirements.txt
-  - pip install codecov
 
 addons:
   code_climate:
@@ -23,7 +22,6 @@ script:
 
 
 after_sucess:
-  - codecov
   - coveralls
 
 deploy:

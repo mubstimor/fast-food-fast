@@ -83,6 +83,17 @@ def get_user(user_id):
         abort(404)
     return jsonify({'user': user_list[0]})
 
+@app.route('/api/v1/users/login', methods=['POST'])
+def login_user():
+    """ authenticate user. """
+    if not request.json or not 'password' in request.json:
+        abort(400)
+    if USER.login(request.json) == True:
+        response = "success"
+    else:
+        response = "error"
+    return jsonify({'login': response })
+
 # END CUSTOMER ROUTES
 
 @app.errorhandler(404)

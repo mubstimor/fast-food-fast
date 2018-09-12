@@ -24,6 +24,6 @@ Fast-Food-Fast is a food delivery service app for a restaurant.
 ### Travis Badge
 [![Build Status](https://travis-ci.com/mubstimor/fast-food-fast.svg?branch=api)](https://travis-ci.com/mubstimor/fast-food-fast)
 
-[![Coverage Status](https://coveralls.io/repos/github/mubstimor/fast-food-fast/badge.svg?branch=api)](https://coveralls.io/github/mubstimor/fast-food-fast?branch=api)
+[![Coverage Status][![Coverage Status](https://coveralls.io/repos/github/mubstimor/fast-food-fast/badge.svg?branch=master)](https://coveralls.io/github/mubstimor/fast-food-fast?branch=master)
 
 [![Code Climate](https://codeclimate.com/github/codeclimate/codeclimate/badges/gpa.svg)](https://codeclimate.com/github/mubstimor/fast-food-fast)

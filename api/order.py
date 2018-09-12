@@ -1,4 +1,5 @@
-class Order():
+""" Class to manage CRUD operations on order objects"""
+class Order(object):
     """docstring for Orders"""
     def __init__(self):
         """ define attributes for order. """

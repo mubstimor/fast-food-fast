@@ -9,7 +9,7 @@ from api.order import Order
 
 # Create orders list variable to store information.
 # orders = []
-order = Order()
+ORDER = Order()
 
 @app.route('/', methods=['GET'])
 def index():
@@ -21,19 +21,18 @@ def create_order():
     """ create order with post request. """
     if not request.json or not 'item' in request.json:
         abort(400)
-    return jsonify({'order': order.create_order(request.json)}), 201
-
+    return jsonify({'order': ORDER.create_order(request.json)}), 201
 
 @app.route('/api/v1/orders', methods=['GET'])
 def api_all():
     """ A route to return all of the available orders. """
     return jsonify({'orders': \
-    [make_public_order(order_item) for order_item in order.fetch_all_orders()]})
+    [make_public_order(order_item) for order_item in ORDER.fetch_all_orders()]})
 
 @app.route('/api/v1/orders/<int:order_id>', methods=['GET'])
 def get_order(order_id):
     """ Get a specific order with given id."""
-    order_list = order.get_order(order_id)
+    order_list = ORDER.get_order(order_id)
     if not order_list:
         abort(404)
     return jsonify({'order': order_list[0]})
@@ -41,20 +40,20 @@ def get_order(order_id):
 @app.route('/api/v1/orders/<int:order_id>', methods=['PUT'])
 def update_order(order_id):
     """ update resource with put request. """
-    order_list = order.get_order(order_id)
+    order_list = ORDER.get_order(order_id)
     if not order_list:
         abort(404)
     if not request.json:
         abort(400)
-    return jsonify({'order': order.update_order(order_id, request.json)})
+    return jsonify({'order': ORDER.update_order(order_id, request.json)})
 
 @app.route('/api/v1/orders/<int:order_id>', methods=['DELETE'])
 def delete_order(order_id):
     """ delete requested resource from list. """
-    order_list = order.get_order(order_id)
+    order_list = ORDER.get_order(order_id)
     if not order_list:
         abort(404)
-    return jsonify({'result': order.delete_order(order_id)})
+    return jsonify({'result': ORDER.delete_order(order_id)})
 
 @app.errorhandler(404)
 def not_found(error):

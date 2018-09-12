@@ -21,7 +21,7 @@ script:
   # - coverage erase
   # - coverage run test_api.py && coverage html
   # coverage reports
-  - python -m coverage report -m
+  - coverage report -m
   # submit the reports
   - coveralls
 

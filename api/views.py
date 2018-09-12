@@ -6,15 +6,19 @@ from flask import make_response
 from flask import url_for
 from api import app
 from api.order import Order
+from api.user import User
 
 # Create orders list variable to store information.
 # orders = []
 ORDER = Order()
+USER = User()
 
 @app.route('/', methods=['GET'])
 def index():
     """ route to index of the API. """
     return jsonify({'Home': 'Index of the API'})
+
+# ROUTES FOR ORDERS.
 
 @app.route('/api/v1/orders', methods=['POST'])
 def create_order():
@@ -54,6 +58,32 @@ def delete_order(order_id):
     if not order_list:
         abort(404)
     return jsonify({'result': ORDER.delete_order(order_id)})
+
+# END ORDER ROUTES
+
+# ROUTES FOR CUSTOMERS
+
+@app.route('/api/v1/users', methods=['POST'])
+def create_user():
+    """ create user with post request. """
+    if not request.json or not 'email' in request.json:
+        abort(400)
+    return jsonify({'user': USER.create_user((request.json))}), 201
+
+@app.route('/api/v1/users', methods=['GET'])
+def get_all_users():
+    """ A route to return all of the available users. """
+    return jsonify({'users': USER.fetch_all_users()})
+
+@app.route('/api/v1/users/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    """ Get a specific user with given id."""
+    user_list = USER.get_user(user_id)
+    if not user_list:
+        abort(404)
+    return jsonify({'user': user_list[0]})
+
+# END CUSTOMER ROUTES
 
 @app.errorhandler(404)
 def not_found(error):

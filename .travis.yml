@@ -16,18 +16,12 @@ addons:
 script:
 #  - pylint --output-format=text *.py
   - pytest
-  # - python -m coverage run --branch --source=src -m unittest discover -s tests -v
   - coverage run --source api --branch -m unittest discover
   # - coverage erase
   # - coverage run test_api.py && coverage html
-  # coverage reports
   - coverage report -m
   # submit the reports
   - coveralls
-
-
-after_sucess:
-  # - coveralls
 
 deploy:
   provider: heroku

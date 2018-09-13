@@ -48,14 +48,12 @@ def get_order(order_id):
 @app.route('/api/v1/orders/<int:order_id>', methods=['PUT'])
 def update_order(order_id):
     """ update resource with put request. """
+    if not request.json or not 'status' in request.json:
+        abort(400)
     order_list = ORDER.get_order(order_id)
     if not order_list:
         abort(404)
     if not request.json:
-        abort(400)
-    if not isinstance(int(request.json['quantity']), int):
-        abort(400)
-    if not isinstance(int(request.json['user_id']), int):
         abort(400)
     return jsonify({'order': ORDER.update_order(order_id, request.json)})
 

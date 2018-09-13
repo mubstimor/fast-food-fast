@@ -36,7 +36,7 @@ class OrderViewTest(unittest.TestCase):
         """ test update method """
         self.test_create_order()
         request = self.app.put('/api/v1/orders/1', \
-        json={"user_id": 3, "item": "chips", "status":"accepted", "quantity":2})
+        json={"status":"accepted"})
         self.assertIn('quantity', str(request.data))
 
     def test_delete_order(self):

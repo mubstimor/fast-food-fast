@@ -9,7 +9,7 @@ class OrderViewTest(unittest.TestCase):
         """ set default values for class. """
         self.app = app.test_client()
         self.app.testing = True
-        self.order = {"user_id": "3", "item": "chips", "quantity":"1"}
+        self.order = {"user_id": 1, "item": "chips", "quantity":1}
 
     def test_index_page(self):
         """ define test methods for index page. """
@@ -36,7 +36,7 @@ class OrderViewTest(unittest.TestCase):
         """ test update method """
         self.test_create_order()
         request = self.app.put('/api/v1/orders/1', \
-        json={"user_id": "3", "item": "chips", "status":"accepted", "quantity":"2"})
+        json={"user_id": 3, "item": "chips", "status":"accepted", "quantity":2})
         self.assertIn('quantity', str(request.data))
 
     def test_delete_order(self):

@@ -25,6 +25,10 @@ def create_order():
     """ create order with post request. """
     if not request.json or not 'item' in request.json:
         abort(400)
+    if not isinstance(int(request.json['quantity']), int):
+        abort(400)
+    if not isinstance(int(request.json['user_id']), int):
+        abort(400)
     return jsonify({'order': ORDER.create_order(request.json)}), 201
 
 @app.route('/api/v1/orders', methods=['GET'])
@@ -49,6 +53,10 @@ def update_order(order_id):
         abort(404)
     if not request.json:
         abort(400)
+    if not isinstance(int(request.json['quantity']), int):
+        abort(400)
+    if not isinstance(int(request.json['user_id']), int):
+        abort(400)
     return jsonify({'order': ORDER.update_order(order_id, request.json)})
 
 @app.route('/api/v1/orders/<int:order_id>', methods=['DELETE'])
@@ -66,7 +74,10 @@ def delete_order(order_id):
 @app.route('/api/v1/users', methods=['POST'])
 def create_user():
     """ create user with post request. """
+    gender = ('male', 'female')
     if not request.json or not 'email' in request.json:
+        abort(400)
+    if request.json['gender'] not in gender:
         abort(400)
     return jsonify({'user': USER.create_user((request.json))}), 201
 
@@ -104,7 +115,8 @@ def not_found(error):
 @app.errorhandler(400)
 def bad_request(error):
     """ return clean response for bad requests. """
-    return make_response(jsonify({'error': 'Bad Request'}), 400)
+    return make_response(jsonify({'error': 'Bad Request, \
+    some parameters are either missing or invalid'}), 400)
 
 def make_public_order(order_item):
     """ replace id with link to resource. """

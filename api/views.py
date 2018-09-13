@@ -88,11 +88,11 @@ def login_user():
     """ authenticate user. """
     if not request.json or not 'password' in request.json:
         abort(400)
-    if USER.login(request.json) == True:
+    if USER.login(request.json):
         response = "success"
     else:
         response = "error"
-    return jsonify({'login': response })
+    return jsonify({'login': response})
 
 # END CUSTOMER ROUTES
 

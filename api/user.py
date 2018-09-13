@@ -17,17 +17,13 @@ class User(object):
         return user
 
     def fetch_all_users(self):
-        """ retrieve all users from list but exclude passwords """
-        temp_users = []
-        for user in self.users:
-            if 'password' in user:
-                del user['password']
-            temp_users.append(user)
-        return temp_users
+        """ retrieve all users from list """
+        return self.users
 
     def get_user(self, user_id):
         """ retrieve user with given id & exclude password. """
-        user = [user for user in self.users if user['id'] == user_id]
+        users_copy = self.users
+        user = [user for user in users_copy if user['id'] == user_id]
         if 'password' in user:
             del user['password']
         return user

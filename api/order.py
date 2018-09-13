@@ -26,7 +26,7 @@ class Order(object):
         """ update order details. """
         order = self.get_order(order_id)
         order[0]['status'] = order_data['status']
-        return order
+        return order[0]
 
     def delete_order(self, order_id):
         """ delete order. """

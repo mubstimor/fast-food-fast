@@ -9,8 +9,7 @@ class OrderViewTest(unittest.TestCase):
         """ set default values for class. """
         self.app = app.test_client()
         self.app.testing = True
-        self.user = {"email": "mubstimor@gmail.com", "password": "1234", "gender":"male"}
-        # self.test_create_user()
+        self.order = {"user_id": "3", "item": "chips", "quantity":"1"}
 
     def test_index_page(self):
         """ define test methods for index page. """
@@ -19,8 +18,7 @@ class OrderViewTest(unittest.TestCase):
 
     def test_create_order(self):
         """ test post method """
-        request = self.app.post('/api/v1/orders', \
-        json={"user_id": "3", "item": "chips", "quantity":"1"})
+        request = self.app.post('/api/v1/orders', json=self.order)
         self.assertEqual(request.status_code, 201)
 
     def test_retrieve_order(self):

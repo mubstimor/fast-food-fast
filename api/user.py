@@ -33,10 +33,3 @@ class User(object):
         user = [user for user in self.users if user['email'] == user_data['email']]
         if user and check_password_hash(user[0]['password'], user_data['password']):
             return True
-
-# Unused - not a priority at the moment
-    def update_user(self, user_id, user_data):
-        """ update user details. """
-        user = self.get_user(user_id)
-        user[0]['email'] = user_data['email']
-        return user

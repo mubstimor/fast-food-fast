@@ -10,12 +10,10 @@ class UserViewTest(unittest.TestCase):
         self.app = app.test_client()
         self.app.testing = True
         self.user = {"email": "mubstimor@gmail.com", "password": "1234", "gender":"male"}
-        # self.test_create_user()
 
     def test_create_user(self):
         """ test create user method """
-        request = self.app.post('/api/v1/users', \
-        json=self.user)
+        request = self.app.post('/api/v1/users', json=self.user)
         self.assertEqual(request.status_code, 201)
 
     def test_user_login(self):

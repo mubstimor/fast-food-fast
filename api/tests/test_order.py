@@ -2,7 +2,7 @@
 import unittest
 from api import app
 
-class IndexViewTest(unittest.TestCase):
+class OrderViewTest(unittest.TestCase):
     """ class defines test methods."""
 
     def setUp(self):
@@ -44,30 +44,6 @@ class IndexViewTest(unittest.TestCase):
     def test_delete_order(self):
         """ test delete method """
         request = self.app.delete('/api/v1/orders/1')
-        self.assertEqual(request.status_code, 200)
-
-    # TESTS FOR USER ROUTES
-
-    def test_create_user(self):
-        """ test create user method """
-        request = self.app.post('/api/v1/users', \
-        json=self.user)
-        self.assertEqual(request.status_code, 201)
-
-    def test_user_login(self):
-        """ test user login method """
-        request = self.app.post('/api/v1/users/login', \
-        json={"email": "mubstimor@gmail.com", "password": "1234"})
-        self.assertIn('success', str(request.data))
-
-    def test_get_user(self):
-        """ test get user method """
-        request = self.app.get('/api/v1/users/1')
-        self.assertEqual(request.status_code, 200)
-
-    def test_get_all_users(self):
-        """ test get user method """
-        request = self.app.get('/api/v1/users')
         self.assertEqual(request.status_code, 200)
 
 if __name__ == "__main__":

@@ -21,11 +21,9 @@ class User(object):
         return self.users
 
     def get_user(self, user_id):
-        """ retrieve user with given id & exclude password. """
+        """ retrieve user with given id"""
         users_copy = self.users
         user = [user for user in users_copy if user['id'] == user_id]
-        if 'password' in user:
-            del user['password']
         return user
 
     def login(self, user_data):

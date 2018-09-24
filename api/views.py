@@ -25,9 +25,11 @@ def create_order():
     """ create order with post request. """
     if not request.json or not 'item' in request.json:
         abort(400)
-    if not isinstance(int(request.json['quantity']), int):
-        abort(400)
-    if not isinstance(int(request.json['user_id']), int):
+
+    try:
+        request.json['quantity'] = isinstance(int(request.json['quantity']), int)
+        request.json['user_id'] = isinstance(int(request.json['user_id']), int)
+    except ValueError:
         abort(400)
     return jsonify({'order': ORDER.create_order(request.json)}), 201
 

@@ -20,6 +20,26 @@ class OrderViewTest(unittest.TestCase):
         """ test post method """
         request = self.app.post('/api/v1/orders', json=self.order)
         self.assertEqual(request.status_code, 201)
+        # print(request.data)
+        # self.assertEqual(request.data[1], "chips")
+
+    def test_create_order_without_item_in_request(self):
+        """ test post method by not including item in request """
+        del self.order['item']
+        request = self.app.post('/api/v1/orders', json=self.order)
+        self.assertEqual(request.status_code, 400)
+
+    def test_create_order_with_invalid_quantity(self):
+        """ test post method by including an invalid quantity value."""
+        self.order['quantity'] = "abafhh"
+        request = self.app.post('/api/v1/orders', json=self.order)
+        self.assertEqual(request.status_code, 400)
+
+    def test_create_order_with_invalid_userid(self):
+        """ test post method by including an invalid user id."""
+        self.order['user_id'] = "sdd"
+        request = self.app.post('/api/v1/orders', json=self.order)
+        self.assertEqual(request.status_code, 400)
 
     def test_retrieve_order(self):
         """ test fetch method """

@@ -24,10 +24,10 @@ class User(object):
         """ retrieve user with given id"""
         users_copy = self.users
         user = [user for user in users_copy if user['id'] == user_id]
-        return user
+        return user[0]
 
     def login(self, user_data):
         """ check user login """
         user = [user for user in self.users if user['email'] == user_data['email']]
-        if user and check_password_hash(user[0]['password'], user_data['password']):
-            return True
+        return check_password_hash(user[0]['password'], user_data['password'])
+            # return "successful"

@@ -20,16 +20,16 @@ class Order(object):
     def get_order(self, order_id):
         """ retrieve order with given id. """
         order = [order for order in self.orders if order['id'] == order_id]
-        return order
+        return order[0]
 
     def update_order(self, order_id, order_data):
         """ update order details. """
         order = self.get_order(order_id)
-        order[0]['status'] = order_data['status']
-        return order[0]
+        order['status'] = order_data['status']
+        return order
 
     def delete_order(self, order_id):
         """ delete order. """
         order = self.get_order(order_id)
-        self.orders.remove(order[0])
-        return True
+        self.orders.remove(order)
+        return "Order was deleted"

@@ -1,6 +1,7 @@
 """ Test class for project"""
 import unittest
 from api import app
+# import ast
 
 class OrderViewTest(unittest.TestCase):
     """ class defines test methods."""
@@ -20,8 +21,10 @@ class OrderViewTest(unittest.TestCase):
         """ test post method """
         request = self.app.post('/api/v1/orders', json=self.order)
         self.assertEqual(request.status_code, 201)
-        # print(request.data)
-        # self.assertEqual(request.data[1], "chips")
+        self.assertEqual(request.headers['Content-Type'], 'application/json')
+        self.assertIn("chips", request.json['order']['item'])
+        # print(request.json['order']['item'])
+        # print(self.order)
 
     def test_create_order_without_item_in_request(self):
         """ test post method by not including item in request """

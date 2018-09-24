@@ -27,11 +27,12 @@ def create_order():
         abort(400)
 
     try:
-        request.json['quantity'] = isinstance(int(request.json['quantity']), int)
-        request.json['user_id'] = isinstance(int(request.json['user_id']), int)
+        request.json['quantity'] = int(request.json['quantity'])
+        request.json['user_id'] = int(request.json['user_id'])
     except ValueError:
         abort(400)
     return jsonify({'order': ORDER.create_order(request.json)}), 201
+    # return json.dumps(ORDER.create_order(request.json))
 
 @app.route('/api/v1/orders', methods=['GET'])
 def api_all():

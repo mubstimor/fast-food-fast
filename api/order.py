@@ -24,7 +24,7 @@ class Order(object):
 
     def fetch_user_orders(self, user_id):
         """ retrieve all orders from list """
-        user_orders = [order for order in self.orders if order['user_id'] == user_id]
+        user_orders = [order for order in self.orders if order['user_id'] == user_id and order['status'] != 'cancelled']
         return user_orders
 
     def get_order(self, order_id):
@@ -43,6 +43,7 @@ class Order(object):
         order = self.get_order(order_id)
         order['item'] = order_data['item']
         order['quantity'] = order_data['quantity']
+        order['status'] = order_data['status']
         return order
 
     def delete_order(self, order_id):

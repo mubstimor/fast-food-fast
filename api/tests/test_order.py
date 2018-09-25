@@ -81,7 +81,7 @@ class OrderViewTest(unittest.TestCase):
         self.order['user_id'] = 2
         self.test_create_order()
         request = self.app.put('api/v1/users/orders/2', \
-        json={"user_id": "7", "item": "Rice + Chapatti", "quantity":"4"})
+        json={"user_id": "7", "item": "Rice + Chapatti", "quantity":"4", "status":"pending"})
         self.assertEqual(request.status_code, 200)
         self.assertEqual(2, request.json['order']['id'])
         self.assertEqual("Rice + Chapatti", request.json['order']['item'])

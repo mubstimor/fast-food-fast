@@ -4,7 +4,6 @@ Fast-Food-Fast is a food delivery service app for a restaurant.
 
 [![Build Status](https://travis-ci.com/mubstimor/fast-food-fast.svg?branch=api)](https://travis-ci.com/mubstimor/fast-food-fast)  [![Coverage Status](https://coveralls.io/repos/github/mubstimor/fast-food-fast/badge.svg?branch=api&service=github)](https://coveralls.io/github/mubstimor/fast-food-fast?branch=api&service=github)  [![Code Climate](https://codeclimate.com/github/codeclimate/codeclimate/badges/gpa.svg)](https://codeclimate.com/github/mubstimor/fast-food-fast)
 
-
 ## Required Features
 
 * Users can create an account and log in
@@ -15,10 +14,9 @@ Fast-Food-Fast is a food delivery service app for a restaurant.
 * The Admin user should be able to do the following: a) See a list of orders. b) Accept and decline orders
  c) Mark orders as completed
 
-
 ### Template Link
 
-[Home Page](https://mubstimor.github.io/fast-food-fast/)
+[Home Page](https://mubstimor.github.io/fast-food-fast/ui/index.html)
 
 ### Heroku Link
 

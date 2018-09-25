@@ -24,7 +24,6 @@ class OrderViewTest(unittest.TestCase):
         self.assertEqual(request.headers['Content-Type'], 'application/json')
         self.assertEqual("chips", request.json['order']['item'])
         self.assertEqual(1, request.json['order']['quantity'])
-        self.assertEqual(1, request.json['order']['user_id'])
 
     def test_create_order_without_item_in_request(self):
         """ test post method by not including item in request """
@@ -46,6 +45,7 @@ class OrderViewTest(unittest.TestCase):
 
     def test_retrieve_order(self):
         """ test fetch method """
+        self.order['user_id'] = 7
         self.test_create_order()
         request = self.app.get('/api/v1/orders/1')
         self.assertEqual(request.status_code, 200)
@@ -53,12 +53,14 @@ class OrderViewTest(unittest.TestCase):
 
     def test_retrieve_unavailableorder(self):
         """ test fetch method by passing an index that's not available """
+        self.order['user_id'] = 8
         self.test_create_order()
         request = self.app.get('/api/v1/orders/89')
         self.assertEqual(request.status_code, 404)
 
     def test_get_all_orders(self):
         """ test get all orders method """
+        self.order['user_id'] = 9
         self.test_create_order()
         request = self.app.get('/api/v1/orders')
         self.assertEqual(request.status_code, 200)
@@ -66,6 +68,7 @@ class OrderViewTest(unittest.TestCase):
 
     def test_update_order(self):
         """ test update method """
+        self.order['user_id'] = 10
         self.test_create_order()
         request = self.app.put('/api/v1/orders/1', \
         json={"status":"accepted"})

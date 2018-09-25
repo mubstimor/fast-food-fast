@@ -30,8 +30,18 @@ def create_order():
         request.json['user_id'] = int(request.json['user_id'])
     except ValueError:
         abort(400)
-    return jsonify({'order': ORDER.create_order(request.json)}), 201
-    # return json.dumps(ORDER.create_order(request.json))
+    
+    try:
+        order  = ORDER.check_if_order_exists(request.json['user_id'], request.json['item'], request.json['quantity'])
+        if order:
+            # order already exists
+            abort(500)
+        else:
+            return jsonify({'order': ORDER.create_order(request.json)}), 201
+
+    except IndexError:
+        abort(400)
+   
 
 @app.route('/api/v1/orders', methods=['GET'])
 def api_all():
@@ -112,3 +122,8 @@ def bad_request(error):
     """ return clean response for bad requests. """
     return make_response(jsonify({'error': 'Bad Request, \
     some parameters are either missing or invalid'}), 400)
+
+@app.errorhandler(500)
+def already_exists(error):
+    """ return clean response for not found resources. """
+    return make_response(jsonify({'error': 'Order already exists'}), 500)

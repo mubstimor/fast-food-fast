@@ -12,6 +12,11 @@ class Order(object):
         order['status'] = 'pending'
         self.orders.append(order)
         return order
+    
+    def check_if_order_exists(self, user_id, item, quantity):
+        """ retrieve order with given id. """
+        order = [order for order in self.orders if order['user_id'] == user_id and order['item'] == item and order['quantity'] == quantity ]
+        return order
 
     def fetch_all_orders(self):
         """ retrieve all orders from list """

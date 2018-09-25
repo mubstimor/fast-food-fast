@@ -170,6 +170,23 @@ form {
     -moz-box-shadow: 0 0 10px rgba(189, 189, 189, 0.4);
 }
 
+.checkout_box{
+    width:28%;
+    float: left;
+    margin-left: 5px;
+    border: 1px solid #DEDEDE;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 0 10px rgba(189, 189, 189, 0.4);
+    -webkit-box-shadow: 0 0 10px rgba(189, 189, 189, 0.4);
+    -moz-box-shadow: 0 0 10px rgba(189, 189, 189, 0.4);
+    position: relative;
+    min-height: 500px;
+}
+
 /* box content css styles */
 .form_content{
     padding: 5px 15px 15px 20px;
@@ -212,6 +229,12 @@ form {
     float: left;
 }
 
+.food_image img{
+    float: left;
+    width: 20%;
+    padding-top: 5px;
+}
+
 .food_item{
     float: left;
     width: 100%
@@ -223,6 +246,36 @@ form {
 .price-right a{
     color: #d74b36;
     text-decoration: none;
+}
+
+.order_item{}
+
+.order_item .food_item_label{
+    width:100%;
+}
+.order_item .quantity-field{
+float: left;
+width:100%;
+}
+
+.spacer{
+    min-height: 20px;
+    width: 100%;
+}
+
+.form-btn{
+    /* padding-top: 40% !important; */
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.order_item .quantity-field input{
+    width:20%
+    }
+
+.order_item .new_total{
+    float: left;
 }
 
 .btn-submit{
@@ -279,7 +332,7 @@ th {
 @media only screen and (min-width : 1025px) {
     /* ipad pro + landscape */
     .left_box {
-        width: 100%;
+        width: 70%;
         margin-left: 0px;
     }
 
@@ -399,6 +452,12 @@ th {
         padding: 10px;
     }
     .login_box { width:auto; }
+
+
+    .food_image img{
+        float: left;
+        width: 100%;
+    }
 
     .price-right {
         float: right;

@@ -22,6 +22,11 @@ class Order(object):
         """ retrieve all orders from list """
         return self.orders
 
+    def fetch_user_orders(self, user_id):
+        """ retrieve all orders from list """
+        user_orders = [order for order in self.orders if order['user_id'] == user_id]
+        return user_orders
+
     def get_order(self, order_id):
         """ retrieve order with given id. """
         order = [order for order in self.orders if order['id'] == order_id]

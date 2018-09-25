@@ -78,13 +78,21 @@ class OrderViewTest(unittest.TestCase):
 
     def test_update_user_order(self):
         """ test update user order method """
-        self.order['user_id'] = 1
+        self.order['user_id'] = 2
         self.test_create_order()
-        request = self.app.put('api/v1/users/orders/1', \
+        request = self.app.put('api/v1/users/orders/2', \
         json={"user_id": "7", "item": "Rice + Chapatti", "quantity":"4"})
         self.assertEqual(request.status_code, 200)
-        self.assertEqual(1, request.json['order']['id'])
+        self.assertEqual(2, request.json['order']['id'])
         self.assertEqual("Rice + Chapatti", request.json['order']['item'])
+
+    def test_retrieve_user_order(self):
+        """ test get user orders method """
+        self.order['user_id'] = 1
+        self.test_create_order()
+        request = self.app.get('/api/v1/users/myorders/1')
+        self.assertEqual(request.status_code, 200)
+        self.assertEqual(1, request.json['myorders'][0]['user_id'])
 
     def test_update_order_with_invalid_status_value(self):
         """ test update method by including a wrong status value """

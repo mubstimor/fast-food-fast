@@ -47,7 +47,6 @@ def create_order():
 def api_all():
     """ A route to return all of the available orders. """
     return jsonify({'orders': ORDER.fetch_all_orders()})
-    # [make_public_order(order_item) for order_item in ORDER.fetch_all_orders()]})
 
 @app.route('/api/v1/orders/<int:order_id>', methods=['GET'])
 def get_order(order_id):
@@ -65,11 +64,6 @@ def update_order(order_id):
     if request.json['status'] not in status:
         abort(400)
     return jsonify({'order': ORDER.update_order(order_id, request.json)})
-
-@app.route('/api/v1/users/orders/<int:order_id>', methods=['PUT'])
-def update_user_order(order_id):
-    """ update order details with put request. """
-    return jsonify({'order': ORDER.update_user_order(order_id, request.json)})
 
 @app.route('/api/v1/orders/<int:order_id>', methods=['DELETE'])
 def delete_order(order_id):
@@ -114,6 +108,17 @@ def login_user():
     if not request.json or not 'password' in request.json:
         abort(400)
     return jsonify({'login': USER.login(request.json)})
+
+@app.route('/api/v1/users/orders/<int:order_id>', methods=['PUT'])
+def update_user_order(order_id):
+    """ update order details with put request. """
+    return jsonify({'order': ORDER.update_user_order(order_id, request.json)})
+
+@app.route('/api/v1/users/myorders/<int:user_id>', methods=['GET'])
+def get_user_orders(user_id):
+    """ Get orders for a specific user."""
+    return jsonify({'myorders': ORDER.fetch_user_orders(user_id)})
+
 
 # END CUSTOMER ROUTES
 

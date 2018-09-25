@@ -66,6 +66,11 @@ def update_order(order_id):
         abort(400)
     return jsonify({'order': ORDER.update_order(order_id, request.json)})
 
+@app.route('/api/v1/users/orders/<int:order_id>', methods=['PUT'])
+def update_user_order(order_id):
+    """ update order details with put request. """
+    return jsonify({'order': ORDER.update_user_order(order_id, request.json)})
+
 @app.route('/api/v1/orders/<int:order_id>', methods=['DELETE'])
 def delete_order(order_id):
     """ delete requested resource from list. """

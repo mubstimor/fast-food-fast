@@ -33,6 +33,13 @@ class Order(object):
         order['status'] = order_data['status']
         return order
 
+    def update_user_order(self, order_id, order_data):
+        """ update order details. """
+        order = self.get_order(order_id)
+        order['item'] = order_data['item']
+        order['quantity'] = order_data['quantity']
+        return order
+
     def delete_order(self, order_id):
         """ delete order. """
         order = self.get_order(order_id)

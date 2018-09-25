@@ -6,13 +6,7 @@ Fast-Food-Fast is a food delivery service app for a restaurant.
 
 ## Required Features
 
-* Users can create an account and log in
-* A user should be able to order for food
-* The admin should be able to add,edit or delete the fast-food items
-* The admin should be able to see a list of fast-food items
-* A user should be able to see a history of ordered food
-* The Admin user should be able to do the following: a) See a list of orders. b) Accept and decline orders
- c) Mark orders as completed
+
 
 ### Template Link
 
@@ -21,3 +15,38 @@ Fast-Food-Fast is a food delivery service app for a restaurant.
 ### Heroku Link
 
 [API Home Page](https://tims-fast-food.herokuapp.com/)
+
+## Supported Functionality
+
+## Orders
+```
+Get /orders
+GET /orders/<orderId>
+
+* The Admin user should be able to do the following: See a list of orders,Accept and decline orders and Mark orders as completed
+PUT /orders/<orderId>
+
+* A user should be able to order for food
+POST /orders
+```
+
+## Users
+```
+Get /users
+GET /users/<userId>
+PUT /users/<userId>
+PUT /users/orders/<order_id>
+
+* Users can create an account and log in
+POST /users
+POST /users/login
+
+* A user should be able to see a history of ordered food
+GET /users/myorders/<user_id>
+```
+
+## Still to implement
+```
+* The admin should be able to add,edit or delete the fast-food items
+* The admin should be able to see a list of fast-food items
+```

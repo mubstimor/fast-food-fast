@@ -27,7 +27,6 @@ script:
   - coverage report -m
   # submit the reports
   - coveralls
-  - bundle exec rspec
 
 after_script:
   - coverage xml

@@ -2,7 +2,6 @@
 import os
 import psycopg2
 from pprint import pprint
-import urlparse
 
 # 
 # CONN = psycopg2.connect(DATABASE_URL, sslmode='require')
@@ -13,13 +12,18 @@ class DatabaseConnection:
     def __init__(self):
         """ initialise connection to db. """
         try:
-            DATABASE_URL = os.environ["DATABASE_URL"]
-            url = urlparse.urlparse(DATABASE_URL)
-            self.db = "dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname)
+            DATABASE_NAME = os.environ["DATABASE_NAME"]
+            DATABASE_USER = os.environ["DATABASE_USER"]
+            DATABASE_PASSWORD = os.environ["DATABASE_PASSWORD"]
+            DATABASE_HOST = os.environ["DATABASE_HOST"]
+            DATABASE_PORT = os.environ["DATABASE_PORT"]
+
+            # url = urlparse.urlparse(DATABASE_URL)
+            # self.db = "dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname)
+            self.connection_variables = 'dbname='+ DATABASE_NAME+' user='+ DATABASE_USER+'  password='+ DATABASE_PASSWORD+'  host='+ DATABASE_HOST+'  port='+ DATABASE_PORT
             # self.connection_variables = 'dbname=fastfoodfast user=postgres password=pgadmin host=localhost port=5432'
-            self.connection_variables = 'dbname=fastfoodfast user=postgres password=pgadmin host=localhost port=5432'
-            # self.connection = psycopg2.connect(self.connection_variables)
-            self.connection = psycopg2.connect(self.db)
+            self.connection = psycopg2.connect(self.connection_variables)
+            # self.connection = psycopg2.connect(self.db)
             self.connection.autocommit = True
             self.cursor = self.connection.cursor()
         except Exception:

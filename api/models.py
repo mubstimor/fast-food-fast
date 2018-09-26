@@ -2,7 +2,7 @@
 import os
 import psycopg2
 from pprint import pprint
-import urlparse
+# import urlparse
 # 
 # CONN = psycopg2.connect(DATABASE_URL, sslmode='require')
 
@@ -20,13 +20,13 @@ class DatabaseConnection:
 
 
             DATABASE_URL = os.environ["DATABASE_URL"]
-            url = urlparse.urlparse(DATABASE_URL)
-            self.db = "dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname)
-            self.connection = psycopg2.connect(self.db)
+            # url = urlparse.urlparse(DATABASE_URL)
+            # self.db = "dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname)
+            # self.connection = psycopg2.connect(self.db)
             
             # self.connection_variables = 'dbname=fastfoodfast user=postgres password=pgadmin host=localhost port=5432'
-            # self.connection_variables = 'dbname='+ DATABASE_NAME+' user='+ DATABASE_USER+'  password='+ DATABASE_PASSWORD+'  host='+ DATABASE_HOST+'  port='+ DATABASE_PORT
-            # self.connection = psycopg2.connect(self.connection_variables)
+            self.connection_variables = 'dbname='+ DATABASE_NAME+' user='+ DATABASE_USER+'  password='+ DATABASE_PASSWORD+'  host='+ DATABASE_HOST+'  port='+ DATABASE_PORT
+            self.connection = psycopg2.connect(self.connection_variables)
             
             self.connection.autocommit = True
             self.cursor = self.connection.cursor()

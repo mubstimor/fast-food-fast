@@ -13,8 +13,8 @@
     <div class="main-menu">
         <div class="sidebar-nav">
             <ul class="nav nav-tabs nav-menu">
-                <li><a class="nav-link active" href="index.html"> Home</a></li>
-                <li><a class="nav-link" href="order_history.html">Order History</a></li>
+                <li><a class="nav-link" href="index.html"> Home</a></li>
+                <li><a class="nav-link active" href="order_history.html">Order History</a></li>
                 <li><a class="nav-link" href="../index.html">Logout</a></li>
             </ul>
         </div>
@@ -111,16 +111,15 @@
 
          <div class="order_item" id="added_item">
             
-            <div id="default_label">Nothing ordered yet</div>
-                <!-- <div class="food_item_label">
-                    <span>Hot Chocolate </span>
+                <div class="food_item_label">
+                    <span>Chips + Chicken </span>
                 </div>
                 <div class="quantity-field">
                     Qty: <input type='number' size='10' id='numberinput' name='mynumber' min="1" value='1' />
                 </div>
                 <div class="new_total">
-                    <span>9000</span>
-                </div> -->
+                    <span>15000</span>
+                </div>
 
             </div>
 
@@ -128,7 +127,7 @@
 
             <div class="form-btn center">
                     <div class="btn-submit">
-                        <input type="button" class="center button button_round_corner button_green" value="Submit Order">
+                        <input type="button" class="center button button_round_corner button_green" value="Update Order">
                     </div>
                 </div>
                 
@@ -151,35 +150,22 @@
     }
 
     function item_clicked(food, price){
+        // document.getElementById("btn-group").innerHTML = "Order was rejected";
         // alert(food + "of "+ price + "added")
-        // count the number of times a given item has been clicked and increase quantity accordingly
-        var foods = []
         document.getElementById('default_label').innerHTML='';
         var div = document.getElementById('added_item');
-        
-        // if(foods.includes(food)){
-        //     // don't increase quantity
-        //     var current_quantity = document.getElementById(''+food+"input").value;
-        //     current_quantity += 1
-        // }else{
-        //     foods.push(food)
-        // }
-        // alert("clicked again")
-
         var data = '<div class="food_item_label">'
                     + '<span> '+food+' </span>'
                     +'</div>'
                     +'<div class="quantity-field">'
-                    +'Qty: <input type="number" size="10" id="'+food+'input" name="mynumber" min="1" value="1" />'
+                    +'Qty: <input type="number" size="10" id="numberinput" name="mynumber" min="1" value="1" />'
                     +'</div>'
                     +'<div class="new_total">'
                     +'<span>' +price +'</span>'
                     +'</div>'
                     +'<div class="spacer"></div>';
                 
-            div.innerHTML += data;
-        
-        
+        div.innerHTML += data;
     }
 </script>
 

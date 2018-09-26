@@ -1,7 +1,6 @@
-""" Test class for project"""
+""" Test class for Order"""
 import unittest
 from api import app
-# import ast
 
 class OrderViewTest(unittest.TestCase):
     """ class defines test methods."""

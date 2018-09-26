@@ -19,6 +19,7 @@ Fast-Food-Fast is a food delivery service app for a restaurant.
 ```
 Get /orders
 GET /orders/<orderId>
+DEL /orders/<orderId>
 
 * The Admin user should be able to do the following:
 See a list of orders
@@ -26,28 +27,42 @@ Accept and decline orders
 Mark orders as completed
 
 PUT /orders/<orderId>
+Expected parameters: {"status":"accepted"}
 
 * A user should be able to order for food
 POST /orders
+Expected parameters: {"user_id": 1, "item": "chips", "quantity":1}
 ```
 
 ## Users
 ```
 Get /users
 GET /users/<userId>
-PUT /users/<userId>
 PUT /users/orders/<order_id>
 
 * Users can create an account and log in
 POST /users
+Expected parameters: {"email": "john@example.com", "password": "1234", "gender":"male"}
+
 POST /users/login
+Expected parameters: {"email": "john@example.com", "password": "1234"}
 
 * A user should be able to see a history of ordered food
 GET /users/myorders/<user_id>
 ```
 
-## Still to implement
+## Food Items
 ```
 * The admin should be able to add,edit or delete the fast-food items
 * The admin should be able to see a list of fast-food items
+POST /fooditems
+Expected parameters: {"name": "Chips", "category": "Foods", "price":7000}
+
+GET /fooditems
+GET /fooditems/<itemId>
+
+PUT /fooditems/<itemId>
+Expected parameters: {"name": "Chips", "category": "Foods", "price":9000}
+
+DEL /fooditems/<itemId>
 ```

@@ -7,11 +7,13 @@ from flask import url_for
 from api import app
 from api.order import Order
 from api.user import User
+from api.fooditem import FoodItem
 
 # Create orders list variable to store information.
 # orders = []
 ORDER = Order()
 USER = User()
+FOODITEM = FoodItem()
 
 @app.route('/', methods=['GET'])
 def index():
@@ -122,6 +124,57 @@ def get_user_orders(user_id):
 
 # END CUSTOMER ROUTES
 
+
+# ROUTES FOR FOOD ITEMS.
+
+@app.route('/api/v1/fooditems', methods=['POST'])
+def create_fooditem():
+    """ create item with post request. """
+    try:
+        request.json['price'] = int(request.json['price'])
+    except ValueError:
+        abort(400)
+    
+    try:
+        item  = FOODITEM.check_if_item_exists(request.json['name'], request.json['price'])
+        if item:
+            abort(500)
+        else:
+            return jsonify({'fooditem': FOODITEM.create_item(request.json)}), 201
+
+    except IndexError:
+        abort(400)
+   
+
+@app.route('/api/v1/fooditems', methods=['GET'])
+def get_all_fooditems():
+    """ A route to return all of the available fooditems. """
+    return jsonify({'fooditems': FOODITEM.fetch_all_fooditems()})
+
+@app.route('/api/v1/fooditems/<int:item_id>', methods=['GET'])
+def get_fooditem(item_id):
+    """ Get a specific item with given id."""
+    try:
+        item = FOODITEM.get_item(item_id)
+    except IndexError:
+        abort(404)
+    return jsonify({'fooditem': item})
+
+@app.route('/api/v1/fooditems/<int:item_id>', methods=['PUT'])
+def update_fooditem(item_id):
+    """ update food item with put request. """
+    return jsonify({'fooditem': FOODITEM.update_item(item_id, request.json)})
+
+@app.route('/api/v1/fooditems/<int:item_id>', methods=['DELETE'])
+def delete_fooditem(item_id):
+    """ delete requested resource from list. """
+    try:
+        return jsonify({'result': FOODITEM.delete_item(item_id)})
+    except IndexError:
+        abort(404)
+    
+# END FOOD ITEM ROUTES
+
 @app.errorhandler(404)
 def not_found(error):
     """ return clean response for not found resources. """
@@ -136,4 +189,4 @@ def bad_request(error):
 @app.errorhandler(500)
 def already_exists(error):
     """ return clean response for not found resources. """
-    return make_response(jsonify({'error': 'Order already exists'}), 500)
+    return make_response(jsonify({'error': 'Item already exists'}), 500)

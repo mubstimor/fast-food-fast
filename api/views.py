@@ -131,9 +131,9 @@ def get_user_orders(user_id):
 @app.route('/api/v1/fooditems', methods=['POST'])
 def create_fooditem():
     """ create item with post request. """
-    # db = DatabaseConnection()
-    # db.create_fooditem_table()
-    # db.insert_fooditem()
+    db = DatabaseConnection()
+    db.create_fooditem_table()
+    db.insert_fooditem()
     try:
         request.json['price'] = int(request.json['price'])
     except ValueError:

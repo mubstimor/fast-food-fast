@@ -2,6 +2,8 @@
 import os
 import psycopg2
 from pprint import pprint
+from environs import Env
+
 # import urlparse
 # 
 # CONN = psycopg2.connect(DATABASE_URL, sslmode='require')
@@ -12,14 +14,25 @@ class DatabaseConnection:
     def __init__(self):
         """ initialise connection to db. """
         try:
-            DATABASE_NAME = os.environ["DATABASE_NAME"]
-            DATABASE_USER = os.environ["DATABASE_USER"]
-            DATABASE_PASSWORD = os.environ["DATABASE_PASSWORD"]
-            DATABASE_HOST = os.environ["DATABASE_HOST"]
-            DATABASE_PORT = os.environ["DATABASE_PORT"]
+            env = Env()
+            env.read_env()
+
+            DATABASE_NAME = env.str("DATABASE_NAME")
+            DATABASE_USER = env.str("DATABASE_USER")
+            DATABASE_PASSWORD = env.str("DATABASE_PASSWORD")
+            DATABASE_HOST = env.str("DATABASE_HOST")
+            DATABASE_PORT = env.str("DATABASE_PORT")
+
+            # DATABASE_NAME = os.environ["DATABASE_NAME"]
+            # DATABASE_USER = os.environ["DATABASE_USER"]
+            # DATABASE_PASSWORD = os.environ["DATABASE_PASSWORD"]
+            # DATABASE_HOST = os.environ["DATABASE_HOST"]
+            # DATABASE_PORT = os.environ["DATABASE_PORT"]
+
+            # SECRET_KEY = env.str("SECRET_KEY")
 
 
-            DATABASE_URL = os.environ["DATABASE_URL"]
+            # DATABASE_URL = os.environ["DATABASE_URL"]
             # url = urlparse.urlparse(DATABASE_URL)
             # self.db = "dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname)
             # self.connection = psycopg2.connect(self.db)
@@ -30,8 +43,8 @@ class DatabaseConnection:
             
             self.connection.autocommit = True
             self.cursor = self.connection.cursor()
-        except Exception:
-            pprint("Can't connect to database")
+        except AttributeError as ae:
+            pprint("Can't connect to database" + ae)
         
     def create_fooditem_table(self):
         """ create table to store menu. """

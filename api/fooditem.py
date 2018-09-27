@@ -1,13 +1,10 @@
 """ Class to manage CRUD operations on food item objects"""
 from api.models import DatabaseConnection
-import psycopg2
-from pprint import pprint
 
 class FoodItem(object):
     """docstring for FoodItem"""
     def __init__(self):
-        """ define attributes for food item. """
-        self.fooditems = []
+        """ define connections to food items table. """
         self.db = DatabaseConnection()
         self.db.create_fooditem_table()
     
@@ -26,13 +23,10 @@ class FoodItem(object):
     
     def check_if_item_exists(self, name):
         """ retrieve item with similar name"""
-        # item = [item for item in self.fooditems if item['name'] == name and item['price'] == price]
-        # return item
         try:
             self.db.cursor.execute("SELECT * FROM fooditems where name='"+name+"'")
         except TypeError as e:
-            pprint(e)
-        # item = self.db.cursor.fetchone()
+            print(e)
         rows_found = self.db.cursor.rowcount
         if rows_found > 0:
             return True
@@ -44,7 +38,7 @@ class FoodItem(object):
         try:
             self.db.cursor.execute("SELECT * FROM fooditems")
         except TypeError as e:
-            pprint(e)
+            print(e)
         fooditems = self.db.cursor.fetchall()
         menuitems = []
         for item in fooditems:
@@ -57,7 +51,7 @@ class FoodItem(object):
         try:
             self.db.cursor.execute("SELECT * FROM fooditems where id='"+str(item_id)+"'")
         except TypeError as e:
-            pprint(e)
+            print(e)
         item = self.db.cursor.fetchone()
         rows_found = self.db.cursor.rowcount
         if rows_found > 0:
@@ -69,7 +63,6 @@ class FoodItem(object):
 
     def update_item(self, item_id, item_data):
         """ update item details. """
-        # item = self.get_item(item_id)
         item = item_data
         item['name'] = str(item_data['name'])
         item['price'] = int(item_data['price'])
@@ -77,7 +70,7 @@ class FoodItem(object):
         try:
             self.db.cursor.execute("UPDATE fooditems set name='"+item['name']+"', category='"+item['category']+"', price='"+str(item['price'])+"' WHERE id='"+str(item_id)+"'")
         except TypeError as e:
-            pprint(e)
+            print(e)
         
         rows_updated = self.db.cursor.rowcount
         if rows_updated > 0:
@@ -88,31 +81,12 @@ class FoodItem(object):
 
     def delete_item(self, item_id):
         """ delete item. """
-        # item = self.get_item(item_id)
-        # self.fooditems.remove(item)
         try:
             self.db.cursor.execute("DELETE FROM fooditems WHERE id='"+str(item_id)+"'")
         except:
-            pprint("unable to print")
+            print("unable to delete")
         rows_deleted = self.db.cursor.rowcount
         if rows_deleted > 0:
             return "fooditem was deleted"
         else:
             return "unable to delete item"
-
-
-#   def insert_fooditem(self):
-#         new_item = ("Fish", "Foods", '9000')
-#         insert_command = "INSERT INTO fooditems(name, category, price) VALUES('"+ new_item[0] + "', '" + new_item[1] + "', '"+ new_item[2] +"')"
-#         pprint(insert_command)
-#         self.cursor.execute(insert_command)
-
-#     def query_all(self):
-#         self.cursor.execute("SELECT * FROM fooditems")
-#         fooditems = self.cursor.fetchall()
-#         for item in fooditems:
-#             pprint("each item : {0}".format(item))
-
-#     def update_record(self):
-#         update_command = "UPDATE fooditems SET name='Fish', price=6000 WHERE id=1"
-#         self.cursor.execute(update_command)

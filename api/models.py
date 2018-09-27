@@ -20,13 +20,7 @@ class DatabaseConnection:
 
             DATABASE_HOST = env.str("DATABASE_HOST")
             DATABASE_URL = env.str("DATABASE_URL")
-            # DATABASE_NAME = env.str("DATABASE_NAME")
-            # DATABASE_USER = env.str("DATABASE_USER")
-            # DATABASE_PASSWORD = env.str("DATABASE_PASSWORD")            
-            # DATABASE_PORT = env.str("DATABASE_PORT")
-
-            # self.connection_variables = 'dbname='+ DATABASE_NAME+' user='+ DATABASE_USER+'  password='+ DATABASE_PASSWORD+'  host='+ DATABASE_HOST+'  port='+ DATABASE_PORT
-            # self.connection = psycopg2.connect(self.connection_variables)
+            
             if DATABASE_HOST == "localhost":
                 self.connection = psycopg2.connect(DATABASE_URL)
             else:
@@ -50,7 +44,7 @@ class DatabaseConnection:
     def create_users_table(self):
         """ create table to store users. """
         try:
-            create_command = "CREATE TABLE IF NOT EXISTS users(id serial PRIMARY KEY, email varchar, password varchar)"
+            create_command = "CREATE TABLE IF NOT EXISTS users(id serial PRIMARY KEY, email varchar, password varchar, gender varchar)"
             self.cursor.execute(create_command)
         except AttributeError:
             print("Error creating table")

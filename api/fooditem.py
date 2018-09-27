@@ -77,7 +77,6 @@ class FoodItem(object):
             return item
         else:
             return "unable to update item"
-        # return item
 
     def delete_item(self, item_id):
         """ delete item. """

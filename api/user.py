@@ -21,7 +21,6 @@ class User(object):
             return user
         else:
             return "Unable to create user"
-        # return user
 
     def check_if_user_exists(self, email):
         """ retrieve item with similar email"""
@@ -41,9 +40,9 @@ class User(object):
             self.db.cursor.execute("SELECT * FROM users")
         except TypeError as e:
             print(e)
-        fooditems = self.db.cursor.fetchall()
+        useritems = self.db.cursor.fetchall()
         users = []
-        for item in fooditems:
+        for item in useritems:
             user = {"id": item['id'], "email": item['email']}
             users.append(user)
         return users

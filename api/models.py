@@ -53,7 +53,7 @@ class DatabaseConnection:
     def create_orders_table(self):
         """ create table to store orders. """
         try:
-            create_command = "CREATE TABLE IF NOT EXISTS orders(id serial PRIMARY KEY, item varchar, quantity integer, user_id integer)"
+            create_command = "CREATE TABLE IF NOT EXISTS orders(id serial PRIMARY KEY, item varchar, quantity integer, status varchar, user_id integer)"
             self.cursor.execute(create_command)
         except AttributeError:
             print("Error creating table")

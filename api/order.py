@@ -1,53 +1,131 @@
 """ Class to manage CRUD operations on order objects"""
+from api.models import DatabaseConnection
+
 class Order(object):
     """docstring for Orders"""
     def __init__(self):
         """ define attributes for order. """
-        self.orders = []
+        # self.orders = []
+        self.db = DatabaseConnection()
+        self.db.create_orders_table()
 
     def create_order(self, order_data):
         """ add order to orders list """
         order = order_data
-        order['id'] = len(self.orders) + 1
+        # order['id'] = len(self.orders) + 1
+        order['item'] = str(order_data['item'])
+        order['quantity'] = str(order_data['quantity'])
+        order['user_id'] = str(order_data['user_id'])
         order['status'] = 'pending'
-        self.orders.append(order)
+        # self.orders.append(order)
+
+        if not self.check_if_order_exists(order['user_id'], order['item'], order['quantity']):
+            self.db.cursor.execute("INSERT INTO orders(item, quantity, status, user_id) \
+            VALUES('"+ order['item'] + "','"+ order['quantity'] +"', '"+order['status']+"', '"+order['user_id']+"')")
+            return order
+        else:
+            return "Unable to create order"
         return order
     
     def check_if_order_exists(self, user_id, item, quantity):
         """ retrieve order with given id. """
-        order = [order for order in self.orders if order['user_id'] == user_id and order['item'] == item and order['quantity'] == quantity ]
-        return order
+        try:
+            self.db.cursor.execute("SELECT * FROM orders where user_id='"+user_id+"' AND item='"+item+"' AND quantity='"+quantity+"'")
+        except TypeError as e:
+            print(e)
+        rows_found = self.db.cursor.rowcount
+        if rows_found > 0:
+            return True
+        else:
+            return False
 
     def fetch_all_orders(self):
-        """ retrieve all orders from list """
-        return self.orders
+        """ retrieve all orders from db """
+        # return self.orders
+        try:
+            self.db.cursor.execute("SELECT * FROM orders WHERE status !='cancelled'")
+        except TypeError as e:
+            print(e)
+        orderitems = self.db.cursor.fetchall()
+        orders = []
+        for item in orderitems:
+            order = {"id": item['id'], "item": item['item'], "quantity": item['quantity'], "status": item['status'], "user_id": item['user_id']}
+            orders.append(order)
+        return orders
 
     def fetch_user_orders(self, user_id):
         """ retrieve all orders from list """
-        user_orders = [order for order in self.orders if order['user_id'] == user_id and order['status'] != 'cancelled']
-        return user_orders
+        try:
+            self.db.cursor.execute("SELECT * FROM orders where user_id='"+str(user_id)+"' AND status !='cancelled'")
+        except TypeError as e:
+            print(e)
+        order_items = self.db.cursor.fetchall()
+        orders = []
+        for item in order_items:
+            order = {"id": item['id'], "item": item['item'], "quantity": item['quantity'], "status": item['status']}
+            orders.append(order)
+        return orders
 
     def get_order(self, order_id):
         """ retrieve order with given id. """
-        order = [order for order in self.orders if order['id'] == order_id]
-        return order[0]
+        # order = [order for order in self.orders if order['id'] == order_id]
+        # return order[0]
+        try:
+            self.db.cursor.execute("SELECT * FROM orders where id='"+str(order_id)+"'")
+        except TypeError as e:
+            print(e)
+        order_item = self.db.cursor.fetchone()
+        rows_found = self.db.cursor.rowcount
+        if rows_found > 0:
+            order = {"id": order_item['id'], "item": order_item['item'], "quantity": order_item['quantity'], "status": order_item['status'], "user_id": order_item['user_id']}
+            return order
+        else:
+            return "not found"
 
     def update_order(self, order_id, order_data):
         """ update order details. """
-        order = self.get_order(order_id)
-        order['status'] = order_data['status']
-        return order
+        # order = self.get_order(order_id)
+        # order['status'] = order_data['status']
+        # return order
+        order = order_data
+        order['status'] = str(order_data['status'])
+        try:
+            self.db.cursor.execute("UPDATE orders set status='"+order['status']+"' WHERE id='"+str(order_id)+"'")
+        except TypeError as e:
+            print(e)
+        
+        rows_updated = self.db.cursor.rowcount
+        if rows_updated > 0:
+            return order
+        else:
+            return "unable to update order"
 
     def update_user_order(self, order_id, order_data):
         """ update order details. """
-        order = self.get_order(order_id)
-        order['item'] = order_data['item']
-        order['quantity'] = order_data['quantity']
-        order['status'] = order_data['status']
-        return order
+        order = order_data
+        order['item'] = str(order_data['item'])
+        order['quantity'] = int(order_data['quantity'])
+        order['status'] = str(order_data['status'])
+        try:
+            self.db.cursor.execute("UPDATE orders set item='"+order['item']+"', quantity='"+order['quantity']+"', status='"+order['status']+"' WHERE id='"+str(order_id)+"'")
+        except TypeError as e:
+            print(e)
+        
+        rows_updated = self.db.cursor.rowcount
+        if rows_updated > 0:
+            order['id'] = order_id
+            return order
+        else:
+            return "unable to update order"
 
     def delete_order(self, order_id):
         """ delete order. """
-        order = self.get_order(order_id)
-        self.orders.remove(order)
-        return "Order was deleted"
+        try:
+            self.db.cursor.execute("DELETE FROM orders WHERE id='"+str(order_id)+"'")
+        except:
+            print("unable to delete")
+        rows_deleted = self.db.cursor.rowcount
+        if rows_deleted > 0:
+            return "order was deleted"
+        else:
+            return "unable to delete order"

@@ -1,6 +1,7 @@
 """ Defines modules for the app """
 import os
 import psycopg2
+import psycopg2.extras
 from pprint import pprint
 from environs import Env
 
@@ -23,51 +24,39 @@ class DatabaseConnection:
             DATABASE_HOST = env.str("DATABASE_HOST")
             DATABASE_PORT = env.str("DATABASE_PORT")
 
-            # DATABASE_NAME = os.environ["DATABASE_NAME"]
-            # DATABASE_USER = os.environ["DATABASE_USER"]
-            # DATABASE_PASSWORD = os.environ["DATABASE_PASSWORD"]
-            # DATABASE_HOST = os.environ["DATABASE_HOST"]
-            # DATABASE_PORT = os.environ["DATABASE_PORT"]
-
-            # SECRET_KEY = env.str("SECRET_KEY")
-
-
-            # DATABASE_URL = os.environ["DATABASE_URL"]
-            # url = urlparse.urlparse(DATABASE_URL)
-            # self.db = "dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname)
-            # self.connection = psycopg2.connect(self.db)
-            
-            # self.connection_variables = 'dbname=fastfoodfast user=postgres password=pgadmin host=localhost port=5432'
             self.connection_variables = 'dbname='+ DATABASE_NAME+' user='+ DATABASE_USER+'  password='+ DATABASE_PASSWORD+'  host='+ DATABASE_HOST+'  port='+ DATABASE_PORT
             self.connection = psycopg2.connect(self.connection_variables)
             
             self.connection.autocommit = True
             self.cursor = self.connection.cursor()
+            self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         except AttributeError as ae:
             pprint("Can't connect to database" + ae)
         
     def create_fooditem_table(self):
         """ create table to store menu. """
         try:
-            # price integer NOT NULL
-            create_command = "CREATE TABLE IF NOT EXISTS fooditems(id serial PRIMARY KEY, name varchar, category varchar, price varchar)"
+            create_command = "CREATE TABLE IF NOT EXISTS fooditems(id serial PRIMARY KEY, name varchar, category varchar, price integer NOT NULL)"
             self.cursor.execute(create_command)
-        except Exception:
+        except AttributeError:
             print("Error creating table")
         return "table created"
 
-    def insert_fooditem(self):
-        new_item = ("Chips", "Foods", '7000')
-        insert_command = "INSERT INTO fooditems(name, category, price) VALUES('"+ new_item[0] + "', '" + new_item[1] + "', '"+ new_item[2] +"')"
-        pprint(insert_command)
-        self.cursor.execute(insert_command)
+    def create_users_table(self):
+        """ create table to store users. """
+        try:
+            create_command = "CREATE TABLE IF NOT EXISTS users(id serial PRIMARY KEY, email varchar, password varchar)"
+            self.cursor.execute(create_command)
+        except AttributeError:
+            print("Error creating table")
+        return "table created"
 
-    def query_all(self):
-        self.cursor.execute("SELECT * FROM fooditems")
-        fooditems = self.cursor.fetchall()
-        for item in fooditems:
-            pprint("each item : {0}".format(item))
+    def create_orders_table(self):
+        """ create table to store orders. """
+        try:
+            create_command = "CREATE TABLE IF NOT EXISTS orders(id serial PRIMARY KEY, item varchar, quantity integer, user_id integer)"
+            self.cursor.execute(create_command)
+        except AttributeError:
+            print("Error creating table")
+        return "table created"
 
-    def update_record(self):
-        update_command = "UPDATE fooditems SET name='Fish', price=6000 WHERE id=1"
-        self.cursor.execute(update_command)

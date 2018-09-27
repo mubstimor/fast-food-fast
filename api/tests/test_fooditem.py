@@ -37,7 +37,7 @@ class FoodItemViewTest(unittest.TestCase):
         """ test fetch method by passing an index that's not available """
         self.fooditem['name'] = "Chapatti"
         self.test_create_fooditem()
-        request = self.app.get('/api/v1/fooditems/3')
+        request = self.app.get('/api/v1/fooditems/10003')
         # self.assertEqual(request.status_code, 404)
         self.assertEqual("not found", request.json['fooditem'])
 

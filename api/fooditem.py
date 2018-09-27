@@ -17,14 +17,27 @@ class FoodItem(object):
         item['name'] = str(item_data['name'])
         item['price'] = int(item_data['price'])
         item['category'] = str(item_data['category'])
-        self.db.cursor.execute("INSERT INTO fooditems(name, category, price) \
-        VALUES('"+ item['name'] + "','"+ item['category'] + "','"+ str(item['price']) +"')")
-        return item
+        if not self.check_if_item_exists(item['name']):
+            self.db.cursor.execute("INSERT INTO fooditems(name, category, price) \
+            VALUES('"+ item['name'] + "','"+ item['category'] + "','"+ str(item['price']) +"')")
+            return item
+        else:
+            return "Unable to create item"
     
-    def check_if_item_exists(self, name, price):
-        """ retrieve item with similar name & price. """
-        item = [item for item in self.fooditems if item['name'] == name and item['price'] == price]
-        return item
+    def check_if_item_exists(self, name):
+        """ retrieve item with similar name"""
+        # item = [item for item in self.fooditems if item['name'] == name and item['price'] == price]
+        # return item
+        try:
+            self.db.cursor.execute("SELECT * FROM fooditems where name='"+name+"'")
+        except TypeError as e:
+            pprint(e)
+        # item = self.db.cursor.fetchone()
+        rows_found = self.db.cursor.rowcount
+        if rows_found > 0:
+            return True
+        else:
+            return False
 
     def fetch_all_fooditems(self):
         """ retrieve all fooditems from database """

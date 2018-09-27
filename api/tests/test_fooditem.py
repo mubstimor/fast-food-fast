@@ -9,15 +9,18 @@ class FoodItemViewTest(unittest.TestCase):
         """ set default values for class. """
         self.app = app.test_client()
         self.app.testing = True
-        self.fooditem = {"name": "Chips", "category": "Foods", "price":7000}
+        self.fooditem = {"name": "Millet", "category": "Foods", "price":7000}
 
     def test_create_fooditem(self):
         """ test post method """
-        request = self.app.post('/api/v1/fooditems', json=self.fooditem)
-        self.assertEqual(request.status_code, 201)
-        self.assertEqual(request.headers['Content-Type'], 'application/json')
-        self.assertEqual(7000, request.json['fooditem']['price'])
-        self.assertEqual("Foods", request.json['fooditem']['category'])
+        # check if table is empty before creating
+        is_table_empty = self.app.get('/api/v1/fooditems')
+        if not is_table_empty.json['fooditems']:
+            request = self.app.post('/api/v1/fooditems', json=self.fooditem)
+            self.assertEqual(request.status_code, 201)
+            self.assertEqual(request.headers['Content-Type'], 'application/json')
+            self.assertEqual(7000, request.json['fooditem']['price'])
+            self.assertEqual("Foods", request.json['fooditem']['category'])
 
     def test_create_fooditem_with_invalid_price(self):
         """ test post method by including an invalid price value."""
@@ -27,43 +30,32 @@ class FoodItemViewTest(unittest.TestCase):
 
     def test_retrieve_fooditem(self):
         """ test fetch method """
-        self.fooditem['name'] = "Rice"
-        self.test_create_fooditem()
         request = self.app.get('/api/v1/fooditems/45')
         self.assertEqual(request.status_code, 200)
         self.assertEqual(45, request.json['fooditem']['id'])
 
     def test_retrieve_unavailablefooditem(self):
         """ test fetch method by passing an index that's not available """
-        self.fooditem['name'] = "Chapatti"
-        self.test_create_fooditem()
         request = self.app.get('/api/v1/fooditems/10003')
-        # self.assertEqual(request.status_code, 404)
         self.assertEqual("not found", request.json['fooditem'])
 
     def test_get_all_fooditems(self):
         """ test get all fooditems method """
-        self.fooditem['name'] = "Fish"
-        self.test_create_fooditem()
         request = self.app.get('/api/v1/fooditems')
         self.assertEqual(request.status_code, 200)
         self.assertGreater(len(request.json['fooditems']), 0)
 
     def test_update_fooditem(self):
         """ test update method """
-        self.fooditem['name'] = "Liver"
-        self.test_create_fooditem()
         request = self.app.put('/api/v1/fooditems/46', \
         json={"name": "Fish Fillet", "category": "Foods", "price":9000})
         self.assertEqual(request.status_code, 200)
-        # self.assertEqual("Fish Fillet", request.json['fooditem']['name'])
         self.assertEqual(9000, request.json['fooditem']['price'])
 
     def test_delete_fooditem(self):
         """ test delete method """
         request = self.app.delete('/api/v1/fooditems/35')
         self.assertEqual(request.status_code, 200)
-        # self.assertEqual("fooditem was deleted", request.json['result'])
         self.assertNotEqual("", request.json['result'])
 
     def test_delete_unavailable_fooditem(self):

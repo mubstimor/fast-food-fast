@@ -18,14 +18,19 @@ class DatabaseConnection:
             env = Env()
             env.read_env()
 
-            DATABASE_NAME = env.str("DATABASE_NAME")
-            DATABASE_USER = env.str("DATABASE_USER")
-            DATABASE_PASSWORD = env.str("DATABASE_PASSWORD")
             DATABASE_HOST = env.str("DATABASE_HOST")
-            DATABASE_PORT = env.str("DATABASE_PORT")
+            DATABASE_URL = env.str("DATABASE_URL")
+            # DATABASE_NAME = env.str("DATABASE_NAME")
+            # DATABASE_USER = env.str("DATABASE_USER")
+            # DATABASE_PASSWORD = env.str("DATABASE_PASSWORD")            
+            # DATABASE_PORT = env.str("DATABASE_PORT")
 
-            self.connection_variables = 'dbname='+ DATABASE_NAME+' user='+ DATABASE_USER+'  password='+ DATABASE_PASSWORD+'  host='+ DATABASE_HOST+'  port='+ DATABASE_PORT
-            self.connection = psycopg2.connect(self.connection_variables)
+            # self.connection_variables = 'dbname='+ DATABASE_NAME+' user='+ DATABASE_USER+'  password='+ DATABASE_PASSWORD+'  host='+ DATABASE_HOST+'  port='+ DATABASE_PORT
+            # self.connection = psycopg2.connect(self.connection_variables)
+            if DATABASE_HOST == "localhost":
+                self.connection = psycopg2.connect(DATABASE_URL)
+            else:
+                self.connection = psycopg2.connect(DATABASE_URL, sslmode='require')
             
             self.connection.autocommit = True
             self.cursor = self.connection.cursor()

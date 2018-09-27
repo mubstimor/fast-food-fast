@@ -38,7 +38,7 @@ def create_order():
         order  = ORDER.check_if_order_exists(request.json['user_id'], request.json['item'], request.json['quantity'])
         if order:
             # order already exists
-            abort(500)
+            return jsonify({'error': 'Order already exists'}), 403
         else:
             return jsonify({'order': ORDER.create_order(request.json)}), 201
 
@@ -137,9 +137,9 @@ def create_fooditem():
         abort(400)
     
     try:
-        item  = FOODITEM.check_if_item_exists(request.json['name'], request.json['price'])
+        item  = FOODITEM.check_if_item_exists(request.json['name'])
         if item:
-            abort(500)
+            return jsonify({'error': 'Menu Item already exists'}), 403
         else:
             return jsonify({'fooditem': FOODITEM.create_item(request.json)}), 201
 
@@ -184,8 +184,8 @@ def not_found(error):
 @app.errorhandler(400)
 def bad_request(error):
     """ return clean response for bad requests. """
-    return make_response(jsonify({'error': 'Bad Request, \
-    some parameters are either missing or invalid'}), 400)
+    return make_response(jsonify(
+        {'error': 'Bad Request, some parameters are either missing or invalid'}), 400)
 
 @app.errorhandler(500)
 def already_exists(error):

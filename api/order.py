@@ -9,6 +9,9 @@ class Order(object):
         """ add order to orders list """
         order = order_data
         order['id'] = len(self.orders) + 1
+        # ensure order ids are not duplicated
+        if self.check_if_orderId_exists(order['id']):
+            order['id'] = len(self.orders) + 2
         order['status'] = 'pending'
         self.orders.append(order)
         return order
@@ -17,6 +20,12 @@ class Order(object):
         """ retrieve order with given id. """
         order = [order for order in self.orders if order['user_id'] == user_id and order['item'] == item and order['quantity'] == quantity ]
         return order
+
+    def check_if_orderId_exists(self, orderId):
+        """ check if order id already exists. """
+        order = [order for order in self.orders if order['id'] == orderId]
+        if order:
+            return True
 
     def fetch_all_orders(self):
         """ retrieve all orders from list """

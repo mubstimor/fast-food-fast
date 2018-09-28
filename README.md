@@ -33,7 +33,7 @@ Expected parameters: {"status":"accepted"}
 POST /orders
 Expected parameters: {"user_id": 1, "item": "chips", "quantity":1}
 ```
-![Post Order](/../develop/screenshots/post-order?raw=true)
+![Post Order](https://user-images.githubusercontent.com/2491780/46194678-c6f78680-c30a-11e8-8e12-d84b64c44dfb.png)
 ## Users
 ```
 Get /users

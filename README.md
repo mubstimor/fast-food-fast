@@ -33,7 +33,7 @@ Expected parameters: {"status":"accepted"}
 POST /orders
 Expected parameters: {"user_id": 1, "item": "chips", "quantity":1}
 ```
-![Post Order](/screenshots/post-order?raw=true)
+![Post Order](/../develop/screenshots/post-order?raw=true)
 ## Users
 ```
 Get /users

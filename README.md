@@ -32,6 +32,7 @@ Expected parameters: {"status":"accepted"}
 * A user should be able to order for food
 POST /orders
 Expected parameters: {"user_id": 1, "item": "chips", "quantity":1}
+![Alt text](https://www.dropbox.com/s/ghkhbrn84tsuc8v/post-order.png?dl=0 "Post order")
 ```
 
 ## Users

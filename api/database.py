@@ -44,7 +44,7 @@ class DatabaseConnection:
     def create_users_table(self):
         """ create table to store users. """
         try:
-            create_command = "CREATE TABLE IF NOT EXISTS users(id serial PRIMARY KEY, email varchar, password varchar, gender varchar)"
+            create_command = "CREATE TABLE IF NOT EXISTS users(id serial PRIMARY KEY, name varchar, email varchar, password varchar, gender varchar, user_type varchar DEFAULT 'Customer')"
             self.cursor.execute(create_command)
         except AttributeError:
             print("Error creating table")

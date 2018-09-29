@@ -47,9 +47,14 @@ def create_order():
    
 
 @app.route('/api/v1/orders', methods=['GET'])
-def api_all():
+def get_all_orders():
     """ A route to return all of the available orders. """
-    return jsonify({'orders': ORDER.fetch_all_orders()})
+    orders = ORDER.fetch_all_orders()
+    if orders:
+        return jsonify({'orders': orders})
+    else:
+        return jsonify({'orders': "No orders available"})
+    
 
 @app.route('/api/v1/orders/<int:order_id>', methods=['GET'])
 def get_order(order_id):

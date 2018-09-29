@@ -1,36 +1,35 @@
 """ Class to manage CRUD operations on order objects"""
-from api.models import DatabaseConnection
+from api.database import DatabaseConnection
 
 class Order(object):
     """docstring for Orders"""
     def __init__(self):
         """ define attributes for order. """
-        # self.orders = []
         self.db = DatabaseConnection()
         self.db.create_orders_table()
 
     def create_order(self, order_data):
         """ add order to orders list """
         order = order_data
-        # order['id'] = len(self.orders) + 1
         order['item'] = str(order_data['item'])
         order['quantity'] = str(order_data['quantity'])
         order['user_id'] = str(order_data['user_id'])
         order['status'] = 'pending'
-        # self.orders.append(order)
 
         if not self.check_if_order_exists(order['user_id'], order['item'], order['quantity']):
             self.db.cursor.execute("INSERT INTO orders(item, quantity, status, user_id) \
-            VALUES('"+ order['item'] + "','"+ order['quantity'] +"', '"+order['status']+"', '"+order['user_id']+"')")
+            VALUES('"+ order['item'] + "','"+ order['quantity'] +"', '"+order['status']+"', '"+order['user_id']+"') RETURNING id")
+            order_id = self.db.cursor.fetchone()[0]
+            order['id'] = order_id
             return order
         else:
-            return "Unable to create order"
-        return order
+            return "order already exists"
+        # return order
     
     def check_if_order_exists(self, user_id, item, quantity):
         """ retrieve order with given id. """
         try:
-            self.db.cursor.execute("SELECT * FROM orders where user_id='"+user_id+"' AND item='"+item+"' AND quantity='"+quantity+"'")
+            self.db.cursor.execute("SELECT * FROM orders where user_id='"+str(user_id)+"' AND item='"+item+"' AND quantity='"+str(quantity)+"'")
         except TypeError as e:
             print(e)
         rows_found = self.db.cursor.rowcount
@@ -41,7 +40,6 @@ class Order(object):
 
     def fetch_all_orders(self):
         """ retrieve all orders from db """
-        # return self.orders
         try:
             self.db.cursor.execute("SELECT * FROM orders WHERE status !='cancelled'")
         except TypeError as e:
@@ -68,8 +66,6 @@ class Order(object):
 
     def get_order(self, order_id):
         """ retrieve order with given id. """
-        # order = [order for order in self.orders if order['id'] == order_id]
-        # return order[0]
         try:
             self.db.cursor.execute("SELECT * FROM orders where id='"+str(order_id)+"'")
         except TypeError as e:
@@ -84,9 +80,6 @@ class Order(object):
 
     def update_order(self, order_id, order_data):
         """ update order details. """
-        # order = self.get_order(order_id)
-        # order['status'] = order_data['status']
-        # return order
         order = order_data
         order['status'] = str(order_data['status'])
         try:

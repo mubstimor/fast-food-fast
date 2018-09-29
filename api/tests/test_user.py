@@ -9,7 +9,7 @@ class UserViewTest(unittest.TestCase):
         """ set default values for class. """
         self.app = app.test_client()
         self.app.testing = True
-        self.user = {"email": "mubstimor@gmail.com", "password": "1234", "gender":"male"}
+        self.user = {"name": "John Doe", "email": "mubstimor@gmail.com", "password": "1234", "gender":"male"}
 
     def test_create_user(self):
         """ test create user method """

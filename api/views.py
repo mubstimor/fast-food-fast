@@ -63,7 +63,11 @@ def get_order(order_id):
         order = ORDER.get_order(order_id)
     except IndexError:
         abort(404)
-    return jsonify({'order': order})
+    if order:
+        return jsonify({'order': order})
+    else:
+        return jsonify({'order': 'Order not found'}), 404
+    
 
 @app.route('/api/v1/orders/<int:order_id>', methods=['PUT'])
 def update_order(order_id):

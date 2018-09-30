@@ -16,7 +16,9 @@ class FoodItem(object):
         item['category'] = str(item_data['category'])
         if not self.check_if_item_exists(item['name']):
             self.db.cursor.execute("INSERT INTO fooditems(name, category, price) \
-            VALUES('"+ item['name'] + "','"+ item['category'] + "','"+ str(item['price']) +"')")
+            VALUES('"+ item['name'] + "','"+ item['category'] + "','"+ str(item['price']) +"') RETURNING id")
+            item_id = self.db.cursor.fetchone()[0]
+            item['id'] = item_id
             return item
         else:
             return "Unable to create item"

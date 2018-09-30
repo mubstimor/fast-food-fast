@@ -1,6 +1,7 @@
 """ TESTS FOR USER ROUTES"""
 import unittest
 from api import app
+from api.database import DatabaseConnection
 
 class UserViewTest(unittest.TestCase):
     """ class defines test methods."""
@@ -8,13 +9,16 @@ class UserViewTest(unittest.TestCase):
     def setUp(self):
         """ set default values for class. """
         self.app = app.test_client()
+        self.db = DatabaseConnection()
+        self.db.create_users_table()
         self.app.testing = True
-        self.user = {"name": "John Doe", "email": "mubstimor@gmail.com", "password": "1234", "gender":"male"}
+        self.user = {"name": "John Doe", "email": "john@example.com", "password": "1234", "gender":"male"}
 
     def test_create_user(self):
         """ test create user method """
         request = self.app.post('/api/v1/users', json=self.user)
         self.assertEqual(request.status_code, 201)
+        self.assertEqual("john@example.com", request.json['user']['email'])
 
     def test_create_user_without_email_in_request(self):
         """ test post method by not including email in request """
@@ -43,19 +47,30 @@ class UserViewTest(unittest.TestCase):
 
     def test_get_user(self):
         """ test get user method """
-        request = self.app.get('/api/v1/users/1')
+        request = self.app.post('/api/v1/users', \
+        json={"name": "Jack Danny", "email": "jdanny@example.com", "password": "12345", "gender":"male"})
+        created_user_id = int(request.json['user']['id'])
+        user_url = "/api/v1/users/" + str(created_user_id)
+        request = self.app.get(user_url)
         self.assertEqual(request.status_code, 200)
 
     def test_retrieve_unavailableuser(self):
         """ test fetch user method by passing an index that's not available """
-        request = self.app.get('/api/v1/users/3')
+        request = self.app.get('/api/v1/users/13')
         # self.assertEqual(request.status_code, 404)
         self.assertEqual("not found", request.json['user'])
 
     def test_get_all_users(self):
         """ test get user method """
+        request = self.app.post('/api/v1/users', \
+        json={"name": "Aaron Doherty", "email": "adoherty@example.com", "password": "123456", "gender":"male"})
         request = self.app.get('/api/v1/users')
         self.assertEqual(request.status_code, 200)
+        self.assertGreater(len(request.json['users']), 0)
+
+    def tearDown(self):
+        """ undo effects of tests. """
+        self.db.cursor.execute("DROP TABLE users")
 
 if __name__ == "__main__":
     unittest.main()

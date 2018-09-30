@@ -60,7 +60,7 @@ class Order(object):
         order_items = self.db.cursor.fetchall()
         orders = []
         for item in order_items:
-            order = {"id": item['id'], "item": item['item'], "quantity": item['quantity'], "status": item['status']}
+            order = {"id": item['id'], "item": item['item'], "quantity": item['quantity'], "status": item['status'], "user_id": item['user_id']}
             orders.append(order)
         return orders
 
@@ -75,8 +75,8 @@ class Order(object):
         if rows_found > 0:
             order = {"id": order_item['id'], "item": order_item['item'], "quantity": order_item['quantity'], "status": order_item['status'], "user_id": order_item['user_id']}
             return order
-        else:
-            return "not found"
+        # else:
+        #     return "not found"
 
     def update_order(self, order_id, order_data):
         """ update order details. """

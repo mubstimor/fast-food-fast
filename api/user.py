@@ -19,8 +19,10 @@ class User(object):
         user['password'] = generate_password_hash(str(user_data['password']))
         if not self.check_if_user_exists(user['email']):
             self.db.cursor.execute("INSERT INTO users(name, email, password, gender) \
-            VALUES('"+ user['name'] + "','"+ user['email'] +"', '"+user['password']+"', '"+user['gender']+"')")
+            VALUES('"+ user['name'] + "','"+ user['email'] +"', '"+user['password']+"', '"+user['gender']+"') RETURNING id")
+            user_id = self.db.cursor.fetchone()[0]
             user['user_type'] = 'Customer'
+            user['id'] = user_id
             return user
         else:
             return "Unable to create user"

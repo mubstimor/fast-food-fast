@@ -1,17 +1,14 @@
 """ manages routes to the app. """
-# from flask import render_template
 from flask import request, jsonify
 from flask import abort
 from flask import make_response
-from flask import url_for
 from api import app
 from api.order import Order
 from api.user import User
 from api.fooditem import FoodItem
 
 
-# Create orders list variable to store information.
-# orders = []
+# Instantiate model connection variables
 ORDER = Order()
 USER = User()
 FOODITEM = FoodItem()
@@ -22,7 +19,6 @@ def index():
     return jsonify({'Home': 'Index of the API'})
 
 # ROUTES FOR ORDERS.
-
 @app.route('/api/v1/orders', methods=['POST'])
 def create_order():
     """ create order with post request. """
@@ -36,22 +32,9 @@ def create_order():
 
     order  = ORDER.check_if_order_exists(request.json['user_id'], request.json['item'], request.json['quantity'])
     if order:
-        # order already exists
         return jsonify({'error': 'Order already exists'}), 403
     else:
         return jsonify({'order': ORDER.create_order(request.json)}), 201
-    
-    # try:
-    #     order  = ORDER.check_if_order_exists(request.json['user_id'], request.json['item'], request.json['quantity'])
-    #     if order:
-    #         # order already exists
-    #         return jsonify({'error': 'Order already exists'}), 403
-    #     else:
-    #         return jsonify({'order': ORDER.create_order(request.json)}), 201
-
-    # except IndexError:
-    #     abort(400)
-   
 
 @app.route('/api/v1/orders', methods=['GET'])
 def get_all_orders():
@@ -62,21 +45,15 @@ def get_all_orders():
     else:
         return jsonify({'orders': "No orders available"})
     
-
 @app.route('/api/v1/orders/<int:order_id>', methods=['GET'])
 def get_order(order_id):
     """ Get a specific order with given id."""
     order = ORDER.get_order(order_id)
-    # try:
-    #     order = ORDER.get_order(order_id)
-    # except IndexError:
-    #     abort(404)
     if order:
         return jsonify({'order': order})
     else:
         return jsonify({'order': 'Order not found'}), 404
     
-
 @app.route('/api/v1/orders/<int:order_id>', methods=['PUT'])
 def update_order(order_id):
     """ update order status with put request. """
@@ -89,16 +66,9 @@ def update_order(order_id):
 def delete_order(order_id):
     """ delete requested resource from list. """
     return jsonify({'result': ORDER.delete_order(order_id)})
-    # try:
-    #     return jsonify({'result': ORDER.delete_order(order_id)})
-    # except IndexError:
-    #     abort(404)
-    
-
 # END ORDER ROUTES
 
 # ROUTES FOR CUSTOMERS
-
 @app.route('/api/v1/users', methods=['POST'])
 def create_user():
     """ create user with post request. """
@@ -113,17 +83,6 @@ def create_user():
         return jsonify({'error': 'user already exists'}), 403
     else:
         return jsonify({'user': USER.create_user((request.json))}), 201
-    # try:
-    #     user  = USER.check_if_user_exists(request.json['email'])
-    #     if user:
-    #         return jsonify({'error': 'user already exists'}), 403
-    #     else:
-    #         return jsonify({'user': USER.create_user((request.json))}), 201
-
-    # except IndexError:
-    #     abort(400)
-
-    # return jsonify({'user': USER.create_user((request.json))}), 201
 
 @app.route('/api/v1/users', methods=['GET'])
 def get_all_users():
@@ -134,10 +93,6 @@ def get_all_users():
 def get_user(user_id):
     """ Get a specific user with given id."""
     user = USER.get_user(user_id)
-    # try:
-    #     user = USER.get_user(user_id)
-    # except IndexError:
-    #     abort(404)
     return jsonify({'user': user})
 
 @app.route('/api/v1/users/login', methods=['POST'])
@@ -156,13 +111,9 @@ def update_user_order(order_id):
 def get_user_orders(user_id):
     """ Get orders for a specific user."""
     return jsonify({'myorders': ORDER.fetch_user_orders(user_id)})
-
-
 # END CUSTOMER ROUTES
 
-
 # ROUTES FOR FOOD ITEMS.
-
 @app.route('/api/v1/fooditems', methods=['POST'])
 def create_fooditem():
     """ create item with post request. """
@@ -177,18 +128,6 @@ def create_fooditem():
     else:
         return jsonify({'fooditem': FOODITEM.create_item(request.json)}), 201
 
-
-    # try:
-    #     item  = FOODITEM.check_if_item_exists(request.json['name'])
-    #     if item:
-    #         return jsonify({'error': 'Menu Item already exists'}), 403
-    #     else:
-    #         return jsonify({'fooditem': FOODITEM.create_item(request.json)}), 201
-
-    # except IndexError:
-    #     abort(400)
-   
-
 @app.route('/api/v1/fooditems', methods=['GET'])
 def get_all_fooditems():
     """ A route to return all of the available fooditems. """
@@ -198,10 +137,6 @@ def get_all_fooditems():
 def get_fooditem(item_id):
     """ Get a specific item with given id."""
     item = FOODITEM.get_item(item_id)
-    # try:
-    #     item = FOODITEM.get_item(item_id)
-    # except IndexError:
-    #     abort(404)
     return jsonify({'fooditem': item})
 
 @app.route('/api/v1/fooditems/<int:item_id>', methods=['PUT'])
@@ -212,12 +147,7 @@ def update_fooditem(item_id):
 @app.route('/api/v1/fooditems/<int:item_id>', methods=['DELETE'])
 def delete_fooditem(item_id):
     """ delete requested resource from list. """
-    return jsonify({'result': FOODITEM.delete_item(item_id)})
-    # try:
-    #     return jsonify({'result': FOODITEM.delete_item(item_id)})
-    # except IndexError:
-    #     abort(404)
-    
+    return jsonify({'result': FOODITEM.delete_item(item_id)})    
 # END FOOD ITEM ROUTES
 
 # @app.errorhandler(404)
@@ -230,8 +160,3 @@ def bad_request(error):
     """ return clean response for bad requests. """
     return make_response(jsonify(
         {'error': 'Bad Request, some parameters are either missing or invalid'}), 400)
-
-# @app.errorhandler(500)
-# def already_exists(error):
-#     """ return clean response for not found resources. """
-#     return make_response(jsonify({'error': 'Item already exists'}), 500)

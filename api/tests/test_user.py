@@ -45,7 +45,6 @@ class UserViewTest(unittest.TestCase):
         json={"name": "Jack Decker", "email": "jack@example.com", "password": "1234", "gender":"male"})
         request = self.app.post('/api/v1/users/login', \
         json={"email": "jack@example.com", "password": "1234"})
-        # self.assertIn('true', str(request.data))
         self.assertEqual(True, request.json['login'])
 
     def test_invalid_user_login_password(self):
@@ -54,7 +53,6 @@ class UserViewTest(unittest.TestCase):
         json={"name": "John Doe", "email": "john@example.com", "password": "1234", "gender":"male"})
         request = self.app.post('/api/v1/users/login', \
         json={"email": "john@example.com", "password": "12345"})
-        # self.assertIn('true', str(request.data))
         self.assertEqual(False, request.json['login'])
 
     def test_invalid_user_login_email(self):
@@ -63,7 +61,6 @@ class UserViewTest(unittest.TestCase):
         json={"name": "John Doe", "email": "james@example.com", "password": "1234", "gender":"male"})
         request = self.app.post('/api/v1/users/login', \
         json={"email": "john@example.com", "password": "12345"})
-        # self.assertIn('true', str(request.data))
         self.assertEqual(False, request.json['login'])
 
     def test_user_login_without_password(self):
@@ -84,7 +81,6 @@ class UserViewTest(unittest.TestCase):
     def test_retrieve_unavailableuser(self):
         """ test fetch user method by passing an index that's not available """
         request = self.app.get('/api/v1/users/13')
-        # self.assertEqual(request.status_code, 404)
         self.assertEqual("not found", request.json['user'])
 
     def test_get_all_users(self):

@@ -1,7 +1,7 @@
 """ Test class for Order"""
 import unittest
-import random
-from pprint import pprint
+# import random
+# from pprint import pprint
 from api import app
 from api.database import DatabaseConnection
 
@@ -34,6 +34,14 @@ class OrderViewTest(unittest.TestCase):
         self.assertEqual("Chips", request.json['order']['item'])
         self.assertEqual(1, int(request.json['order']['user_id']))
 
+    def test_create_already_existing_order(self):
+        """ test create duplicate order """
+        request = self.app.post(self.default_orders_url, json=self.default_order)
+        request = self.app.post(self.default_orders_url, json=self.default_order)
+        self.assertEqual(request.status_code, 403)
+        self.assertEqual(request.headers['Content-Type'], 'application/json')    
+        self.assertEqual("Order already exists", request.json['error'])
+
     def test_create_order_without_item_in_request(self):
         """ test post method by not including item in request """
         del self.default_order['item']
@@ -62,7 +70,7 @@ class OrderViewTest(unittest.TestCase):
         created_order_id = int(request.json['order']['id'])
         new_order_link = self.indexed_orders_url + str(created_order_id)
         request =  self.app.get(new_order_link)
-        pprint(request.json)
+        # pprint(request.json)
         self.assertEqual(request.status_code, 200)
         self.assertEqual(created_order_id, request.json['order']['id'])
 
@@ -88,6 +96,12 @@ class OrderViewTest(unittest.TestCase):
         self.assertEqual(request.status_code, 200)
         self.assertGreater(len(request.json['orders']), 0)
 
+    def test_get_empty_orders_list(self):
+        """ test get all orders method """
+        request = self.app.get(self.default_orders_url)
+        self.assertEqual(request.status_code, 200)
+        self.assertEqual("No orders available", request.json['orders'])
+
     def test_update_order(self):
         """ test update order status """
         # random_value = random.randint(1, 1000)
@@ -101,6 +115,19 @@ class OrderViewTest(unittest.TestCase):
         self.assertEqual(request.status_code, 200)
         # print(request.json)
         self.assertEqual("accepted", request.json['order']['status'])
+
+    def test_update_unavailable_order(self):
+        """ test update order status of unavailable order"""
+        # random_value = random.randint(1, 1000)
+        # order= {"user_id": 5, "item": "Fish Fillet", "quantity":10}
+        request = self.app.post(self.default_orders_url, \
+        json={"user_id": 11, "item": "Chicken Nuggets", "quantity":10})
+        created_order_id = int(request.json['order']['id']) + 3
+        new_order_link = self.indexed_orders_url + str(created_order_id)
+        request = self.app.put(new_order_link, \
+        json={"status":"accepted"})
+        self.assertEqual(request.status_code, 200)
+        self.assertEqual("unable to update order", request.json['order'])
 
     def test_update_user_order(self):
         """ test update user order method """
@@ -116,6 +143,19 @@ class OrderViewTest(unittest.TestCase):
         self.assertEqual("Rice + Chapatti", request.json['order']['item'])
         self.assertEqual(4, request.json['order']['quantity'])
 
+    def test_update_unavailable_user_order(self):
+        """ test update unavailable user order """
+        # random_value = random.randint(1, 1000)
+        # order= {"user_id": random_value, "item": "Fish", "quantity":random_value}
+        request = self.app.post(self.default_orders_url, \
+        json={"user_id": 12, "item": "Fish", "quantity":6})
+        created_order_id = int(request.json['order']['id']) + 4
+        new_order_link = "api/v1/users/orders/" + str(created_order_id)
+        request = self.app.put(new_order_link, \
+        json={"user_id": 6, "item": "Rice + Chapatti", "quantity":"4", "status":"pending"})
+        self.assertEqual(request.status_code, 200)
+        self.assertEqual("unable to update order", request.json['order'])
+
     def test_retrieve_user_order(self):
         """ test get user orders method """
         # random_value = random.randint(1, 1000)
@@ -125,7 +165,7 @@ class OrderViewTest(unittest.TestCase):
         new_order_link = "api/v1/users/myorders/7"
         request = self.app.get(new_order_link)
         self.assertEqual(request.status_code, 200)
-        pprint(request.json)
+        # pprint(request.json)
         self.assertEqual(7, request.json['myorders'][0]['user_id'])
         
     def test_update_order_with_invalid_status_value(self):
@@ -160,7 +200,6 @@ class OrderViewTest(unittest.TestCase):
         unavailable_order_id = int(request.json['order']['id']) + 2
         unavailable_order_link = self.indexed_orders_url + str(unavailable_order_id)
         request = self.app.delete(unavailable_order_link)
-        pprint(request.json)
         self.assertEqual(request.status_code, 200)
         self.assertEqual("unable to delete order", request.json['result'])
 

@@ -2,4 +2,8 @@
 source = api
 
 [report]
-    omit = */.pyc/*
+    omit = 
+            */.pyc/*
+            *__init__.py*
+            *api/database.py*
+            *test_*.py*

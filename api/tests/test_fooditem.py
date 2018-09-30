@@ -15,12 +15,20 @@ class FoodItemViewTest(unittest.TestCase):
         self.fooditem = {"name": "Millet", "category": "Foods", "price":7000}
 
     def test_create_fooditem(self):
-        """ test post method """
+        """ test create food item """
         request = self.app.post('/api/v1/fooditems', json=self.fooditem)
         self.assertEqual(request.status_code, 201)
         self.assertEqual(request.headers['Content-Type'], 'application/json')
         self.assertEqual(7000, request.json['fooditem']['price'])
         self.assertEqual("Foods", request.json['fooditem']['category'])
+
+    def test_create_duplicate_fooditem(self):
+        """ test duplicate food item """
+        request = self.app.post('/api/v1/fooditems', json=self.fooditem)
+        request = self.app.post('/api/v1/fooditems', json=self.fooditem)
+        self.assertEqual(request.status_code, 403)
+        self.assertEqual(request.headers['Content-Type'], 'application/json')
+        self.assertEqual("Menu Item already exists", request.json['error'])
 
     def test_create_fooditem_with_invalid_price(self):
         """ test post method by including an invalid price value."""
@@ -51,7 +59,7 @@ class FoodItemViewTest(unittest.TestCase):
         self.assertGreater(len(request.json['fooditems']), 0)
 
     def test_update_fooditem(self):
-        """ test update method """
+        """ test update food item """
         request = self.app.post('/api/v1/fooditems', \
         json={"name": "Liver", "category": "Foods", "price":8000})
         created_item_id = int(request.json['fooditem']['id'])
@@ -60,6 +68,17 @@ class FoodItemViewTest(unittest.TestCase):
         json={"name": "Fish Fillet", "category": "Foods", "price":9000})
         self.assertEqual(request.status_code, 200)
         self.assertEqual(9000, request.json['fooditem']['price'])
+
+    def test_update_unavailablefooditem(self):
+        """ test update unavailable item """
+        request = self.app.post('/api/v1/fooditems', \
+        json={"name": "Chicken Nuggets", "category": "Foods", "price":12000})
+        created_item_id = int(request.json['fooditem']['id']) + 3
+        item_url = "/api/v1/fooditems/" + str(created_item_id)
+        request = self.app.put(item_url, \
+        json={"name": "Fish Fillet", "category": "Foods", "price":9000})
+        self.assertEqual(request.status_code, 200)
+        self.assertEqual("unable to update item", request.json['fooditem'])
 
     def test_delete_fooditem(self):
         """ test delete method """

@@ -15,35 +15,35 @@ class Order(object):
         order['quantity'] = str(order_data['quantity'])
         order['user_id'] = str(order_data['user_id'])
         order['status'] = 'pending'
-
-        if not self.check_if_order_exists(order['user_id'], order['item'], order['quantity']):
-            self.db.cursor.execute("INSERT INTO orders(item, quantity, status, user_id) \
-            VALUES('"+ order['item'] + "','"+ order['quantity'] +"', '"+order['status']+"', '"+order['user_id']+"') RETURNING id")
-            order_id = self.db.cursor.fetchone()[0]
-            order['id'] = order_id
-            return order
-        else:
-            return "order already exists"
-        # return order
-    
+        self.db.cursor.execute("INSERT INTO orders(item, quantity, status, user_id) \
+        VALUES('"+ order['item'] + "','"+ order['quantity'] +"', '"+ \
+        order['status']+"', '"+order['user_id']+"') RETURNING id")
+        order_id = self.db.cursor.fetchone()[0]
+        order['id'] = order_id
+        return order
+        
     def check_if_order_exists(self, user_id, item, quantity):
         """ retrieve order with given id. """
-        try:
-            self.db.cursor.execute("SELECT * FROM orders where user_id='"+str(user_id)+"' AND item='"+item+"' AND quantity='"+str(quantity)+"'")
-        except TypeError as e:
-            print(e)
+        self.db.cursor.execute("SELECT * FROM orders where user_id='"+str(user_id) \
+            +"' AND item='"+item+"' AND quantity='"+ str(quantity)+"'")
+        # try:
+        #     self.db.cursor.execute("SELECT * FROM orders where user_id='"+str(user_id) \
+        #     +"' AND item='"+item+"' AND quantity='"+ str(quantity)+"'")
+        # except TypeError as e:
+        #     print(e)
         rows_found = self.db.cursor.rowcount
         if rows_found > 0:
             return True
-        else:
-            return False
+        # else:
+        #     return False
 
     def fetch_all_orders(self):
         """ retrieve all orders from db """
-        try:
-            self.db.cursor.execute("SELECT * FROM orders WHERE status !='cancelled'")
-        except TypeError as e:
-            print(e)
+        self.db.cursor.execute("SELECT * FROM orders WHERE status !='cancelled'")
+        # try:
+        #     self.db.cursor.execute("SELECT * FROM orders WHERE status !='cancelled'")
+        # except TypeError as e:
+        #     print(e)
         orderitems = self.db.cursor.fetchall()
         orders = []
         for item in orderitems:
@@ -53,10 +53,11 @@ class Order(object):
 
     def fetch_user_orders(self, user_id):
         """ retrieve all orders from list """
-        try:
-            self.db.cursor.execute("SELECT * FROM orders where user_id='"+str(user_id)+"' AND status !='cancelled'")
-        except TypeError as e:
-            print(e)
+        self.db.cursor.execute("SELECT * FROM orders where user_id='"+str(user_id)+"' AND status !='cancelled'")
+        # try:
+        #     self.db.cursor.execute("SELECT * FROM orders where user_id='"+str(user_id)+"' AND status !='cancelled'")
+        # except TypeError as e:
+        #     print(e)
         order_items = self.db.cursor.fetchall()
         orders = []
         for item in order_items:
@@ -66,10 +67,11 @@ class Order(object):
 
     def get_order(self, order_id):
         """ retrieve order with given id. """
-        try:
-            self.db.cursor.execute("SELECT * FROM orders where id='"+str(order_id)+"'")
-        except TypeError as e:
-            print(e)
+        self.db.cursor.execute("SELECT * FROM orders where id='"+str(order_id)+"'")
+        # try:
+        #     self.db.cursor.execute("SELECT * FROM orders where id='"+str(order_id)+"'")
+        # except TypeError as e:
+        #     print(e)
         order_item = self.db.cursor.fetchone()
         rows_found = self.db.cursor.rowcount
         if rows_found > 0:
@@ -82,10 +84,11 @@ class Order(object):
         """ update order details. """
         order = order_data
         order['status'] = str(order_data['status'])
-        try:
-            self.db.cursor.execute("UPDATE orders set status='"+order['status']+"' WHERE id='"+str(order_id)+"'")
-        except TypeError as e:
-            print(e)
+        self.db.cursor.execute("UPDATE orders set status='"+order['status']+"' WHERE id='"+str(order_id)+"'")
+        # try:
+        #     self.db.cursor.execute("UPDATE orders set status='"+order['status']+"' WHERE id='"+str(order_id)+"'")
+        # except TypeError as e:
+        #     print(e)
         
         rows_updated = self.db.cursor.rowcount
         if rows_updated > 0:
@@ -99,10 +102,11 @@ class Order(object):
         order['item'] = str(order_data['item'])
         order['quantity'] = int(order_data['quantity'])
         order['status'] = str(order_data['status'])
-        try:
-            self.db.cursor.execute("UPDATE orders set item='"+order['item']+"', quantity='"+order['quantity']+"', status='"+order['status']+"' WHERE id='"+str(order_id)+"'")
-        except TypeError as e:
-            print(e)
+        self.db.cursor.execute("UPDATE orders set item='"+order['item']+"', quantity='"+ str(order['quantity'])+"', status='"+order['status']+"' WHERE id='"+str(order_id)+"'")
+        # try:
+        #     self.db.cursor.execute("UPDATE orders set item='"+order['item']+"', quantity='"+order['quantity']+"', status='"+order['status']+"' WHERE id='"+str(order_id)+"'")
+        # except TypeError as e:
+        #     print(e)
         
         rows_updated = self.db.cursor.rowcount
         if rows_updated > 0:
@@ -113,10 +117,11 @@ class Order(object):
 
     def delete_order(self, order_id):
         """ delete order. """
-        try:
-            self.db.cursor.execute("DELETE FROM orders WHERE id='"+str(order_id)+"'")
-        except:
-            print("unable to delete")
+        self.db.cursor.execute("DELETE FROM orders WHERE id='"+str(order_id)+"'")
+        # try:
+        #     self.db.cursor.execute("DELETE FROM orders WHERE id='"+str(order_id)+"'")
+        # except:
+        #     print("unable to delete")
         rows_deleted = self.db.cursor.rowcount
         if rows_deleted > 0:
             return "order was deleted"

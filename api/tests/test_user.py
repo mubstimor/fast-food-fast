@@ -20,6 +20,13 @@ class UserViewTest(unittest.TestCase):
         self.assertEqual(request.status_code, 201)
         self.assertEqual("john@example.com", request.json['user']['email'])
 
+    def test_create_duplicate_user(self):
+        """ test create duplicate user """
+        request = self.app.post('/api/v1/users', json=self.user)
+        request = self.app.post('/api/v1/users', json=self.user)
+        self.assertEqual(request.status_code, 403)
+        self.assertEqual("user already exists", request.json['error'])
+
     def test_create_user_without_email_in_request(self):
         """ test post method by not including email in request """
         del self.user['email']
@@ -34,8 +41,28 @@ class UserViewTest(unittest.TestCase):
 
     def test_user_login(self):
         """ test user login method """
+        request = self.app.post('/api/v1/users', \
+        json={"name": "Jack Decker", "email": "jack@example.com", "password": "1234", "gender":"male"})
         request = self.app.post('/api/v1/users/login', \
-        json={"email": "mubstimor@gmail.com", "password": "1234"})
+        json={"email": "jack@example.com", "password": "1234"})
+        # self.assertIn('true', str(request.data))
+        self.assertEqual(True, request.json['login'])
+
+    def test_invalid_user_login_password(self):
+        """ test invalid user login password"""
+        request = self.app.post('/api/v1/users', \
+        json={"name": "John Doe", "email": "john@example.com", "password": "1234", "gender":"male"})
+        request = self.app.post('/api/v1/users/login', \
+        json={"email": "john@example.com", "password": "12345"})
+        # self.assertIn('true', str(request.data))
+        self.assertEqual(False, request.json['login'])
+
+    def test_invalid_user_login_email(self):
+        """ test invalid user login email"""
+        request = self.app.post('/api/v1/users', \
+        json={"name": "John Doe", "email": "james@example.com", "password": "1234", "gender":"male"})
+        request = self.app.post('/api/v1/users/login', \
+        json={"email": "john@example.com", "password": "12345"})
         # self.assertIn('true', str(request.data))
         self.assertEqual(False, request.json['login'])
 

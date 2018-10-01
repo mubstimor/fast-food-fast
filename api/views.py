@@ -1,17 +1,32 @@
 """ manages routes to the app. """
-from flask import request, jsonify
+from flask import Flask, request, jsonify
 from flask import abort
 from flask import make_response
+from environs import Env
+from pprint import pprint
+from flask_jwt_extended import (JWTManager, jwt_required, create_access_token, get_jwt_identity)
 from api import app
 from api.order import Order
 from api.user import User
 from api.fooditem import FoodItem
+from api.database import DatabaseConnection
 
+# # set up the flask jwt-extended extension
+env = Env()
+env.read_env()
+app.config['JWT_SECRET_KEY'] = env.str("JWT_SECRET_KEY")
+jwt = JWTManager(app)
 
 # Instantiate model connection variables
 ORDER = Order()
 USER = User()
 FOODITEM = FoodItem()
+
+# establish database
+db = DatabaseConnection()
+db.create_users_table()
+db.create_fooditem_table
+db.create_users_table
 
 @app.route('/', methods=['GET'])
 def index():
@@ -95,12 +110,20 @@ def get_user(user_id):
     user = USER.get_user(user_id)
     return jsonify({'user': user})
 
+# create tokens to be used for accessing app
 @app.route('/api/v1/users/login', methods=['POST'])
 def login_user():
     """ authenticate user. """
     if not request.json or not 'password' in request.json:
         abort(400)
-    return jsonify({'login': USER.login(request.json)})
+    access_token = "" # set an empty token
+    if USER.login(request.json):
+        # create token here
+        access_token = create_access_token(identity=request.json['email'])
+        # pprint(access_token)
+    # return jsonify({'login': USER.login(request.json)})
+    # current_user = get_jwt_identity()
+    return jsonify({'login': USER.login(request.json), "access_token": access_token}), 200
 
 @app.route('/api/v1/users/orders/<int:order_id>', methods=['PUT'])
 def update_user_order(order_id):
@@ -150,6 +173,16 @@ def delete_fooditem(item_id):
     return jsonify({'result': FOODITEM.delete_item(item_id)})    
 # END FOOD ITEM ROUTES
 
+# protected decorator
+@app.route('/api/v1/protected', methods=['GET'])
+@jwt_required
+def protected():
+    # access identity of current user
+    current_user = get_jwt_identity()
+    # pprint("user = ")
+    # pprint(current_user)
+    return jsonify(logged_in_as=current_user), 200
+
 # @app.errorhandler(404)
 # def not_found(error):
 #     """ return clean response for not found resources. """
@@ -160,3 +193,4 @@ def bad_request(error):
     """ return clean response for bad requests. """
     return make_response(jsonify(
         {'error': 'Bad Request, some parameters are either missing or invalid'}), 400)
+

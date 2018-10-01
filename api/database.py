@@ -8,6 +8,7 @@ from environs import Env
 # import urlparse
 # 
 # CONN = psycopg2.connect(DATABASE_URL, sslmode='require')
+print(os.getenv('APP_SETTINGS'))
 
 class DatabaseConnection:
     """ handles database connections. """
@@ -20,9 +21,18 @@ class DatabaseConnection:
 
             DATABASE_HOST = env.str("DATABASE_HOST")
             DATABASE_URL = env.str("DATABASE_URL")
+            APP_SETTINGS = env.str("APP_SETTINGS")
             
-            if DATABASE_HOST == "localhost":
-                self.connection = psycopg2.connect(DATABASE_URL)
+            # if APP_SETTINGS== "TESTING" and DATABASE_HOST == "localhost":
+            # # if DATABASE_HOST == "localhost:
+            #     # self.connection = psycopg2.connect(DATABASE_URL)
+            #     self.connection = psycopg2.connect(env.str("DATABASE_TEST_URL"))
+            # else:
+            #     self.connection = psycopg2.connect(DATABASE_URL, sslmode='require')
+            if APP_SETTINGS== "TESTING":
+                self.connection = psycopg2.connect(env.str("DATABASE_TEST_URL"))
+            elif APP_SETTINGS== "DEVELOPMENT":
+                self.connection = psycopg2.connect(env.str("DATABASE_URL"))
             else:
                 self.connection = psycopg2.connect(DATABASE_URL, sslmode='require')
             
@@ -58,4 +68,16 @@ class DatabaseConnection:
         except AttributeError:
             print("Error creating table")
         return "table created"
+
+    def create_all(self):
+        """ create all tables. """
+        self.create_fooditem_table()
+        self.create_users_table()
+        self.create_orders_table()
+
+    def drop_all(self):
+        """ delete all tables. """
+        self.cursor.execute("DROP TABLE fooditems")
+        self.cursor.execute("DROP TABLE users")
+        self.cursor.execute("DROP TABLE orders")
 

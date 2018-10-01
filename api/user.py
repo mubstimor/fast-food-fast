@@ -31,6 +31,13 @@ class User(object):
         if rows_found > 0:
             return True
         
+    def get_user_data_from(self, email):
+        """ retrieve user data with similar email"""
+        self.db.cursor.execute("SELECT * FROM users where email='"+email+"'")
+        rows_found = self.db.cursor.rowcount
+        useritem = self.db.cursor.fetchone()
+        user = {"id": useritem['id'], "email": useritem['email'], "role": useritem['user_type']}
+        return user
 
     def fetch_all_users(self):
         """ retrieve all users from db """

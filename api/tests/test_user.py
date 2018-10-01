@@ -1,5 +1,6 @@
 """ TESTS FOR USER ROUTES"""
 import unittest
+from pprint import pprint
 from api import app
 from api.database import DatabaseConnection
 
@@ -46,6 +47,8 @@ class UserViewTest(unittest.TestCase):
         request = self.app.post('/api/v1/users/login', \
         json={"email": "jack@example.com", "password": "1234"})
         self.assertEqual(True, request.json['login'])
+        pprint("access token is")
+        pprint(request.json['access_token'])
 
     def test_invalid_user_login_password(self):
         """ test invalid user login password"""

@@ -96,7 +96,6 @@ def create_order():
           201:
             description: New order created
         """
-    """ create order with post request. """
     if not request.json or not 'item' in request.json:
         abort(400)
     try:

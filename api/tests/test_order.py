@@ -175,6 +175,7 @@ class OrderViewTest(unittest.TestCase):
     def tearDown(self):
         """ undo effects of tests. """
         self.db.cursor.execute("DROP TABLE orders")
+        self.db.close_connection()
 
 if __name__ == "__main__":
     unittest.main()

@@ -123,7 +123,7 @@ def get_all_orders():
       200:
         description: All available orders
     """
-    """ A route to return all of the available orders. """
+    """ A route to return all of the available orders."""
     orders = ORDER.fetch_all_orders()
     if orders:
         return jsonify({'orders': orders})

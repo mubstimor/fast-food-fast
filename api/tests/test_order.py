@@ -16,10 +16,10 @@ class OrderViewTest(unittest.TestCase):
         self.indexed_orders_url = "/api/v1/orders/"
         self.default_order = {"user_id": 1, "item": "Fish", "quantity":1}
 
-    def test_index_page(self):
-        """ define test methods for index page. """
-        index = self.app.get('/')
-        self.assertIn('Home', str(index.data))
+    # def test_index_page(self):
+    #     """ define test methods for index page. """
+    #     index = self.app.get('/')
+    #     self.assertIn('Home', str(index.data))
 
     def test_create_order(self):
         """ test post method """

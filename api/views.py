@@ -28,10 +28,10 @@ db.create_users_table()
 db.create_fooditem_table
 db.create_users_table
 
-@app.route('/', methods=['GET'])
-def index():
-    """ route to index of the API. """
-    return jsonify({'Home': 'Index of the API'})
+# @app.route('/', methods=['GET'])
+# def index():
+#     """ route to index of the API. """
+#     return jsonify({'Home': 'Index of the API'})
 
 # ROUTES FOR ORDERS.
 @app.route('/api/v1/orders', methods=['POST'])

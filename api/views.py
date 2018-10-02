@@ -4,12 +4,15 @@ from flask import abort
 from flask import make_response
 from environs import Env
 from pprint import pprint
+from flask import Blueprint, render_template as view, render_template
+from jinja2 import TemplateNotFound
 from flask_jwt_extended import (JWTManager, jwt_required, create_access_token, get_jwt_identity)
 from api import app
 from api.order import Order
 from api.user import User
 from api.fooditem import FoodItem
 from api.database import DatabaseConnection
+# from api.docs import views
 
 # # set up the flask jwt-extended extension
 env = Env()
@@ -28,11 +31,16 @@ db.create_users_table()
 db.create_fooditem_table
 db.create_users_table
 
-# @app.route('/', methods=['GET'])
-# def index():
-#     """ route to index of the API. """
-#     return jsonify({'Home': 'Index of the API'})
-
+docs = Blueprint('docs', __name__, template_folder='templates', static_folder='static')
+@app.route('/', methods=['GET'])
+@docs.route('/', methods=['GET'])
+def index():
+    """ route to index of the API. """
+    try:
+       return render_template('index.html')
+    except TemplateNotFound:
+        abort(404)
+    
 # ROUTES FOR ORDERS.
 @app.route('/api/v1/orders', methods=['POST'])
 def create_order():

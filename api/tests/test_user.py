@@ -1,6 +1,5 @@
 """ TESTS FOR USER ROUTES"""
 import unittest
-from pprint import pprint
 from api import app
 from api.database import DatabaseConnection
 
@@ -25,7 +24,7 @@ class UserViewTest(unittest.TestCase):
         """ test create duplicate user """
         request = self.app.post('/api/v1/auth/signup', json=self.user)
         request = self.app.post('/api/v1/auth/signup', json=self.user)
-        self.assertEqual(request.status_code, 403)
+        self.assertEqual(request.status_code, 409)
         self.assertEqual("user already exists", request.json['error'])
 
     def test_create_user_without_email_in_request(self):
@@ -47,8 +46,6 @@ class UserViewTest(unittest.TestCase):
         request = self.app.post('/api/v1/auth/login', \
         json={"email": "jack@example.com", "password": "1234"})
         self.assertEqual(True, request.json['ok'])
-        # pprint("access token is")
-        # pprint(request.json['access_token'])
 
     def test_invalid_user_login_password(self):
         """ test invalid user login password"""

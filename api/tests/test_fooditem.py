@@ -1,6 +1,5 @@
 """ Test class for FoodItem"""
 import unittest
-import json
 from pprint import pprint
 from api import app
 from api.database import DatabaseConnection
@@ -28,7 +27,6 @@ class FoodItemViewTest(unittest.TestCase):
 
     def test_create_fooditem(self):
         """ test create food item """
-        data = json.dumps(self.fooditem)
         request = self.app.post('/api/v1/menu', json=self.fooditem, headers={"Authorization": self.bearer_token})
         pprint(request.json)
         self.assertEqual(request.status_code, 201)  
@@ -40,7 +38,7 @@ class FoodItemViewTest(unittest.TestCase):
         """ test duplicate menu item """
         request = self.app.post('/api/v1/menu', json=self.fooditem, headers={"Authorization": self.bearer_token})
         request = self.app.post('/api/v1/menu', json=self.fooditem, headers={"Authorization": self.bearer_token})
-        self.assertEqual(request.status_code, 403)
+        self.assertEqual(request.status_code, 409)
         self.assertEqual(request.headers['Content-Type'], 'application/json')
         self.assertEqual("Menu Item already exists", request.json['error'])
 
@@ -113,7 +111,6 @@ class FoodItemViewTest(unittest.TestCase):
     def tearDown(self):
         """ undo effects of tests. """
         self.db.drop_all_tables()
-        # self.db.cursor.execute("DROP TABLE users")
         self.db.close_connection()
 
 if __name__ == "__main__":

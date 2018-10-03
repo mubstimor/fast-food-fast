@@ -27,19 +27,14 @@ class OrderViewTest(unittest.TestCase):
         return admin_token
 
     def _set_up_dummy_order_and_user_data(self):
-        """ populate order with food item & user data """
+        """ create dummy fooditem & user """
         admin_token = self._set_up_admin_token()
-        # create dummy fooditem
         fooditem = {"name": "Millet", "category": "Foods", "price":7000}
-        request = self.app.post('/api/v1/menu', json=fooditem, headers={"Authorization": admin_token})
-
-        # create dummy user
+        self.app.post('/api/v1/menu', json=fooditem, headers={"Authorization": admin_token})
         user = {"name": "James Adkins", "email": "james@example.com", "password": "1234", "gender":"male", "user_type":"Admin"}
-        request = self.app.post('/api/v1/auth/signup', json=user)
-
+        self.app.post('/api/v1/auth/signup', json=user)
         return
         
-
     def setUp(self):
         """ set default values for class. """
         self.app = app.test_client()
@@ -51,8 +46,6 @@ class OrderViewTest(unittest.TestCase):
         self.default_order = {"user_id": 1, "item": 1, "quantity":1}
         self.client_token = self._set_up_user()
         self.admin_token = self._set_up_admin_token()
-
-        # call setup dummy data
         self._set_up_dummy_order_and_user_data()
 
     def test_index_page(self):
@@ -65,15 +58,14 @@ class OrderViewTest(unittest.TestCase):
         request = self.app.post(self.default_orders_url, \
         json=self.default_order, headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 201)
-        self.assertEqual(request.headers['Content-Type'], 'application/json')    
-        # self.assertEqual("Chips", request.json['order']['item'])
+        self.assertEqual(request.headers['Content-Type'], 'application/json')   
         self.assertEqual(1, int(request.json['order']['user_id']))
 
     def test_create_already_existing_order(self):
         """ test create duplicate order """
         request = self.app.post(self.default_orders_url, json=self.default_order, headers={"Authorization": self.client_token})
         request = self.app.post(self.default_orders_url, json=self.default_order, headers={"Authorization": self.client_token})
-        self.assertEqual(request.status_code, 403)
+        self.assertEqual(request.status_code, 409)
         self.assertEqual(request.headers['Content-Type'], 'application/json')    
         self.assertEqual("Order already exists", request.json['error'])
 
@@ -160,7 +152,6 @@ class OrderViewTest(unittest.TestCase):
         request = self.app.put(new_order_link, \
         json={"user_id": 1, "item": 1, "quantity":3, "status":"pending"}, headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 200)
-        # self.assertEqual("Rice + Chapatti", request.json['order']['item'])
         self.assertEqual(3, request.json['order']['quantity'])
 
     def test_update_unavailable_user_order(self):

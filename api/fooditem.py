@@ -14,22 +14,15 @@ class FoodItem(object):
         item['name'] = str(item_data['name'])
         item['price'] = int(item_data['price'])
         item['category'] = str(item_data['category'])
-        # if not self.check_if_item_exists(item['name']):
         self.db.cursor.execute("INSERT INTO fooditems(name, category, price) \
         VALUES('"+ item['name'] + "','"+ item['category'] + "','"+ str(item['price']) +"') RETURNING id")
         item_id = self.db.cursor.fetchone()[0]
         item['id'] = item_id
         return item
-        # else:
-        #     return "Unable to create item"
     
     def check_if_item_exists(self, name):
         """ retrieve item with similar name"""
         self.db.cursor.execute("SELECT * FROM fooditems where name='"+name+"'")
-        # try:
-        #     self.db.cursor.execute("SELECT * FROM fooditems where name='"+name+"'")
-        # except TypeError as e:
-        #     print(e)
         rows_found = self.db.cursor.rowcount
         if rows_found > 0:
             return True
@@ -39,10 +32,6 @@ class FoodItem(object):
     def fetch_all_fooditems(self):
         """ retrieve all fooditems from database """
         self.db.cursor.execute("SELECT * FROM fooditems")
-        # try:
-        #     self.db.cursor.execute("SELECT * FROM fooditems")
-        # except TypeError as e:
-        #     print(e)
         fooditems = self.db.cursor.fetchall()
         menuitems = []
         for item in fooditems:
@@ -53,10 +42,6 @@ class FoodItem(object):
     def get_item(self, item_id):
         """ retrieve item with given id from database. """
         self.db.cursor.execute("SELECT * FROM fooditems where id='"+str(item_id)+"'")
-        # try:
-        #     self.db.cursor.execute("SELECT * FROM fooditems where id='"+str(item_id)+"'")
-        # except TypeError as e:
-        #     print(e)
         item = self.db.cursor.fetchone()
         rows_found = self.db.cursor.rowcount
         if rows_found > 0:
@@ -72,12 +57,7 @@ class FoodItem(object):
         item['name'] = str(item_data['name'])
         item['price'] = int(item_data['price'])
         item['category'] = str(item_data['category'])
-        self.db.cursor.execute("UPDATE fooditems set name='"+item['name']+"', category='"+item['category']+"', price='"+str(item['price'])+"' WHERE id='"+str(item_id)+"'")
-        # try:
-        #     self.db.cursor.execute("UPDATE fooditems set name='"+item['name']+"', category='"+item['category']+"', price='"+str(item['price'])+"' WHERE id='"+str(item_id)+"'")
-        # except TypeError as e:
-        #     print(e)
-        
+        self.db.cursor.execute("UPDATE fooditems set name='"+item['name']+"', category='"+item['category']+"', price='"+str(item['price'])+"' WHERE id='"+str(item_id)+"'")        
         rows_updated = self.db.cursor.rowcount
         if rows_updated > 0:
             return item
@@ -87,10 +67,6 @@ class FoodItem(object):
     def delete_item(self, item_id):
         """ delete item. """
         self.db.cursor.execute("DELETE FROM fooditems WHERE id='"+str(item_id)+"'")
-        # try:
-        #     self.db.cursor.execute("DELETE FROM fooditems WHERE id='"+str(item_id)+"'")
-        # except:
-        #     print("unable to delete")
         rows_deleted = self.db.cursor.rowcount
         if rows_deleted > 0:
             return "fooditem was deleted"

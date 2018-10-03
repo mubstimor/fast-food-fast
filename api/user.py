@@ -20,13 +20,13 @@ class User(object):
         if not user['user_type']:
             user['user_type'] = 'Customer'
         self.db.cursor.execute("INSERT INTO users(name, email, password, gender, user_type) \
-        VALUES('"+ user['name'] + "','"+ user['email'] +"', '"+user['password']+"', '"+user['gender']+"','"+user['user_type']+"') RETURNING id")
+                                VALUES('"+ user['name'] + "','"+ user['email'] +"', '"+user['password']+"', '"+ \
+                                user['gender']+"','"+user['user_type']+"') RETURNING id")
         user_id = self.db.cursor.fetchone()[0]
         del user['password']
         user['user_type'] = 'Customer'
         user['id'] = user_id
         return user
-
 
     def check_if_user_exists(self, email):
         """ retrieve item with similar email"""
@@ -38,7 +38,6 @@ class User(object):
     def get_user_data_from(self, email):
         """ retrieve user data with similar email"""
         self.db.cursor.execute("SELECT * FROM users where email='"+email+"'")
-        rows_found = self.db.cursor.rowcount
         useritem = self.db.cursor.fetchone()
         user = {"id": useritem['id'], "email": useritem['email'], "role": useritem['user_type']}
         return user

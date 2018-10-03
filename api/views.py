@@ -1,28 +1,19 @@
 """ manages routes to the app. """
 import datetime
-from flask import Flask, request, jsonify
+from flask import request, jsonify
 from flask import abort
 from flask import make_response
 from environs import Env
-from pprint import pprint
-from flask import Blueprint, render_template as view, render_template
-from jinja2 import TemplateNotFound
 from flasgger import Swagger
 from functools import wraps
-# from flask_jwt import JWT, jwt_required, current_identity
-# from werkzeug.security import safe_str_cmp
 from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 jwt_required, jwt_refresh_token_required, get_jwt_identity, JWTManager,
-                                verify_jwt_in_request, get_jwt_claims)
-# from app import jwt
+                                verify_jwt_in_request)
 from api import app
 from api.order import Order
 from api.user import User
 from api.fooditem import FoodItem
-from api.database import DatabaseConnection
-# from api.docs import views
 
-# swagger
 app.config['SWAGGER'] = {
     "swagger_version": "2.0",
     "title": "FastFoodFast API Documentation",
@@ -33,36 +24,15 @@ app.config['SWAGGER'] = {
     ]
 }
 swagger = Swagger(app)
-
-# # set up the flask jwt-extended extension
 env = Env()
 env.read_env()
-# app.config['JWT_SECRET_KEY'] = env.str("JWT_SECRET_KEY")
 app.config['SECRET_KEY'] = env.str("JWT_SECRET_KEY")
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(days=1)
-# jwt = JWT(app, authenticate, identity)
 jwt = JWTManager(app)
 
-# Instantiate model connection variables
 ORDER = Order()
 USER = User()
 FOODITEM = FoodItem()
-
-# establish database
-# db = DatabaseConnection()
-# db.create_users_table()
-# db.create_fooditem_table
-# db.create_users_table
-
-# docs = Blueprint('docs', __name__, template_folder='templates', static_folder='static')
-# @app.route('/', methods=['GET'])
-# @docs.route('/', methods=['GET'])
-# def index():
-#     """ route to index of the API. """
-#     try:
-#        return render_template('index.html')
-#     except TemplateNotFound:
-#         abort(404)
 
 @app.route('/', methods=['GET'])
 def index():
@@ -80,35 +50,17 @@ def unauthorized_response(callback):
 def admin_token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-
-        # data, status = get_logged_in_user(request)
-        # token = data.get('data')
-
-        # if not token:
-        #     return data, status
-
-        # admin = token.get('admin')
-        # if not admin:
-        #     response_object = {
-        #         'status': 'fail',
-        #         'message': 'admin token required'
-        #     }
-        #     return response_object, 401
-
-        # return f(*args, **kwargs)
+        """ check role = admin in user token. """
         verify_jwt_in_request()
-        # claims = get_jwt_claims()
         claims = get_jwt_identity()
-        pprint(claims)
         if claims['role'] != 'Admin':
             return jsonify({"msg": "Admins only!"}), 403
         else:
             return f(*args, **kwargs)
-
     return decorated
 
-# ROUTES FOR ORDERS.
 @app.route('/api/v1/orders', methods=['POST'])
+@jwt_required
 def create_order():
     """
         Create a new order
@@ -152,9 +104,13 @@ def create_order():
     except ValueError:
         abort(400)
 
+    current_user = get_jwt_identity()
+    if current_user['id'] != request.json['user_id']:
+        return jsonify({'error': True, "message":"Forbidden request"}), 403
+
     order  = ORDER.check_if_order_exists(request.json['user_id'], request.json['item'], request.json['quantity'])
     if order:
-        return jsonify({'error': 'Order already exists'}), 403
+        return jsonify({'error': 'Order already exists'}), 409
     else:
         return jsonify({'order': ORDER.create_order(request.json)}), 201
 
@@ -172,7 +128,6 @@ def get_all_orders():
       200:
         description: All available orders
     """
-    """ A route to return all of the available orders."""
     orders = ORDER.fetch_all_orders()
     if orders:
         return jsonify({'orders': orders})
@@ -199,7 +154,6 @@ def get_order(order_id):
       200:
         description: The requested order
     """
-    # """ Get a specific order with given id."""
     order = ORDER.get_order(order_id)
     if order:
         return jsonify({'order': order})
@@ -230,7 +184,6 @@ def update_order(order_id):
             # schema:
             #   id: Order
         """
-    """ update order status with put request. """
     status = ("accepted", "rejected", "completed")
     if request.json['status'] not in status:
         abort(400)
@@ -241,24 +194,25 @@ def update_order(order_id):
 def delete_order(order_id):
     """ delete requested resource from list. """
     return jsonify({'result': ORDER.delete_order(order_id)})
-# END ORDER ROUTES
 
-# ROUTES FOR CUSTOMERS
 @app.route('/api/v1/auth/signup', methods=['POST'])
 def create_user():
     """ create user with post request. """
     gender = ('male', 'female')
     if not request.json or not 'email' in request.json:
-        abort(400)
+        return jsonify({'error': True, "message": "Add 'email' parameter to reuest"}), 400
     if request.json['gender'] not in gender:
-        abort(400)
+        return jsonify({'error': True, "message": "Add 'gender' parameter to reuest"}), 400
 
     user  = USER.check_if_user_exists(request.json['email'])
     if user:
-        return jsonify({'error': 'user already exists'}), 403
+        return jsonify({'error': 'user already exists'}), 409
     else:
-        return jsonify({'user': USER.create_user((request.json)),
-                        "message": "User successfully created." }), 201
+        try:
+            post_user = USER.create_user(request.json)
+        except KeyError:
+            return jsonify({'error': True, "message": "Missing/Invalid parameters in request"}), 400
+        return jsonify({'user': post_user, "message": "User successfully created." }), 201
 
 @app.route('/api/v1/users', methods=['GET'])
 def get_all_users():
@@ -271,27 +225,12 @@ def get_user(user_id):
     user = USER.get_user(user_id)
     return jsonify({'user': user})
 
-# @app.route('/api/v1/auth/login', methods=['POST'])
-# def login_user():
-#     """ authenticate user. """
-#     if not request.json or not 'password' in request.json:
-#         abort(400)
-#     access_token = "" # set an empty token
-#     if USER.login(request.json):
-#         # create token here
-#         access_token = create_access_token(identity=request.json['email'])
-#         # pprint(access_token)
-#     # return jsonify({'login': USER.login(request.json)})
-#     # current_user = get_jwt_identity()
-#     return jsonify({'login': USER.login(request.json), "access_token": access_token}), 200
-
-# create tokens to be used for accessing app
 @app.route('/api/v1/auth/login', methods=['POST'])
 def auth_user():
     """ authenticate user. """
     if not request.json or not 'password' in request.json:
         abort(400)
-    access_token = "" # set an empty token
+    access_token = ""
     data = USER.authenticate(request.json)
     if data:
         access_token = create_access_token(identity=data)
@@ -313,33 +252,27 @@ def refresh():
     }
     return jsonify({'ok': True, 'data': ret}), 200
 
-# @staticmethod
 def get_logged_in_user(new_request):
-    # get the auth token
-    # auth_token = new_request.headers.get('Authorization')
+    """ Get user information from token """
     auth_token = get_jwt_identity()
-    pprint("auth token is")
-    pprint(auth_token)
     if auth_token:
-            resp = get_jwt_identity()
-            # if not isinstance(resp, str):
-            if not isinstance(resp):
-                user = USER.get_user(resp['id'])
-                # user = User.query.filter_by(id=resp).first()
-                response_object = {
-                    'status': 'success',
-                    'data': {
-                        'user_id': user['id'],
-                        'email': user['email'],
-                        'role': user['role']
-                    }
-                }
-                return response_object, 200
+        resp = get_jwt_identity()
+        if not isinstance(resp):
+            user = USER.get_user(resp['id'])
             response_object = {
-                'status': 'fail',
-                'message': resp
+                'status': 'success',
+                'data': {
+                    'user_id': user['id'],
+                    'email': user['email'],
+                    'role': user['role']
+                }
             }
-            return response_object, 401
+            return response_object, 200
+        response_object = {
+            'status': 'fail',
+            'message': resp
+        }
+        return response_object, 401
     else:
         response_object = {
             'status': 'fail',
@@ -369,9 +302,7 @@ def get_user_data(email):
     """ Get orders for a specific user."""
     data = USER.get_user_data_from(email)
     return jsonify(data)
-# END CUSTOMER ROUTES
 
-# ROUTES FOR MENU.
 @app.route('/api/v1/menu', methods=['POST'])
 @admin_token_required
 def create_fooditem():
@@ -383,7 +314,7 @@ def create_fooditem():
     
     item  = FOODITEM.check_if_item_exists(request.json['name'])
     if item:
-        return jsonify({'error': 'Menu Item already exists'}), 403
+        return jsonify({'error': 'Menu Item already exists'}), 409
     else:
         return jsonify({'fooditem': FOODITEM.create_item(request.json)}), 201
 
@@ -408,22 +339,13 @@ def update_fooditem(item_id):
 def delete_fooditem(item_id):
     """ delete requested resource from list. """
     return jsonify({'result': FOODITEM.delete_item(item_id)})    
-# END FOOD ITEM ROUTES
 
-# protected decorator
 @app.route('/api/v1/protected', methods=['GET'])
 @jwt_required
 def protected():
-    # access identity of current user
+    """"access identity of current user """
     current_user = get_jwt_identity()
-    # pprint("user = ")
-    # pprint(current_user)
     return jsonify(logged_in_as=current_user), 200
-
-# @app.errorhandler(404)
-# def not_found(error):
-#     """ return clean response for not found resources. """
-#     return make_response(jsonify({'error': 'Not found'}), 404)
 
 @app.errorhandler(400)
 def bad_request(error):

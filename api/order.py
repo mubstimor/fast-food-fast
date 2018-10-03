@@ -1,4 +1,6 @@
 """ Class to manage CRUD operations on order objects"""
+import psycopg2
+import psycopg2.extras
 from api.database import DatabaseConnection
 
 class Order(object):
@@ -15,9 +17,13 @@ class Order(object):
         order['quantity'] = str(order_data['quantity'])
         order['user_id'] = str(order_data['user_id'])
         order['status'] = 'pending'
-        self.db.cursor.execute("INSERT INTO orders(item, quantity, status, user_id) \
-        VALUES('"+ str(order['item']) + "','"+ order['quantity'] +"', '"+ \
-        order['status']+"', '"+order['user_id']+"') RETURNING id")
+        try:
+            self.db.cursor.execute("INSERT INTO orders(item, quantity, status, user_id) \
+                                VALUES('"+ str(order['item']) + "','"+ order['quantity'] +"', '"+ \
+                                order['status']+"', '"+order['user_id']+"') RETURNING id")
+        except (psycopg2.DatabaseError) as error:
+            print(error)
+        
         order_id = self.db.cursor.fetchone()[0]
         order['id'] = order_id
         return order

@@ -49,10 +49,10 @@ USER = User()
 FOODITEM = FoodItem()
 
 # establish database
-db = DatabaseConnection()
-db.create_users_table()
-db.create_fooditem_table
-db.create_users_table
+# db = DatabaseConnection()
+# db.create_users_table()
+# db.create_fooditem_table
+# db.create_users_table
 
 # docs = Blueprint('docs', __name__, template_folder='templates', static_folder='static')
 # @app.route('/', methods=['GET'])

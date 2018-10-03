@@ -21,40 +21,9 @@ class FoodItemViewTest(unittest.TestCase):
         """ set default values for class. """
         self.app = app.test_client()
         self.db = DatabaseConnection()
-        self.db.create_fooditem_table()
+        self.db.create_all_tables()
         self.app.testing = True
         self.fooditem = {"name": "Millet", "category": "Foods", "price":7000}
-        # self.db.create_users_table()
-        # self.admin = {"name": "Jack Cobbsn", "email": "jackobo1@example.com", "password": "1234", "gender":"male"}
-        # self.request = self.app.post('/api/v1/auth/signup', json=self.admin)
-        
-        # self.created_user_id=0
-        # pprint(self.request.json)
-        # if self.request.json['error']== "user already exists":
-        #     # get id existing user
-        #     user_url = '/api/v1/users/admin/' + self.admin['email']
-        #     request = self.app.get(user_url)
-        #     self.created_user_id = request.json['id']
-            
-        # else:
-        #     self.created_user_id = int(self.request.json['user']['id'])
-        # pprint(self.created_user_id)
-        # # self.created_user_id = int(self.request.json['user']['id'])
-        # # self.db.drop_users_table()
-        # self.user_uri = '/api/v1/users/' + str(self.created_user_id)
-        # request = self.app.put(self.user_uri)
-        # # pprint(request.json)
-        # # login
-        # self.request = self.app.post('/api/v1/auth/login', \
-        # json={"email": "jackob1@example.com", "password": "1234"})
-        # # pprint(self.request.json)
-        # # self.admin_token = str(self.request.json['access_token'])
-        # # token unusable
-        # # pprint(self.admin_token)
-        
-        # self.admin_token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4OGQzODdjYy04YTdhLTRmZjAtODI3MC03ZmQzNjNiY2NjZDQiLCJleHAiOjE1Mzg2NDc5MTUsImZyZXNoIjpmYWxzZSwiaWF0IjoxNTM4NTYxNTE1LCJ0eXBlIjoiYWNjZXNzIiwibmJmIjoxNTM4NTYxNTE1LCJpZGVudGl0eSI6eyJyb2xlIjoiQWRtaW4iLCJpZCI6MSwiZW1haWwiOiJtdWJzdGltb3JAZ21haWwuY29tIn19.h_jR6izQoEJ_MLy0Cts47_a-IMonbplWaOOxLkTy5zY"
-        # # self.admin_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyMjY5YWNmNy0zYzQ2LTRhYjYtODc2MC03ZmRmY2QxYjRmZDIiLCJleHAiOjE1Mzg2MjQyMDEsImZyZXNoIjpmYWxzZSwiaWF0IjoxNTM4NTM3ODAxLCJ0eXBlIjoiYWNjZXNzIiwibmJmIjoxNTM4NTM3ODAxLCJpZGVudGl0eSI6eyJyb2xlIjoiQWRtaW4iLCJpZCI6MSwiZW1haWwiOiJtdWJzdGltb3JAZ21haWwuY29tIn19.HcnepeJG_YKDIlftb0qGYC8hRCzmj0Re385xX-AcqwU"
-        # self.bearer_token = "Bearer " + self.admin_token
         self.bearer_token = self._set_up_admin_token()
 
     def test_create_fooditem(self):
@@ -143,7 +112,7 @@ class FoodItemViewTest(unittest.TestCase):
 
     def tearDown(self):
         """ undo effects of tests. """
-        self.db.cursor.execute("DROP TABLE fooditems")
+        self.db.drop_all_tables()
         # self.db.cursor.execute("DROP TABLE users")
         self.db.close_connection()
 

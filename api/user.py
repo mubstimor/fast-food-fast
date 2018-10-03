@@ -7,7 +7,7 @@ class User(object):
     def __init__(self):
         """ define connections to food items table. """
         self.db = DatabaseConnection()
-        self.db.create_users_table()
+        self.db.create_all_tables()
 
     def create_user(self, user_data):
         """ add user to users table"""

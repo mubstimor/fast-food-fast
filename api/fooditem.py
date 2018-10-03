@@ -6,7 +6,7 @@ class FoodItem(object):
     def __init__(self):
         """ define connections to food items table. """
         self.db = DatabaseConnection()
-        self.db.create_fooditem_table()
+        self.db.create_all_tables()
     
     def create_item(self, item_data):
         """ add item to fooditems list (menu) """

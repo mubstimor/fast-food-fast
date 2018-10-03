@@ -6,7 +6,7 @@ class Order(object):
     def __init__(self):
         """ define attributes for order. """
         self.db = DatabaseConnection()
-        self.db.create_orders_table()
+        self.db.create_all_tables()
 
     def create_order(self, order_data):
         """ add order to orders list """
@@ -16,7 +16,7 @@ class Order(object):
         order['user_id'] = str(order_data['user_id'])
         order['status'] = 'pending'
         self.db.cursor.execute("INSERT INTO orders(item, quantity, status, user_id) \
-        VALUES('"+ order['item'] + "','"+ order['quantity'] +"', '"+ \
+        VALUES('"+ str(order['item']) + "','"+ order['quantity'] +"', '"+ \
         order['status']+"', '"+order['user_id']+"') RETURNING id")
         order_id = self.db.cursor.fetchone()[0]
         order['id'] = order_id
@@ -25,7 +25,7 @@ class Order(object):
     def check_if_order_exists(self, user_id, item, quantity):
         """ retrieve order with given id. """
         self.db.cursor.execute("SELECT * FROM orders where user_id='"+str(user_id) \
-            +"' AND item='"+item+"' AND quantity='"+ str(quantity)+"'")
+            +"' AND item='"+ str(item)+"' AND quantity='"+ str(quantity)+"'")
         rows_found = self.db.cursor.rowcount
         if rows_found > 0:
             return True

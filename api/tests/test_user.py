@@ -11,7 +11,7 @@ class UserViewTest(unittest.TestCase):
         """ set default values for class. """
         self.app = app.test_client()
         self.db = DatabaseConnection()
-        self.db.create_users_table()
+        self.db.create_all_tables()
         self.app.testing = True
         self.user = {"name": "John Doe", "email": "john@example.com", "password": "1234", "gender":"male", "user_type":""}
 
@@ -96,7 +96,7 @@ class UserViewTest(unittest.TestCase):
 
     def tearDown(self):
         """ undo effects of tests. """
-        self.db.cursor.execute("DROP TABLE users")
+        self.db.drop_all_tables()
         self.db.close_connection()
 
 if __name__ == "__main__":

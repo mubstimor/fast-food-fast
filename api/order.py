@@ -21,12 +21,12 @@ class Order(object):
             self.db.cursor.execute("INSERT INTO orders(item, quantity, status, user_id) \
                                 VALUES('"+ str(order['item']) + "','"+ order['quantity'] +"', '"+ \
                                 order['status']+"', '"+order['user_id']+"') RETURNING id")
+            order_id = self.db.cursor.fetchone()[0]
+            order['id'] = order_id
+            return order
         except (psycopg2.DatabaseError) as error:
-            print(error)
+            return
         
-        order_id = self.db.cursor.fetchone()[0]
-        order['id'] = order_id
-        return order
         
     def check_if_order_exists(self, user_id, item, quantity):
         """ retrieve order with given id. """

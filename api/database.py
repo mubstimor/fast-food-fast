@@ -33,7 +33,7 @@ class DatabaseConnection:
         commands = (
         """
         CREATE TABLE IF NOT EXISTS fooditems (
-            id serial PRIMARY KEY,
+            item_id serial PRIMARY KEY,
             name varchar,
             category varchar,
             price integer NOT NULL
@@ -56,7 +56,7 @@ class DatabaseConnection:
                 status varchar,
                 user_id integer,
                 FOREIGN KEY (item)
-                    REFERENCES fooditems (id)
+                    REFERENCES fooditems (item_id)
                     ON UPDATE CASCADE ON DELETE CASCADE,
                 FOREIGN KEY (user_id)
                     REFERENCES users (id)

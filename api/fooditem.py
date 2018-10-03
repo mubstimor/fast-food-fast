@@ -15,7 +15,7 @@ class FoodItem(object):
         item['price'] = int(item_data['price'])
         item['category'] = str(item_data['category'])
         self.db.cursor.execute("INSERT INTO fooditems(name, category, price) \
-        VALUES('"+ item['name'] + "','"+ item['category'] + "','"+ str(item['price']) +"') RETURNING id")
+        VALUES('"+ item['name'] + "','"+ item['category'] + "','"+ str(item['price']) +"') RETURNING item_id")
         item_id = self.db.cursor.fetchone()[0]
         item['id'] = item_id
         return item
@@ -35,17 +35,17 @@ class FoodItem(object):
         fooditems = self.db.cursor.fetchall()
         menuitems = []
         for item in fooditems:
-            menu_item = {"id": item['id'], "name": item['name'], "category": item['category'], "price": item['price']}
+            menu_item = {"id": item['item_id'], "name": item['name'], "category": item['category'], "price": item['price']}
             menuitems.append(menu_item)
         return menuitems
 
     def get_item(self, item_id):
         """ retrieve item with given id from database. """
-        self.db.cursor.execute("SELECT * FROM fooditems where id='"+str(item_id)+"'")
+        self.db.cursor.execute("SELECT * FROM fooditems where item_id='"+str(item_id)+"'")
         item = self.db.cursor.fetchone()
         rows_found = self.db.cursor.rowcount
         if rows_found > 0:
-            menu_item = {"id": item['id'], "name": item['name'], "category": item['category'], "price": item['price']}
+            menu_item = {"id": item['item_id'], "name": item['name'], "category": item['category'], "price": item['price']}
             return menu_item
         else:
             return "not found"
@@ -66,7 +66,7 @@ class FoodItem(object):
 
     def delete_item(self, item_id):
         """ delete item. """
-        self.db.cursor.execute("DELETE FROM fooditems WHERE id='"+str(item_id)+"'")
+        self.db.cursor.execute("DELETE FROM fooditems WHERE item_id='"+str(item_id)+"'")
         rows_deleted = self.db.cursor.rowcount
         if rows_deleted > 0:
             return "fooditem was deleted"

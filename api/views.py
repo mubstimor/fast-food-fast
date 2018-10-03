@@ -59,7 +59,7 @@ def admin_token_required(f):
             return f(*args, **kwargs)
     return decorated
 
-@app.route('/api/v1/orders', methods=['POST'])
+@app.route('/api/v1/users/orders', methods=['POST'])
 @jwt_required
 def create_order():
     """
@@ -112,7 +112,11 @@ def create_order():
     if order:
         return jsonify({'error': 'Order already exists'}), 409
     else:
-        return jsonify({'order': ORDER.create_order(request.json)}), 201
+        create_user_order = ORDER.create_order(request.json)
+        if create_user_order:
+            return jsonify({"message":"Order successfully created", 'order': ORDER.create_order(request.json)}), 201
+        else:
+            return jsonify({'error': True, "message":"Unable to support request"}), 400
 
 
 @app.route('/api/v1/orders', methods=['GET'])
@@ -285,11 +289,16 @@ def update_user_order(order_id):
     """ update order details with put request. """
     return jsonify({'order': ORDER.update_user_order(order_id, request.json)})
 
-@app.route('/api/v1/users/myorders/<int:user_id>', methods=['GET'])
+@app.route('/api/v1/users/orders', methods=['GET'])
 @jwt_required
-def get_user_orders(user_id):
+def get_user_orders():
     """ Get orders for a specific user."""
-    return jsonify({'myorders': ORDER.fetch_user_orders(user_id)})
+    current_user = get_jwt_identity()
+    get_user_orders = ORDER.fetch_user_orders(current_user['id'])
+    if get_user_orders:
+        return jsonify({'myorders': ORDER.fetch_user_orders(current_user['id'])})
+    else:
+        return jsonify({"message":"no orders available for current user"})
 
 @app.route('/api/v1/users/<int:user_id>', methods=['PUT'])
 def elevate_user_to_admin(user_id):

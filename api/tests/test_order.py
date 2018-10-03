@@ -13,7 +13,6 @@ class OrderViewTest(unittest.TestCase):
         json={"name": "Jack Decker", "email": "jack@example.com", "password": "1234", "gender":"male", "user_type":""})
         request = self.app.post('/api/v1/auth/login', \
         json={"email": "jack@example.com", "password": "1234"})
-        pprint(request.json)
         user_token = "Bearer " +str(request.json['data']['token'])
         return user_token
 
@@ -42,6 +41,7 @@ class OrderViewTest(unittest.TestCase):
         self.db = DatabaseConnection()
         self.db.create_all_tables()
         self.default_orders_url = "/api/v1/orders"
+        self.user_orders_url = "/api/v1/users/orders"
         self.indexed_orders_url = "/api/v1/orders/"
         self.default_order = {"user_id": 1, "item": 1, "quantity":1}
         self.client_token = self._set_up_user()
@@ -55,7 +55,7 @@ class OrderViewTest(unittest.TestCase):
 
     def test_create_order(self):
         """ test post method """
-        request = self.app.post(self.default_orders_url, \
+        request = self.app.post(self.user_orders_url, \
         json=self.default_order, headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 201)
         self.assertEqual(request.headers['Content-Type'], 'application/json')   
@@ -63,8 +63,8 @@ class OrderViewTest(unittest.TestCase):
 
     def test_create_already_existing_order(self):
         """ test create duplicate order """
-        request = self.app.post(self.default_orders_url, json=self.default_order, headers={"Authorization": self.client_token})
-        request = self.app.post(self.default_orders_url, json=self.default_order, headers={"Authorization": self.client_token})
+        request = self.app.post(self.user_orders_url, json=self.default_order, headers={"Authorization": self.client_token})
+        request = self.app.post(self.user_orders_url, json=self.default_order, headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 409)
         self.assertEqual(request.headers['Content-Type'], 'application/json')    
         self.assertEqual("Order already exists", request.json['error'])
@@ -72,20 +72,20 @@ class OrderViewTest(unittest.TestCase):
     def test_create_order_without_item_in_request(self):
         """ test post method by not including item in request """
         del self.default_order['item']
-        request = self.app.post(self.default_orders_url, \
+        request = self.app.post(self.user_orders_url, \
         json=self.default_order, headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 400)
 
     def test_create_order_with_invalid_quantity(self):
         """ test post method by including an invalid quantity value."""
         self.default_order['quantity'] = "abafhh"
-        request = self.app.post(self.default_orders_url, json=self.default_order, headers={"Authorization": self.client_token})
+        request = self.app.post(self.user_orders_url, json=self.default_order, headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 400)
 
     def test_create_order_with_invalid_userid(self):
         """ test post method by including an invalid user id."""
         self.default_order['user_id'] = "sdd"
-        request = self.app.post(self.default_orders_url, json=self.default_order, headers={"Authorization": self.client_token})
+        request = self.app.post(self.user_orders_url, json=self.default_order, headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 400)
 
     def test_retrieve_order(self):
@@ -114,6 +114,23 @@ class OrderViewTest(unittest.TestCase):
         request = self.app.get(self.default_orders_url, headers={"Authorization": self.admin_token})
         self.assertEqual(request.status_code, 200)
         self.assertGreater(len(request.json['orders']), 0)
+
+    def test_retrieve_user_order(self):
+        """ test get user orders method """
+        request = self.app.post(self.user_orders_url, \
+        json=self.default_order, headers={"Authorization": self.client_token})
+        new_order_link = "api/v1/users/orders/1"
+        request = self.app.get(new_order_link, headers={"Authorization": self.client_token})
+        self.assertEqual(request.status_code, 200)
+        self.assertEqual(1, request.json['myorders'][0]['user_id'])
+
+    def test_retrieve_all_user_orders(self):
+        """ test get all user orders method """
+        request = self.app.post(self.user_orders_url, \
+        json=self.default_order, headers={"Authorization": self.client_token})
+        request = self.app.get(self.user_orders_url, headers={"Authorization": self.admin_token})
+        self.assertEqual(request.status_code, 200)
+        self.assertGreater(len(request.json['myorders']), 0)
 
     def test_get_empty_orders_list(self):
         """ test get all orders method """
@@ -145,7 +162,7 @@ class OrderViewTest(unittest.TestCase):
 
     def test_update_user_order(self):
         """ test update user order method """
-        request = self.app.post(self.default_orders_url, \
+        request = self.app.post(self.user_orders_url, \
         json=self.default_order, headers={"Authorization": self.client_token})
         created_order_id = int(request.json['order']['id'])
         new_order_link = "api/v1/users/orders/" + str(created_order_id)
@@ -156,7 +173,7 @@ class OrderViewTest(unittest.TestCase):
 
     def test_update_unavailable_user_order(self):
         """ test update unavailable user order """
-        request = self.app.post(self.default_orders_url, \
+        request = self.app.post(self.user_orders_url, \
         json=self.default_order, headers={"Authorization": self.client_token})
         created_order_id = int(request.json['order']['id']) + 4
         new_order_link = "api/v1/users/orders/" + str(created_order_id)
@@ -164,15 +181,6 @@ class OrderViewTest(unittest.TestCase):
         json={"user_id": 1, "item": 1, "quantity":4, "status":"pending"}, headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 200)
         self.assertEqual("unable to update order", request.json['order'])
-
-    def test_retrieve_user_order(self):
-        """ test get user orders method """
-        request = self.app.post(self.default_orders_url, \
-        json=self.default_order, headers={"Authorization": self.client_token})
-        new_order_link = "api/v1/users/myorders/1"
-        request = self.app.get(new_order_link, headers={"Authorization": self.admin_token})
-        self.assertEqual(request.status_code, 200)
-        self.assertEqual(1, request.json['myorders'][0]['user_id'])
         
     def test_update_order_with_invalid_status_value(self):
         """ test update method by including a wrong status value """

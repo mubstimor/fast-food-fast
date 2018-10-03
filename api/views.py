@@ -179,6 +179,7 @@ def get_all_orders():
         return jsonify({'orders': "No orders available"})
     
 @app.route('/api/v1/orders/<int:order_id>', methods=['GET'])
+@admin_token_required
 def get_order(order_id):
     """
     Get single order
@@ -205,6 +206,7 @@ def get_order(order_id):
         return jsonify({'order': 'Order not found'}), 404
     
 @app.route('/api/v1/orders/<int:order_id>', methods=['PUT'])
+@admin_token_required
 def update_order(order_id):
     """
         Update a single order's status
@@ -234,6 +236,7 @@ def update_order(order_id):
     return jsonify({'order': ORDER.update_order(order_id, request.json)})
 
 @app.route('/api/v1/orders/<int:order_id>', methods=['DELETE'])
+@admin_token_required
 def delete_order(order_id):
     """ delete requested resource from list. """
     return jsonify({'result': ORDER.delete_order(order_id)})
@@ -357,6 +360,7 @@ def get_user_orders(user_id):
 
 # ROUTES FOR FOOD ITEMS.
 @app.route('/api/v1/fooditems', methods=['POST'])
+@admin_token_required
 def create_fooditem():
     """ create item with post request. """
     try:
@@ -382,6 +386,7 @@ def get_fooditem(item_id):
     return jsonify({'fooditem': item})
 
 @app.route('/api/v1/fooditems/<int:item_id>', methods=['PUT'])
+@admin_token_required
 def update_fooditem(item_id):
     """ update food item with put request. """
     return jsonify({'fooditem': FOODITEM.update_item(item_id, request.json)})

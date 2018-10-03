@@ -99,6 +99,7 @@ def admin_token_required(f):
         verify_jwt_in_request()
         # claims = get_jwt_claims()
         claims = get_jwt_identity()
+        pprint(claims)
         if claims['role'] != 'Admin':
             return jsonify({"msg": "Admins only!"}), 403
         else:
@@ -243,7 +244,7 @@ def delete_order(order_id):
 # END ORDER ROUTES
 
 # ROUTES FOR CUSTOMERS
-@app.route('/api/v1/users', methods=['POST'])
+@app.route('/api/v1/auth/signup', methods=['POST'])
 def create_user():
     """ create user with post request. """
     gender = ('male', 'female')
@@ -270,22 +271,22 @@ def get_user(user_id):
     user = USER.get_user(user_id)
     return jsonify({'user': user})
 
-@app.route('/api/v1/users/login', methods=['POST'])
-def login_user():
-    """ authenticate user. """
-    if not request.json or not 'password' in request.json:
-        abort(400)
-    access_token = "" # set an empty token
-    if USER.login(request.json):
-        # create token here
-        access_token = create_access_token(identity=request.json['email'])
-        # pprint(access_token)
-    # return jsonify({'login': USER.login(request.json)})
-    # current_user = get_jwt_identity()
-    return jsonify({'login': USER.login(request.json), "access_token": access_token}), 200
+# @app.route('/api/v1/auth/login', methods=['POST'])
+# def login_user():
+#     """ authenticate user. """
+#     if not request.json or not 'password' in request.json:
+#         abort(400)
+#     access_token = "" # set an empty token
+#     if USER.login(request.json):
+#         # create token here
+#         access_token = create_access_token(identity=request.json['email'])
+#         # pprint(access_token)
+#     # return jsonify({'login': USER.login(request.json)})
+#     # current_user = get_jwt_identity()
+#     return jsonify({'login': USER.login(request.json), "access_token": access_token}), 200
 
 # create tokens to be used for accessing app
-@app.route('/api/v1/users/auth', methods=['POST'])
+@app.route('/api/v1/auth/login', methods=['POST'])
 def auth_user():
     """ authenticate user. """
     if not request.json or not 'password' in request.json:
@@ -356,10 +357,22 @@ def update_user_order(order_id):
 def get_user_orders(user_id):
     """ Get orders for a specific user."""
     return jsonify({'myorders': ORDER.fetch_user_orders(user_id)})
+
+@app.route('/api/v1/users/<int:user_id>', methods=['PUT'])
+def elevate_user_to_admin(user_id):
+    """ update user to admin. """
+    status = USER.assign_admin_privileges(user_id)
+    return jsonify(status)
+
+@app.route('/api/v1/users/admin/<string:email>', methods=['GET'])
+def get_user_data(email):
+    """ Get orders for a specific user."""
+    data = USER.get_user_data_from(email)
+    return jsonify(data)
 # END CUSTOMER ROUTES
 
-# ROUTES FOR FOOD ITEMS.
-@app.route('/api/v1/fooditems', methods=['POST'])
+# ROUTES FOR MENU.
+@app.route('/api/v1/menu', methods=['POST'])
 @admin_token_required
 def create_fooditem():
     """ create item with post request. """
@@ -374,24 +387,24 @@ def create_fooditem():
     else:
         return jsonify({'fooditem': FOODITEM.create_item(request.json)}), 201
 
-@app.route('/api/v1/fooditems', methods=['GET'])
+@app.route('/api/v1/menu', methods=['GET'])
 def get_all_fooditems():
     """ A route to return all of the available fooditems. """
     return jsonify({'fooditems': FOODITEM.fetch_all_fooditems()})
 
-@app.route('/api/v1/fooditems/<int:item_id>', methods=['GET'])
+@app.route('/api/v1/menu/<int:item_id>', methods=['GET'])
 def get_fooditem(item_id):
     """ Get a specific item with given id."""
     item = FOODITEM.get_item(item_id)
     return jsonify({'fooditem': item})
 
-@app.route('/api/v1/fooditems/<int:item_id>', methods=['PUT'])
+@app.route('/api/v1/menu/<int:item_id>', methods=['PUT'])
 @admin_token_required
 def update_fooditem(item_id):
     """ update food item with put request. """
     return jsonify({'fooditem': FOODITEM.update_item(item_id, request.json)})
 
-@app.route('/api/v1/fooditems/<int:item_id>', methods=['DELETE'])
+@app.route('/api/v1/menu/<int:item_id>', methods=['DELETE'])
 def delete_fooditem(item_id):
     """ delete requested resource from list. """
     return jsonify({'result': FOODITEM.delete_item(item_id)})    

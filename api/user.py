@@ -16,8 +16,11 @@ class User(object):
         user['email'] = str(user_data['email'])
         user['gender'] = str(user_data['gender'])
         user['password'] = generate_password_hash(str(user_data['password']))
-        self.db.cursor.execute("INSERT INTO users(name, email, password, gender) \
-        VALUES('"+ user['name'] + "','"+ user['email'] +"', '"+user['password']+"', '"+user['gender']+"') RETURNING id")
+        user['user_type'] = str(user_data['user_type'])
+        if not user['user_type']:
+            user['user_type'] = 'Customer'
+        self.db.cursor.execute("INSERT INTO users(name, email, password, gender, user_type) \
+        VALUES('"+ user['name'] + "','"+ user['email'] +"', '"+user['password']+"', '"+user['gender']+"','"+user['user_type']+"') RETURNING id")
         user_id = self.db.cursor.fetchone()[0]
         del user['password']
         user['user_type'] = 'Customer'
@@ -93,4 +96,12 @@ class User(object):
                 user = {"id": userdata['id'], "email": userdata['email'], "role": userdata['user_type']}
                 return user
             
+    def assign_admin_privileges(self, user_id):
+        """ elevate user to admin """
+        self.db.cursor.execute("UPDATE users set user_type='Admin' WHERE id='"+str(user_id)+"'")
+        rows_updated = self.db.cursor.rowcount
+        if rows_updated > 0:
+            return {"error": False, "message":"user updated to admin"}
+        else:
+            return {"error": True, "message":"unable to elevate user to admin"}
         

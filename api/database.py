@@ -81,6 +81,10 @@ class DatabaseConnection:
         self.cursor.execute("DROP TABLE users")
         self.cursor.execute("DROP TABLE orders")
 
+    def drop_users_table(self):
+        """ delete users tables. """
+        self.cursor.execute("DROP TABLE users")
+
     def close_connection(self):
         """ drop connection """
         self.cursor.close()

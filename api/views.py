@@ -1,4 +1,5 @@
 """ manages routes to the app. """
+import datetime
 from flask import Flask, request, jsonify
 from flask import abort
 from flask import make_response
@@ -7,7 +8,13 @@ from pprint import pprint
 from flask import Blueprint, render_template as view, render_template
 from jinja2 import TemplateNotFound
 from flasgger import Swagger
-from flask_jwt_extended import (JWTManager, jwt_required, create_access_token, get_jwt_identity)
+from functools import wraps
+# from flask_jwt import JWT, jwt_required, current_identity
+# from werkzeug.security import safe_str_cmp
+from flask_jwt_extended import (create_access_token, create_refresh_token,
+                                jwt_required, jwt_refresh_token_required, get_jwt_identity, JWTManager,
+                                verify_jwt_in_request, get_jwt_claims)
+# from app import jwt
 from api import app
 from api.order import Order
 from api.user import User
@@ -30,7 +37,10 @@ swagger = Swagger(app)
 # # set up the flask jwt-extended extension
 env = Env()
 env.read_env()
-app.config['JWT_SECRET_KEY'] = env.str("JWT_SECRET_KEY")
+# app.config['JWT_SECRET_KEY'] = env.str("JWT_SECRET_KEY")
+app.config['SECRET_KEY'] = env.str("JWT_SECRET_KEY")
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(days=1)
+# jwt = JWT(app, authenticate, identity)
 jwt = JWTManager(app)
 
 # Instantiate model connection variables
@@ -58,6 +68,43 @@ db.create_users_table
 def index():
     """ route to index of the API. """
     return jsonify({'Home': 'Index of the API', "Docs":"/apidocs"})
+
+@jwt.unauthorized_loader
+def unauthorized_response(callback):
+    return jsonify({
+        'ok': False,
+        'message': 'Missing Authorization Header'
+    }), 401
+
+
+def admin_token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+
+        # data, status = get_logged_in_user(request)
+        # token = data.get('data')
+
+        # if not token:
+        #     return data, status
+
+        # admin = token.get('admin')
+        # if not admin:
+        #     response_object = {
+        #         'status': 'fail',
+        #         'message': 'admin token required'
+        #     }
+        #     return response_object, 401
+
+        # return f(*args, **kwargs)
+        verify_jwt_in_request()
+        # claims = get_jwt_claims()
+        claims = get_jwt_identity()
+        if claims['role'] != 'Admin':
+            return jsonify({"msg": "Admins only!"}), 403
+        else:
+            return f(*args, **kwargs)
+
+    return decorated
 
 # ROUTES FOR ORDERS.
 @app.route('/api/v1/orders', methods=['POST'])
@@ -110,7 +157,9 @@ def create_order():
     else:
         return jsonify({'order': ORDER.create_order(request.json)}), 201
 
+
 @app.route('/api/v1/orders', methods=['GET'])
+@admin_token_required
 def get_all_orders():
     """
     Endpoint for returning list of orders
@@ -204,7 +253,8 @@ def create_user():
     if user:
         return jsonify({'error': 'user already exists'}), 403
     else:
-        return jsonify({'user': USER.create_user((request.json))}), 201
+        return jsonify({'user': USER.create_user((request.json)),
+                        "message": "User successfully created." }), 201
 
 @app.route('/api/v1/users', methods=['GET'])
 def get_all_users():
@@ -217,7 +267,6 @@ def get_user(user_id):
     user = USER.get_user(user_id)
     return jsonify({'user': user})
 
-# create tokens to be used for accessing app
 @app.route('/api/v1/users/login', methods=['POST'])
 def login_user():
     """ authenticate user. """
@@ -232,12 +281,75 @@ def login_user():
     # current_user = get_jwt_identity()
     return jsonify({'login': USER.login(request.json), "access_token": access_token}), 200
 
+# create tokens to be used for accessing app
+@app.route('/api/v1/users/auth', methods=['POST'])
+def auth_user():
+    """ authenticate user. """
+    if not request.json or not 'password' in request.json:
+        abort(400)
+    access_token = "" # set an empty token
+    data = USER.authenticate(request.json)
+    if data:
+        access_token = create_access_token(identity=data)
+        refresh_token = create_refresh_token(identity=data)
+        user = {}
+        user['token'] = access_token
+        user['refresh'] = refresh_token
+        return jsonify({'ok': True, 'data': user}), 200
+    else:
+        return jsonify({'ok': False, 'message': 'invalid username or password'}), 401
+
+@app.route('/refresh', methods=['POST'])
+@jwt_refresh_token_required
+def refresh():
+    ''' refresh token endpoint '''
+    current_user = get_jwt_identity()
+    ret = {
+        'token': create_access_token(identity=current_user)
+    }
+    return jsonify({'ok': True, 'data': ret}), 200
+
+# @staticmethod
+def get_logged_in_user(new_request):
+    # get the auth token
+    # auth_token = new_request.headers.get('Authorization')
+    auth_token = get_jwt_identity()
+    pprint("auth token is")
+    pprint(auth_token)
+    if auth_token:
+            resp = get_jwt_identity()
+            # if not isinstance(resp, str):
+            if not isinstance(resp):
+                user = USER.get_user(resp['id'])
+                # user = User.query.filter_by(id=resp).first()
+                response_object = {
+                    'status': 'success',
+                    'data': {
+                        'user_id': user['id'],
+                        'email': user['email'],
+                        'role': user['role']
+                    }
+                }
+                return response_object, 200
+            response_object = {
+                'status': 'fail',
+                'message': resp
+            }
+            return response_object, 401
+    else:
+        response_object = {
+            'status': 'fail',
+            'message': 'Provide a valid auth token.'
+        }
+        return response_object, 401
+
 @app.route('/api/v1/users/orders/<int:order_id>', methods=['PUT'])
 def update_user_order(order_id):
     """ update order details with put request. """
     return jsonify({'order': ORDER.update_user_order(order_id, request.json)})
 
 @app.route('/api/v1/users/myorders/<int:user_id>', methods=['GET'])
+@jwt_required
 def get_user_orders(user_id):
     """ Get orders for a specific user."""
     return jsonify({'myorders': ORDER.fetch_user_orders(user_id)})

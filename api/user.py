@@ -19,6 +19,7 @@ class User(object):
         self.db.cursor.execute("INSERT INTO users(name, email, password, gender) \
         VALUES('"+ user['name'] + "','"+ user['email'] +"', '"+user['password']+"', '"+user['gender']+"') RETURNING id")
         user_id = self.db.cursor.fetchone()[0]
+        del user['password']
         user['user_type'] = 'Customer'
         user['id'] = user_id
         return user
@@ -55,7 +56,7 @@ class User(object):
         user_item = self.db.cursor.fetchone()
         rows_found = self.db.cursor.rowcount
         if rows_found > 0:
-            user = {"id": user_item['id'], "email": user_item['email']}
+            user = {"id": user_item['id'], "email": user_item['email'], "role": user_item['user_type']}
             return user
         else:
             return "not found"
@@ -76,4 +77,20 @@ class User(object):
                 return False
         else:
             return False
+
+    def authenticate(self, user_data):
+        """ check user login """
+        user = user_data
+        user['email'] = str(user_data['email'])
+        user['password'] = str(user_data['password'])
+        self.db.cursor.execute("SELECT * FROM users where email='"+user['email']+"'")
+        rows_found = self.db.cursor.rowcount
+        if rows_found > 0:
+            userdata = self.db.cursor.fetchone()
+            login_status = check_password_hash(userdata['password'], user['password'])
+            if login_status:
+                # return data
+                user = {"id": userdata['id'], "email": userdata['email'], "role": userdata['user_type']}
+                return user
+            
         

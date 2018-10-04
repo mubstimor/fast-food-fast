@@ -16,7 +16,7 @@ class Order(object):
         order['item'] = int(order_data['item'])
         order['quantity'] = str(order_data['quantity'])
         order['user_id'] = str(order_data['user_id'])
-        order['status'] = 'pending'
+        order['status'] = 'new'
         try:
             self.db.cursor.execute("INSERT INTO orders(item, quantity, status, user_id) \
                                 VALUES('"+ str(order['item']) + "','"+ order['quantity'] +"', '"+ \

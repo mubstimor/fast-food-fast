@@ -133,9 +133,9 @@ class OrderViewTest(unittest.TestCase):
         created_order_id = int(request.json['order']['id'])
         new_order_link = self.indexed_orders_url + str(created_order_id)
         request = self.app.put(new_order_link, \
-        json={"status":"accepted"}, headers={"Authorization": self.admin_token})
+        json={"status":"processing"}, headers={"Authorization": self.admin_token})
         self.assertEqual(request.status_code, 200)
-        self.assertEqual("accepted", request.json['order']['status'])
+        self.assertEqual("processing", request.json['order']['status'])
 
     def test_update_unavailable_order(self):
         """ test update order status of unavailable order"""
@@ -144,7 +144,7 @@ class OrderViewTest(unittest.TestCase):
         created_order_id = int(request.json['order']['id']) + 3
         new_order_link = self.indexed_orders_url + str(created_order_id)
         request = self.app.put(new_order_link, \
-        json={"status":"accepted"}, headers={"Authorization": self.admin_token})
+        json={"status":"processing"}, headers={"Authorization": self.admin_token})
         self.assertEqual(request.status_code, 200)
         self.assertEqual("unable to update order", request.json['order'])
 

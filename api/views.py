@@ -191,7 +191,7 @@ def update_order(order_id):
             # schema:
             #   id: Order
         """
-    status = ("accepted", "rejected", "completed")
+    status = ("processing", "cancelled", "complete")
     if request.json['status'] not in status:
         return jsonify({'error': 'Missing status parameter in request'}), 400
     return jsonify({'order': ORDER.update_order(order_id, request.json)})
@@ -283,10 +283,17 @@ def auth_user():
             email: body
             password: body
             schema:
-              id: User
+              id: Auth
               required:
                 - email
                 - password
+              properties:
+                email:
+                    type: string
+                    description: email address of user
+                password:
+                    type: string
+                    description: secret key known to user
         responses:
           200:
             description: Login successful

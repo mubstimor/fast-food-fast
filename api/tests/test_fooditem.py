@@ -69,7 +69,7 @@ class FoodItemViewTest(unittest.TestCase):
         json={"name": "Chicken Wings", "category": "Foods", "price":18000}, headers={"Authorization": self.bearer_token})
         request = self.app.get('/api/v1/menu')
         self.assertEqual(request.status_code, 200)
-        self.assertGreater(len(request.json['fooditems']), 0)
+        self.assertGreater(len(request.json['menu']), 0)
 
     def test_update_menuitem(self):
         """ test update food item """
@@ -77,8 +77,10 @@ class FoodItemViewTest(unittest.TestCase):
         json={"name": "Liver", "category": "Foods", "price":8000}, headers={"Authorization": self.bearer_token})
         created_item_id = int(request.json['fooditem']['id'])
         item_url = "/api/v1/menu/" + str(created_item_id)
-        request = self.app.put(item_url, \
-        json={"name": "Fish Fillet", "category": "Foods", "price":9000}, headers={"Authorization": self.bearer_token})
+        request = self.app.put(item_url,
+                               json={"name": "Fish Fillet",
+                                     "category": "Foods", "price":9000}, 
+                                headers={"Authorization": self.bearer_token})
         self.assertEqual(request.status_code, 200)
         self.assertEqual(9000, request.json['fooditem']['price'])
 

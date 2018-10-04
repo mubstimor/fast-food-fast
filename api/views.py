@@ -204,7 +204,46 @@ def delete_order(order_id):
 
 @app.route('/api/v1/auth/signup', methods=['POST'])
 def create_user():
-    """ create user with post request. """
+    """
+        Register a new user
+        ---
+        tags:
+          - User
+        parameters:
+          - in: body
+            name: body
+            email: body
+            password: body
+            gender: body
+            user_type: body
+            schema:
+              id: User
+              required:
+                - name
+                - email
+                - password
+                - gender
+              properties:
+                name:
+                    type: string
+                    description: user identifer
+                email:
+                    type: string
+                    description: email address of user
+                password:
+                    type: string
+                    description: secret key known to user
+                gender:
+                    type: string
+                    description: either male or female
+                user_type:
+                    type: string
+                    description: class of the user
+                    default: Customer
+        responses:
+          201:
+            description: New user created
+    """
     gender = ('male', 'female')
     if not request.json or not 'email' in request.json:
         return jsonify({'error': True, "message": "Add 'email' parameter to reuest"}), 400
@@ -234,7 +273,24 @@ def get_user(user_id):
 
 @app.route('/api/v1/auth/login', methods=['POST'])
 def auth_user():
-    """ authenticate user. """
+    """
+        Authenticate user
+        ---
+        tags:
+          - User
+        parameters:
+          - in: body
+            email: body
+            password: body
+            schema:
+              id: User
+              required:
+                - email
+                - password
+        responses:
+          200:
+            description: Login successful
+    """
     if not request.json or not 'password' in request.json:
         return jsonify({'error': 'Missing password parameter in request'}), 400
     access_token = ""
@@ -267,7 +323,17 @@ def update_user_order(order_id):
 @app.route('/api/v1/users/orders', methods=['GET'])
 @jwt_required
 def get_user_orders():
-    """ Get orders for a specific user."""
+    """
+    Get orders for a specific user.
+    ---
+    tags:
+      - ORDER
+    produces:
+      - application/json
+    responses:
+      200:
+        description: Displays a users order history
+    """
     current_user = get_jwt_identity()
     get_orders = ORDER.fetch_user_orders(current_user['id'])
     if get_user_orders:
@@ -290,7 +356,40 @@ def get_user_data(email):
 @app.route('/api/v1/menu', methods=['POST'])
 @admin_token_required
 def create_fooditem():
-    """ create item with post request. """
+    """
+        Create a new menu item
+        Allows an admin to post a food item
+        ---
+        tags:
+          - MENU
+        parameters:
+          - in: body
+            name: body
+            category: body
+            price: body
+            schema:
+              id: Menu
+              required:
+                - name
+                - category
+                - price
+              properties:
+                name:
+                    type: string
+                    description: description of food item
+                    default: 1
+                category:
+                    type: string
+                    description: class to which the item belongs
+                    default: Foods
+                price:
+                    type: integer
+                    description: monetary worth of item
+                    default: 3000
+        responses:
+          201:
+            description: New order created
+    """
     try:
         request.json['price'] = int(request.json['price'])
     except ValueError:
@@ -304,12 +403,38 @@ def create_fooditem():
 
 @app.route('/api/v1/menu', methods=['GET'])
 def get_all_fooditems():
-    """ A route to return all of the available fooditems. """
-    return jsonify({'fooditems': FOODITEM.fetch_all_fooditems()})
+    """
+    Get available menu
+    ---
+    tags:
+      - MENU
+    produces:
+      - application/json
+    responses:
+      200:
+        description: Displays a list of available menu item
+    """
+    return jsonify({'menu': FOODITEM.fetch_all_fooditems()})
 
 @app.route('/api/v1/menu/<int:item_id>', methods=['GET'])
 def get_fooditem(item_id):
-    """ Get a specific item with given id."""
+    """
+    Get single menu item
+    ---
+    tags:
+      - MENU
+    produces:
+      - application/json
+    parameters:
+      - in: path
+        name: item_id
+        type: int
+        description: item_id to be retrieved
+        required: false
+    responses:
+      200:
+        description: The requested menu item
+    """
     item = FOODITEM.get_item(item_id)
     return jsonify({'fooditem': item})
 

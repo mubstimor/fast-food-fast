@@ -38,21 +38,25 @@ class Order(object):
 
     def fetch_all_orders(self):
         """ retrieve all orders from db """
-        self.db.cursor.execute("SELECT * FROM orders WHERE status !='cancelled'")
+        self.db.cursor.execute("SELECT od.id as id, menu.name as item, od.quantity as quantity, cu.name as user_id, od.status as status \
+                            FROM orders as od, users as cu, fooditems as menu \
+                            WHERE od.id=cu.id and od.id=menu.item_id and od.status !='cancelled'")
         orderitems = self.db.cursor.fetchall()
         orders = []
         for item in orderitems:
-            order = {"id": item['id'], "item": item['item'], "quantity": item['quantity'], "status": item['status'], "user_id": item['user_id']}
+            order = {"order_id": item['id'], "item": item['item'], "quantity": item['quantity'], "status": item['status'], "customer": item['user_id']}
             orders.append(order)
         return orders
 
     def fetch_user_orders(self, user_id):
         """ retrieve all orders from list """
-        self.db.cursor.execute("SELECT * FROM orders where user_id='"+str(user_id)+"' AND status !='cancelled'")
+        self.db.cursor.execute("SELECT od.id as id, menu.name as item, od.quantity as quantity, cu.name as user_id, od.status as status \
+                            FROM orders as od, users as cu, fooditems as menu \
+                            WHERE od.id=cu.id and od.id=menu.item_id and od.status !='cancelled' and user_id='"+str(user_id)+"'")
         order_items = self.db.cursor.fetchall()
         orders = []
         for item in order_items:
-            order = {"id": item['id'], "item": item['item'], "quantity": item['quantity'], "status": item['status'], "user_id": item['user_id']}
+            order = {"id": item['id'], "item": item['item'], "quantity": item['quantity'], "status": item['status'], "customer": item['user_id']}
             orders.append(order)
         return orders
 

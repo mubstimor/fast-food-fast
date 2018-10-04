@@ -1,13 +1,12 @@
 """ manages routes to the app. """
 import datetime
+from functools import wraps
 from flask import request, jsonify
-from flask import abort
-from flask import make_response
 from environs import Env
 from flasgger import Swagger
-from functools import wraps
 from flask_jwt_extended import (create_access_token, create_refresh_token,
-                                jwt_required, jwt_refresh_token_required, get_jwt_identity, JWTManager,
+                                jwt_required, jwt_refresh_token_required,
+                                get_jwt_identity, JWTManager,
                                 verify_jwt_in_request)
 from api import app
 from api.order import Order
@@ -23,12 +22,12 @@ app.config['SWAGGER'] = {
         ('Access-Control-Allow-Credentials', "true"),
     ]
 }
-swagger = Swagger(app)
-env = Env()
-env.read_env()
-app.config['SECRET_KEY'] = env.str("JWT_SECRET_KEY")
+SWAGGER = Swagger(app)
+ENV = Env()
+ENV.read_env()
+app.config['SECRET_KEY'] = ENV.str("JWT_SECRET_KEY")
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(days=1)
-jwt = JWTManager(app)
+JWT = JWTManager(app)
 
 ORDER = Order()
 USER = User()
@@ -39,16 +38,18 @@ def index():
     """ route to index of the API. """
     return jsonify({'Home': 'Index of the API', "Docs":"/apidocs"})
 
-@jwt.unauthorized_loader
+@JWT.unauthorized_loader
 def unauthorized_response(callback):
+    """ responds to missing authorisation header. """
     return jsonify({
         'ok': False,
         'message': 'Missing Authorization Header'
     }), 401
 
 
-def admin_token_required(f):
-    @wraps(f)
+def admin_token_required(_f):
+    """ create token to protect admin only routes. """
+    @wraps(_f)
     def decorated(*args, **kwargs):
         """ check role = admin in user token. """
         verify_jwt_in_request()
@@ -56,7 +57,7 @@ def admin_token_required(f):
         if claims['role'] != 'Admin':
             return jsonify({"msg": "Admins only!"}), 403
         else:
-            return f(*args, **kwargs)
+            return _f(*args, **kwargs)
     return decorated
 
 @app.route('/api/v1/users/orders', methods=['POST'])
@@ -97,24 +98,26 @@ def create_order():
             description: New order created
         """
     if not request.json or not 'item' in request.json:
-        abort(400)
+        return jsonify({'error': 'Missing Item parameter in request'}), 400
     try:
         request.json['quantity'] = int(request.json['quantity'])
         request.json['user_id'] = int(request.json['user_id'])
     except ValueError:
-        abort(400)
+        return jsonify({'error': 'Bad request'}), 400
 
     current_user = get_jwt_identity()
     if current_user['id'] != request.json['user_id']:
         return jsonify({'error': True, "message":"Forbidden request"}), 403
 
-    order  = ORDER.check_if_order_exists(request.json['user_id'], request.json['item'], request.json['quantity'])
+    order = ORDER.check_if_order_exists(request.json['user_id'], \
+                                        request.json['item'], request.json['quantity'])
     if order:
         return jsonify({'error': 'Order already exists'}), 409
     else:
         create_user_order = ORDER.create_order(request.json)
         if create_user_order:
-            return jsonify({"message":"Order successfully created", 'order': ORDER.create_order(request.json)}), 201
+            return jsonify({"message":"Order successfully created",
+                            'order': ORDER.create_order(request.json)}), 201
         else:
             return jsonify({'error': True, "message":"Unable to support request"}), 400
 
@@ -127,7 +130,7 @@ def get_all_orders():
     ---
     tags:
       - ORDER
-    
+
     responses:
       200:
         description: All available orders
@@ -137,7 +140,7 @@ def get_all_orders():
         return jsonify({'orders': orders})
     else:
         return jsonify({'orders': "No orders available"})
-    
+  
 @app.route('/api/v1/orders/<int:order_id>', methods=['GET'])
 @admin_token_required
 def get_order(order_id):
@@ -163,7 +166,7 @@ def get_order(order_id):
         return jsonify({'order': order})
     else:
         return jsonify({'order': 'Order not found'}), 404
-    
+  
 @app.route('/api/v1/orders/<int:order_id>', methods=['PUT'])
 @admin_token_required
 def update_order(order_id):
@@ -190,7 +193,7 @@ def update_order(order_id):
         """
     status = ("accepted", "rejected", "completed")
     if request.json['status'] not in status:
-        abort(400)
+        return jsonify({'error': 'Missing status parameter in request'}), 400
     return jsonify({'order': ORDER.update_order(order_id, request.json)})
 
 @app.route('/api/v1/orders/<int:order_id>', methods=['DELETE'])
@@ -208,7 +211,7 @@ def create_user():
     if request.json['gender'] not in gender:
         return jsonify({'error': True, "message": "Add 'gender' parameter to reuest"}), 400
 
-    user  = USER.check_if_user_exists(request.json['email'])
+    user = USER.check_if_user_exists(request.json['email'])
     if user:
         return jsonify({'error': 'user already exists'}), 409
     else:
@@ -216,7 +219,7 @@ def create_user():
             post_user = USER.create_user(request.json)
         except KeyError:
             return jsonify({'error': True, "message": "Missing/Invalid parameters in request"}), 400
-        return jsonify({'user': post_user, "message": "User successfully created." }), 201
+        return jsonify({'user': post_user, "message": "User successfully created."}), 201
 
 @app.route('/api/v1/users', methods=['GET'])
 def get_all_users():
@@ -233,7 +236,7 @@ def get_user(user_id):
 def auth_user():
     """ authenticate user. """
     if not request.json or not 'password' in request.json:
-        abort(400)
+        return jsonify({'error': 'Missing password parameter in request'}), 400
     access_token = ""
     data = USER.authenticate(request.json)
     if data:
@@ -256,34 +259,6 @@ def refresh():
     }
     return jsonify({'ok': True, 'data': ret}), 200
 
-def get_logged_in_user(new_request):
-    """ Get user information from token """
-    auth_token = get_jwt_identity()
-    if auth_token:
-        resp = get_jwt_identity()
-        if not isinstance(resp):
-            user = USER.get_user(resp['id'])
-            response_object = {
-                'status': 'success',
-                'data': {
-                    'user_id': user['id'],
-                    'email': user['email'],
-                    'role': user['role']
-                }
-            }
-            return response_object, 200
-        response_object = {
-            'status': 'fail',
-            'message': resp
-        }
-        return response_object, 401
-    else:
-        response_object = {
-            'status': 'fail',
-            'message': 'Provide a valid auth token.'
-        }
-        return response_object, 401
-
 @app.route('/api/v1/users/orders/<int:order_id>', methods=['PUT'])
 def update_user_order(order_id):
     """ update order details with put request. """
@@ -294,9 +269,9 @@ def update_user_order(order_id):
 def get_user_orders():
     """ Get orders for a specific user."""
     current_user = get_jwt_identity()
-    get_user_orders = ORDER.fetch_user_orders(current_user['id'])
+    get_orders = ORDER.fetch_user_orders(current_user['id'])
     if get_user_orders:
-        return jsonify({'myorders': ORDER.fetch_user_orders(current_user['id'])})
+        return jsonify({'myorders': get_orders})
     else:
         return jsonify({"message":"no orders available for current user"})
 
@@ -319,9 +294,9 @@ def create_fooditem():
     try:
         request.json['price'] = int(request.json['price'])
     except ValueError:
-        abort(400)
-    
-    item  = FOODITEM.check_if_item_exists(request.json['name'])
+        return jsonify({'error': 'Invalid price value'}), 400
+
+    item = FOODITEM.check_if_item_exists(request.json['name'])
     if item:
         return jsonify({'error': 'Menu Item already exists'}), 409
     else:
@@ -347,7 +322,7 @@ def update_fooditem(item_id):
 @app.route('/api/v1/menu/<int:item_id>', methods=['DELETE'])
 def delete_fooditem(item_id):
     """ delete requested resource from list. """
-    return jsonify({'result': FOODITEM.delete_item(item_id)})    
+    return jsonify({'result': FOODITEM.delete_item(item_id)})
 
 @app.route('/api/v1/protected', methods=['GET'])
 @jwt_required
@@ -355,10 +330,3 @@ def protected():
     """"access identity of current user """
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
-
-@app.errorhandler(400)
-def bad_request(error):
-    """ return clean response for bad requests. """
-    return make_response(jsonify(
-        {'error': 'Bad Request, some parameters are either missing or invalid'}), 400)
-

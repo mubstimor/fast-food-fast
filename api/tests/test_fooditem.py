@@ -28,7 +28,6 @@ class FoodItemViewTest(unittest.TestCase):
     def test_create_fooditem(self):
         """ test create food item """
         request = self.app.post('/api/v1/menu', json=self.fooditem, headers={"Authorization": self.bearer_token})
-        pprint(request.json)
         self.assertEqual(request.status_code, 201)  
         self.assertEqual(request.headers['Content-Type'], 'application/json')
         self.assertEqual(7000, request.json['fooditem']['price'])
@@ -85,12 +84,15 @@ class FoodItemViewTest(unittest.TestCase):
 
     def test_update_unavailablemenuitem(self):
         """ test update unavailable item """
-        request = self.app.post('/api/v1/menu', \
-        json={"name": "Chicken Nuggets", "category": "Foods", "price":12000}, headers={"Authorization": self.bearer_token})
+        request = self.app.post('/api/v1/menu',
+                                json={"name": "Chicken Nuggets",
+                                      "category": "Foods", "price":12000},
+                                headers={"Authorization": self.bearer_token})
         created_item_id = int(request.json['fooditem']['id']) + 3
         item_url = "/api/v1/menu/" + str(created_item_id)
-        request = self.app.put(item_url, \
-        json={"name": "Fish Fillet", "category": "Foods", "price":9000}, headers={"Authorization": self.bearer_token})
+        request = self.app.put(item_url,
+                    json={"name": "Fish Fillet", "category": "Foods", "price":9000},
+                    headers={"Authorization": self.bearer_token})
         self.assertEqual(request.status_code, 200)
         self.assertEqual("unable to update item", request.json['fooditem'])
 

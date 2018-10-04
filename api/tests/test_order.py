@@ -1,7 +1,6 @@
 """ Test class for Order"""
 import unittest
 from api import app
-from pprint import pprint
 from api.database import DatabaseConnection
 
 class OrderViewTest(unittest.TestCase):
@@ -95,8 +94,6 @@ class OrderViewTest(unittest.TestCase):
         created_order_id = int(request.json['order']['id'])
         new_order_link = self.indexed_orders_url + str(created_order_id)
         request =  self.app.get(new_order_link, headers={"Authorization": self.admin_token})
-        pprint(request.json)
-        pprint(self.admin_token)
         self.assertEqual(request.status_code, 200)
         self.assertEqual(created_order_id, request.json['order']['id'])
 

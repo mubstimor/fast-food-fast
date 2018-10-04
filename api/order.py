@@ -13,7 +13,7 @@ class Order(object):
     def create_order(self, order_data):
         """ add order to orders list """
         order = order_data
-        order['item'] = str(order_data['item'])
+        order['item'] = int(order_data['item'])
         order['quantity'] = str(order_data['quantity'])
         order['user_id'] = str(order_data['user_id'])
         order['status'] = 'pending'

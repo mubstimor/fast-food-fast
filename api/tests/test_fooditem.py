@@ -53,8 +53,9 @@ class FoodItemViewTest(unittest.TestCase):
         request = self.app.post('/api/v1/menu', \
         json={"name": "Chips", "category": "Foods", "price":6000}, headers={"Authorization": self.bearer_token})
         pprint(request.json)
-        created_item_id = int(request.json['fooditem']['item_id'])
+        created_item_id = int(request.json['fooditem']['id'])
         request = self.app.get('/api/v1/menu/' + str(created_item_id))
+        pprint(request.json)
         self.assertEqual(request.status_code, 200)
         self.assertEqual("Chips", request.json['fooditem']['name'])
 
@@ -75,7 +76,7 @@ class FoodItemViewTest(unittest.TestCase):
         """ test update food item """
         request = self.app.post('/api/v1/menu', \
         json={"name": "Liver", "category": "Foods", "price":8000}, headers={"Authorization": self.bearer_token})
-        created_item_id = int(request.json['fooditem']['item_id'])
+        created_item_id = int(request.json['fooditem']['id'])
         item_url = "/api/v1/menu/" + str(created_item_id)
         request = self.app.put(item_url, \
         json={"name": "Fish Fillet", "category": "Foods", "price":9000}, headers={"Authorization": self.bearer_token})
@@ -86,7 +87,7 @@ class FoodItemViewTest(unittest.TestCase):
         """ test update unavailable item """
         request = self.app.post('/api/v1/menu', \
         json={"name": "Chicken Nuggets", "category": "Foods", "price":12000}, headers={"Authorization": self.bearer_token})
-        created_item_id = int(request.json['fooditem']['item_id']) + 3
+        created_item_id = int(request.json['fooditem']['id']) + 3
         item_url = "/api/v1/menu/" + str(created_item_id)
         request = self.app.put(item_url, \
         json={"name": "Fish Fillet", "category": "Foods", "price":9000}, headers={"Authorization": self.bearer_token})
@@ -97,7 +98,7 @@ class FoodItemViewTest(unittest.TestCase):
         """ test delete method """
         request = self.app.post('/api/v1/menu', \
         json={"name": "Hot Chocolate", "category": "Beverages", "price":8000}, headers={"Authorization": self.bearer_token})
-        created_item_id = int(request.json['fooditem']['item_id'])
+        created_item_id = int(request.json['fooditem']['id'])
         item_url = "/api/v1/menu/" + str(created_item_id)
         request = self.app.delete(item_url, headers={"Authorization": self.bearer_token})
         self.assertEqual(request.status_code, 200)

@@ -3,9 +3,10 @@ import datetime
 from functools import wraps
 from flask import request, jsonify
 from environs import Env
+from pprint import pprint
 from flasgger import Swagger
 from flask_jwt_extended import (create_access_token, create_refresh_token,
-                                jwt_required, jwt_refresh_token_required,
+                                jwt_required,
                                 get_jwt_identity, JWTManager,
                                 verify_jwt_in_request)
 from api import app
@@ -46,7 +47,6 @@ def unauthorized_response(callback):
         'message': 'Missing Authorization Header'
     }), 401
 
-
 def admin_token_required(_f):
     """ create token to protect admin only routes. """
     @wraps(_f)
@@ -71,20 +71,14 @@ def create_order():
           - ORDER
         parameters:
           - in: body
-            user_id: body
             item: body
             quantity: body
             schema:
               id: Order
               required:
-                - user_id
                 - item
                 - quantity
               properties:
-                user_id:
-                  type: integer
-                  description: id for customer
-                  default: 1
                 item:
                   type: string
                   description: ordered item
@@ -101,23 +95,24 @@ def create_order():
         return jsonify({'error': 'Missing Item parameter in request'}), 400
     try:
         request.json['quantity'] = int(request.json['quantity'])
-        request.json['user_id'] = int(request.json['user_id'])
+        # request.json['user_id'] = int(request.json['user_id'])
     except ValueError:
         return jsonify({'error': 'Bad request'}), 400
 
     current_user = get_jwt_identity()
-    if current_user['id'] != request.json['user_id']:
-        return jsonify({'error': True, "message":"Forbidden request"}), 403
+    logged_in_user = current_user['id']
+    # if current_user['id'] != request.json['user_id']:
+    #     return jsonify({'error': True, "message":"Forbidden request"}), 403
 
-    order = ORDER.check_if_order_exists(request.json['user_id'], \
+    order = ORDER.check_if_order_exists(logged_in_user , \
                                         request.json['item'], request.json['quantity'])
     if order:
         return jsonify({'error': 'Order already exists'}), 409
     else:
-        create_user_order = ORDER.create_order(request.json)
+        create_user_order = ORDER.create_order(logged_in_user, request.json)
         if create_user_order:
             return jsonify({"message":"Order successfully created",
-                            'order': ORDER.create_order(request.json)}), 201
+                            'id': create_user_order}), 201
         else:
             return jsonify({'error': True, "message":"Unable to support request"}), 400
 
@@ -280,13 +275,13 @@ def auth_user():
           - User
         parameters:
           - in: body
-            email: body
-            password: body
+            name: body
+            required: true
+            type: string
+            description: sign in a registered user
+            
             schema:
               id: Auth
-              required:
-                - email
-                - password
               properties:
                 email:
                     type: string
@@ -298,29 +293,18 @@ def auth_user():
           200:
             description: Login successful
     """
+    pprint(request.json)
     if not request.json or not 'password' in request.json:
         return jsonify({'error': 'Missing password parameter in request'}), 400
     access_token = ""
     data = USER.authenticate(request.json)
     if data:
         access_token = create_access_token(identity=data)
-        refresh_token = create_refresh_token(identity=data)
         user = {}
         user['token'] = access_token
-        user['refresh'] = refresh_token
         return jsonify({'ok': True, 'data': user}), 200
     else:
         return jsonify({'ok': False, 'message': 'invalid username or password'}), 401
-
-@app.route('/refresh', methods=['POST'])
-@jwt_refresh_token_required
-def refresh():
-    ''' refresh token endpoint '''
-    current_user = get_jwt_identity()
-    ret = {
-        'token': create_access_token(identity=current_user)
-    }
-    return jsonify({'ok': True, 'data': ret}), 200
 
 @app.route('/api/v1/users/orders/<int:order_id>', methods=['PUT'])
 def update_user_order(order_id):
@@ -340,6 +324,14 @@ def get_user_orders():
     responses:
       200:
         description: Displays a users order history
+    security:
+        -JWT:
+            descript: send token
+            type: apiKey
+            scheme: bearer
+            name: access-token
+            in: header
+            bearerFormat: JWT
     """
     current_user = get_jwt_identity()
     get_orders = ORDER.fetch_user_orders(current_user['id'])
@@ -369,6 +361,9 @@ def create_fooditem():
         ---
         tags:
           - MENU
+        securityDefinitions:
+            bearerAuth:
+                type: bearer
         parameters:
           - in: body
             name: body
@@ -396,6 +391,16 @@ def create_fooditem():
         responses:
           201:
             description: New order created
+        # openapi: 3.0.0
+        components:
+            securitySchemes:
+                bearerAuth:
+                    type: apiKey
+                    scheme: bearer
+                    in: header
+                    bearerFormat: JWT
+        security:
+            - bearerAuth: []            
     """
     try:
         request.json['price'] = int(request.json['price'])

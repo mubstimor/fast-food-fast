@@ -10,20 +10,18 @@ class Order(object):
         self.db = DatabaseConnection()
         self.db.create_all_tables()
 
-    def create_order(self, order_data):
+    def create_order(self, user_id, order_data):
         """ add order to orders list """
         order = order_data
         order['item'] = int(order_data['item'])
         order['quantity'] = str(order_data['quantity'])
-        order['user_id'] = str(order_data['user_id'])
         order['status'] = 'new'
         try:
             self.db.cursor.execute("INSERT INTO orders(item, quantity, status, user_id) \
                                 VALUES('"+ str(order['item']) + "','"+ order['quantity'] +"', '"+ \
-                                order['status']+"', '"+order['user_id']+"') RETURNING id")
+                                order['status']+"', '"+str(user_id)+"') RETURNING id")
             order_id = self.db.cursor.fetchone()[0]
-            order['id'] = order_id
-            return order
+            return order_id
         except (psycopg2.DatabaseError) as error:
             return
         

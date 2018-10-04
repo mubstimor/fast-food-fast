@@ -2,7 +2,7 @@
 import unittest
 from pprint import pprint
 from api import app
-from api.database import DatabaseConnection
+from api.db.database import DatabaseConnection
 
 class FoodItemViewTest(unittest.TestCase):
     """ class defines test methods."""

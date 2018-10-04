@@ -2,7 +2,7 @@
 import unittest
 from api import app
 from pprint import pprint
-from api.database import DatabaseConnection
+from api.db.database import DatabaseConnection
 
 class OrderViewTest(unittest.TestCase):
     """ class defines test methods."""

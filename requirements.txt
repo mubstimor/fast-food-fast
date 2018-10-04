@@ -14,7 +14,7 @@ cryptography==2.3.1
 docopt==0.6.2
 enum34==1.1.6
 environs==4.0.0
-flasgger==0.8.0
+flasgger==0.9.1
 Flask==1.0.2
 Flask-JWT==0.3.2
 Flask-JWT-Extended==3.13.0

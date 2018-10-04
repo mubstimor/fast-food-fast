@@ -1,7 +1,7 @@
 """ TESTS FOR USER ROUTES"""
 import unittest
 from api import app
-from api.database import DatabaseConnection
+from api.db.database import DatabaseConnection
 
 class UserViewTest(unittest.TestCase):
     """ class defines test methods."""

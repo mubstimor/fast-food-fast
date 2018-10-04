@@ -91,7 +91,6 @@ class User(object):
             userdata = self.db.cursor.fetchone()
             login_status = check_password_hash(userdata['password'], user['password'])
             if login_status:
-                # return data
                 user = {"id": userdata['id'], "email": userdata['email'], "role": userdata['user_type']}
                 return user
             

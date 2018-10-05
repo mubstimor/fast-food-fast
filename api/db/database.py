@@ -19,7 +19,7 @@ class DatabaseConnection:
                 self.connection = psycopg2.connect("postgres://postgres:pgadmin@localhost:5432/fastfoodfast_test")
             elif APP_SETTINGS== "DEVELOPMENT":
                 self.connection = psycopg2.connect(env.str("DATABASE_URL"))
-            else:
+            elif APP_SETTINGS== "DEVELOPMENT":
                 self.connection = psycopg2.connect(DATABASE_URL, sslmode='require')
             
             self.connection.autocommit = True

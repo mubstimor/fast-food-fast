@@ -24,3 +24,11 @@ Fast-Food-Fast is a food delivery service app for a restaurant.
 | PUT /​orders​/<orderId> |   Update order status - Admin |
 | GET /menu| Display menu items|
 | POST /menu | Add menu item - Admin |
+
+## Screenshots
+
+Authenticate user
+![Authenticate user](https://user-images.githubusercontent.com/2491780/46521573-aa1dfe80-c888-11e8-9e8b-0a40f158a299.png)
+
+View Single Order
+![View Single Order](https://user-images.githubusercontent.com/2491780/46521573-aa1dfe80-c888-11e8-9e8b-0a40f158a299.png)

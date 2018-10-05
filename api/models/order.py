@@ -48,19 +48,26 @@ class Order(DatabaseConnection):
 
     def fetch_user_orders(self, user_id):
         """ retrieve all orders from list """
-        self.cursor.execute("SELECT od.id as id, menu.name as item, od.quantity as quantity, cu.name as user_id, od.status as status \
-                            FROM orders as od, users as cu, fooditems as menu \
-                            WHERE od.id=cu.id and od.id=menu.item_id and od.status !='cancelled' and user_id='"+str(user_id)+"'")
+        self.cursor.execute("SELECT od.id as id, menu.name as item, \
+od.quantity as quantity, od.status as status \
+                            FROM orders as od, fooditems as menu \
+                            WHERE od.item=menu.item_id and od.status !='cancelled' and od.user_id='"+str(user_id)+"'")
         order_items = self.cursor.fetchall()
         orders = []
         for item in order_items:
-            order = {"id": item['id'], "item": item['item'], "quantity": item['quantity'], "status": item['status'], "customer": item['user_id']}
+            order = {"id": item['id'], "item": item['item'], "quantity": item['quantity'], "status": item['status']}
             orders.append(order)
         return orders
 
     def get_order(self, order_id):
         """ retrieve order with given id. """
-        self.cursor.execute("SELECT * FROM orders where id='"+str(order_id)+"'")
+        sql = """SELECT od.id as id, menu.name as item,
+             od.quantity as quantity, od.status as status, cu.name as user_id
+             FROM orders as od, fooditems as menu, users as cu
+              WHERE od.item=menu.item_id and od.status !='cancelled'
+              and od.user_id=cu.id and od.id=%s;
+             ;"""
+        self.cursor.execute(sql, (str(order_id)))
         order_item = self.cursor.fetchone()
         rows_found = self.cursor.rowcount
         if rows_found > 0:

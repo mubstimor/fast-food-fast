@@ -23,7 +23,6 @@ class DatabaseConnection:
                 self.connection = psycopg2.connect(DATABASE_URL, sslmode='require')
             
             self.connection.autocommit = True
-            self.cursor = self.connection.cursor()
             self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         except AttributeError as ae:
             pprint("Can't connect to database" + ae)

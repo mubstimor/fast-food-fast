@@ -101,3 +101,11 @@ class Order(DatabaseConnection):
             return "order was deleted"
         else:
             return "unable to delete order"
+
+    def close_order_connection(self):
+        """ close db conn """
+        self.close_connection()
+
+
+order = Order()
+order.close_order_connection()

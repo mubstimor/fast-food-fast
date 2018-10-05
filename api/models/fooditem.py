@@ -75,3 +75,10 @@ class FoodItem(DatabaseConnection):
             return "fooditem was deleted"
         else:
             return "unable to delete item"
+
+    def close_menu_connection(self):
+        """ close db conn """
+        self.close_connection()
+
+menu = FoodItem()
+menu.close_menu_connection()

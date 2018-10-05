@@ -78,7 +78,8 @@ class FoodItem(DatabaseConnection):
 
     def close_menu_connection(self):
         """ close db conn """
-        self.close_connection()
+        self.cursor.close()
+        self.connection.close()
 
 menu = FoodItem()
 menu.close_menu_connection()

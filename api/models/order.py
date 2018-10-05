@@ -104,7 +104,8 @@ class Order(DatabaseConnection):
 
     def close_order_connection(self):
         """ close db conn """
-        self.close_connection()
+        self.cursor.close()
+        self.connection.close()
 
 
 order = Order()

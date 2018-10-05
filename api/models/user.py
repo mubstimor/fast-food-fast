@@ -106,7 +106,8 @@ class User(DatabaseConnection):
         
     def close_user_connection(self):
         """ close db conn """
-        self.close_connection()
+        self.cursor.close()
+        self.connection.close()
 
 user = User()
 user.close_user_connection()

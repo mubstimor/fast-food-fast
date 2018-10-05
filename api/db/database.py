@@ -16,7 +16,7 @@ class DatabaseConnection:
             APP_SETTINGS = env.str("APP_SETTINGS")
             
             if APP_SETTINGS== "TESTING":
-                self.connection = psycopg2.connect(env.str("DATABASE_TEST_URL"))
+                self.connection = psycopg2.connect("postgres://postgres:pgadmin@localhost:5432/fastfoodfast_test")
             elif APP_SETTINGS== "DEVELOPMENT":
                 self.connection = psycopg2.connect(env.str("DATABASE_URL"))
             else:

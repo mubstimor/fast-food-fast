@@ -25,6 +25,17 @@ Fast-Food-Fast is a food delivery service app for a restaurant.
 | GET /menu| Display menu items|
 | POST /menu | Add menu item - Admin |
 
+## Installation Instructions
+
+To install dependencies, run
+```
+pip install -r requirements.txt
+```
+Set up a local Postgresql database and add two environment variables DATABASE_URL, and DATABASE_TEST_URL, forexample
+```
+DATABASE_TEST_URL=postgres://username:password@localhost:5432/test_database
+```
+
 ## Screenshots
 
 Authenticate user

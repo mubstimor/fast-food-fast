@@ -6,7 +6,7 @@ from environs import Env
 
 app = Flask(__name__, instance_relative_config=True)
 
-from api.views import views, auth, orderview, userview, menuview
+from api.views import views, auth, orderview, userview, menuview, extraviews
 app.config.from_object('config')
 
 app.config['SWAGGER'] = {

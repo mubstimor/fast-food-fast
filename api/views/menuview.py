@@ -1,5 +1,5 @@
 from api import app
-from api.fooditem import FoodItem
+from api.models.fooditem import FoodItem
 from api.views.decorators import *
 
 FOODITEM = FoodItem()
@@ -79,36 +79,3 @@ def get_all_fooditems():
         description: Displays a list of available menu item
     """
     return jsonify({'menu': FOODITEM.fetch_all_fooditems()})
-
-@app.route('/api/v1/menu/<int:item_id>', methods=['GET'])
-def get_fooditem(item_id):
-    """
-    Get single menu item
-    ---
-    tags:
-      - MENU
-    produces:
-      - application/json
-    parameters:
-      - in: path
-        name: item_id
-        type: int
-        description: item_id to be retrieved
-        required: false
-    responses:
-      200:
-        description: The requested menu item
-    """
-    item = FOODITEM.get_item(item_id)
-    return jsonify({'fooditem': item})
-
-@app.route('/api/v1/menu/<int:item_id>', methods=['PUT'])
-@admin_token_required
-def update_fooditem(item_id):
-    """ update food item with put request. """
-    return jsonify({'fooditem': FOODITEM.update_item(item_id, request.json)})
-
-@app.route('/api/v1/menu/<int:item_id>', methods=['DELETE'])
-def delete_fooditem(item_id):
-    """ delete requested resource from list. """
-    return jsonify({'result': FOODITEM.delete_item(item_id)})

@@ -3,9 +3,9 @@ from flask import request, jsonify
 from environs import Env
 from pprint import pprint
 from api import app
-from api.order import Order
-from api.user import User
-from api.fooditem import FoodItem
+from api.models.order import Order
+from api.models.user import User
+from api.models.fooditem import FoodItem
 from api.views.decorators import *
 
 ORDER = Order()
@@ -16,5 +16,3 @@ FOODITEM = FoodItem()
 def index():
     """ route to index of the API. """
     return jsonify({'Home': 'Index of the API', "Docs":"/apidocs"})
-
-

@@ -1,6 +1,7 @@
-from api.user import User
+from api.models.user import User
 from api import app
 from api.views.decorators import *
+from flasgger import swag_from
 
 USER = User()
 

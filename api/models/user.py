@@ -1,6 +1,6 @@
 """ Class to manage CRUD operations on user objects"""
 from werkzeug.security import generate_password_hash, check_password_hash
-from api.database import DatabaseConnection
+from api.db.database import DatabaseConnection
 
 class User(object):
     """ docstring for User. """

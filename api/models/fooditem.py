@@ -1,5 +1,5 @@
 """ Class to manage CRUD operations on food item objects"""
-from api.database import DatabaseConnection
+from api.db.database import DatabaseConnection
 
 class FoodItem(object):
     """docstring for FoodItem"""

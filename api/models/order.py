@@ -1,7 +1,7 @@
 """ Class to manage CRUD operations on order objects"""
 import psycopg2
 import psycopg2.extras
-from api.database import DatabaseConnection
+from api.db.database import DatabaseConnection
 
 class Order(object):
     """docstring for Orders"""

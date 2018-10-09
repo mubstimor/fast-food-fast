@@ -4,14 +4,15 @@ import psycopg2
 import psycopg2.extras
 from api.db.database import DatabaseConnection
 
-class User(DatabaseConnection):
+class User(object):
     """ docstring for User. """
     def __init__(self):
-        DatabaseConnection.__init__(self)
-        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)    
+        self.db = DatabaseConnection()
 
     def create_user(self, user_data):
         """ add user to users table"""
+        self.connection = self.db.connect_db()
+        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         user = user_data
         user['name'] = str(user_data['name'])
         user['email'] = str(user_data['email'])
@@ -27,37 +28,50 @@ class User(DatabaseConnection):
         del user['password']
         user['user_type'] = 'Customer'
         user['id'] = user_id
+        self.connection.close()
         return user
 
     def check_if_user_exists(self, email):
         """ retrieve item with similar email"""
+        self.connection = self.db.connect_db()
+        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         self.cursor.execute("SELECT * FROM users where email='"+email+"'")
         rows_found = self.cursor.rowcount
+        self.connection.close()
         if rows_found > 0:
             return True
         
     def get_user_data_from(self, email):
         """ retrieve user data with similar email"""
+        self.connection = self.db.connect_db()
+        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         self.cursor.execute("SELECT * FROM users where email='"+email+"'")
         useritem = self.cursor.fetchone()
         user = {"id": useritem['id'], "email": useritem['email'], "role": useritem['user_type']}
+        self.connection.close()
         return user
 
     def fetch_all_users(self):
         """ retrieve all users from db """
+        self.connection = self.db.connect_db()
+        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         self.cursor.execute("SELECT * FROM users")
         useritems = self.cursor.fetchall()
         users = []
         for item in useritems:
             user = {"id": item['id'], "email": item['email']}
             users.append(user)
+        self.connection.close()
         return users
 
     def get_user(self, user_id):
         """ retrieve user with given id"""
+        self.connection = self.db.connect_db()
+        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         self.cursor.execute("SELECT * FROM users where id='"+str(user_id)+"'")
         user_item = self.cursor.fetchone()
         rows_found = self.cursor.rowcount
+        self.connection.close()
         if rows_found > 0:
             user = {"id": user_item['id'], "email": user_item['email'], "role": user_item['user_type']}
             return user
@@ -66,11 +80,14 @@ class User(DatabaseConnection):
 
     def login(self, user_data):
         """ check user login """
+        self.connection = self.db.connect_db()
+        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         user = user_data
         user['email'] = str(user_data['email'])
         user['password'] = str(user_data['password'])
         self.cursor.execute("SELECT * FROM users where email='"+user['email']+"'")
         rows_found = self.cursor.rowcount
+        self.connection.close()
         if rows_found > 0:
             userdata = self.cursor.fetchone()
             login_status = check_password_hash(userdata['password'], user['password'])
@@ -83,6 +100,8 @@ class User(DatabaseConnection):
 
     def authenticate(self, user_data):
         """ check user login """
+        self.connection = self.db.connect_db()
+        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         user = user_data
         user['email'] = str(user_data['email'])
         user['password'] = str(user_data['password'])
@@ -90,6 +109,7 @@ class User(DatabaseConnection):
         rows_found = self.cursor.rowcount
         if rows_found > 0:
             userdata = self.cursor.fetchone()
+            self.connection.close()
             login_status = check_password_hash(userdata['password'], user['password'])
             if login_status:
                 user = {"id": userdata['id'], "email": userdata['email'], "role": userdata['user_type']}
@@ -97,8 +117,11 @@ class User(DatabaseConnection):
             
     def assign_admin_privileges(self, user_id):
         """ elevate user to admin """
+        self.connection = self.db.connect_db()
+        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         self.cursor.execute("UPDATE users set user_type='Admin' WHERE id='"+str(user_id)+"'")
         rows_updated = self.cursor.rowcount
+        self.connection.close()
         if rows_updated > 0:
             return {"error": False, "message":"user updated to admin"}
         else:

@@ -49,12 +49,14 @@ def create_user():
             description: New user created
     """
     gender = ('male', 'female')
+    if not request.json or not 'email' in request.json:
+        return jsonify({'error': True, "message": "Add 'email' parameter to request"}), 400
     try:
         v = validate_email(request.json['email'])
     except EmailNotValidError as e:
         return jsonify({'error': True, "message": str(e)}), 400
     if request.json['gender'] not in gender:
-        return jsonify({'error': True, "message": "Add 'gender' parameter to reuest"}), 400
+        return jsonify({'error': True, "message": "Add 'gender' parameter to request"}), 400
 
     user = USER.check_if_user_exists(request.json['email'])
     if user:

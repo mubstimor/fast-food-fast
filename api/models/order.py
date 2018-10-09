@@ -7,11 +7,13 @@ class Order(object):
     """docstring for Orders"""
     def __init__(self):
         """ define attributes for order. """
-        self.db = DatabaseConnection()
+        self._db = DatabaseConnection()
+        self.connection = None
+        self.cursor = None
 
     def create_order(self, user_id, order_data):
         """ add order to orders list """
-        self.connection = self.db.connect_db()
+        self.connection = self._db.connect_db()
         self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         order = order_data
         order['item'] = int(order_data['item'])
@@ -19,21 +21,20 @@ class Order(object):
         order['status'] = 'new'
         try:
             self.cursor.execute("INSERT INTO orders(item, quantity, status, user_id) \
-                                VALUES('"+ str(order['item']) + "','"+ order['quantity'] +"', '"+ \
-                                order['status']+"', '"+str(user_id)+"') RETURNING id")
+                                VALUES('"+ str(order['item']) + "','"+ order['quantity']
+                                +"', '"+ order['status']+"', '"+str(user_id)+"') RETURNING id")
             order_id = self.cursor.fetchone()[0]
             self.connection.close()
             return order_id
-        except (psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError:
             return
-        
-        
+
     def check_if_order_exists(self, user_id, item, quantity):
         """ retrieve order with given id. """
-        self.connection = self.db.connect_db()
+        self.connection = self._db.connect_db()
         self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         self.cursor.execute("SELECT * FROM orders where user_id='"+str(user_id) \
-            +"' AND item='"+ str(item)+"' AND quantity='"+ str(quantity)+"'")
+                            +"' AND item='"+ str(item)+"' AND quantity='"+ str(quantity)+"'")
         rows_found = self.cursor.rowcount
         self.connection.close()
         if rows_found > 0:
@@ -41,38 +42,44 @@ class Order(object):
 
     def fetch_all_orders(self):
         """ retrieve all orders from db """
-        self.connection = self.db.connect_db()
+        self.connection = self._db.connect_db()
         self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        self.cursor.execute("SELECT od.id as id, menu.name as item, od.quantity as quantity, cu.name as user_id, od.status as status \
+        self.cursor.execute("SELECT od.id as id, menu.name as item, od.quantity as quantity, \
+                            cu.name as user_id, od.status as status \
                             FROM orders as od, users as cu, fooditems as menu \
-                            WHERE od.user_id=cu.id and od.id=menu.item_id and od.status !='cancelled'")
+                            WHERE od.user_id=cu.id and od.id=menu.item_id \
+                            and od.status !='cancelled'")
         orderitems = self.cursor.fetchall()
         orders = []
         for item in orderitems:
-            order = {"order_id": item['id'], "item": item['item'], "quantity": item['quantity'], "status": item['status'], "customer": item['user_id']}
+            order = {"order_id": item['id'], "item": item['item'],
+                     "quantity": item['quantity'], "status": item['status'],
+                     "customer": item['user_id']}
             orders.append(order)
         self.connection.close()
         return orders
 
     def fetch_user_orders(self, user_id):
         """ retrieve all orders from list """
-        self.connection = self.db.connect_db()
+        self.connection = self._db.connect_db()
         self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         self.cursor.execute("SELECT od.id as id, menu.name as item, \
-od.quantity as quantity, od.status as status \
+                            od.quantity as quantity, od.status as status \
                             FROM orders as od, fooditems as menu \
-                            WHERE od.item=menu.item_id and od.status !='cancelled' and od.user_id='"+str(user_id)+"'")
+                            WHERE od.item=menu.item_id and od.status !='cancelled' \
+                            and od.user_id='"+str(user_id)+"'")
         order_items = self.cursor.fetchall()
         orders = []
         for item in order_items:
-            order = {"id": item['id'], "item": item['item'], "quantity": item['quantity'], "status": item['status']}
+            order = {"id": item['id'], "item": item['item'], "quantity": item['quantity'],
+                     "status": item['status']}
             orders.append(order)
         self.connection.close()
         return orders
 
     def get_order(self, order_id):
         """ retrieve order with given id. """
-        self.connection = self.db.connect_db()
+        self.connection = self._db.connect_db()
         self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         sql = """SELECT od.id as id, menu.name as item,
              od.quantity as quantity, od.status as status, cu.name as user_id
@@ -85,17 +92,19 @@ od.quantity as quantity, od.status as status \
         rows_found = self.cursor.rowcount
         self.connection.close()
         if rows_found > 0:
-            order = {"id": order_item['id'], "item": order_item['item'], "quantity": order_item['quantity'], "status": order_item['status'], "user_id": order_item['user_id']}
+            order = {"id": order_item['id'], "item": order_item['item'],
+                     "quantity": order_item['quantity'], "status": order_item['status'],
+                     "user_id": order_item['user_id']}
             return order
 
     def update_order(self, order_id, order_data):
         """ update order details. """
-        self.connection = self.db.connect_db()
+        self.connection = self._db.connect_db()
         self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         order = order_data
         order['status'] = str(order_data['status'])
-        self.cursor.execute("UPDATE orders set status='"+order['status']+"' WHERE id='"+str(order_id)+"'")
-        
+        self.cursor.execute("UPDATE orders set status='"+order['status']
+                            + "' WHERE id='"+str(order_id)+"'")
         rows_updated = self.cursor.rowcount
         self.connection.close()
         if rows_updated > 0:
@@ -105,13 +114,15 @@ od.quantity as quantity, od.status as status \
 
     def update_user_order(self, order_id, order_data):
         """ update order details. """
-        self.connection = self.db.connect_db()
+        self.connection = self._db.connect_db()
         self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         order = order_data
         order['item'] = str(order_data['item'])
         order['quantity'] = int(order_data['quantity'])
         order['status'] = str(order_data['status'])
-        self.cursor.execute("UPDATE orders set item='"+order['item']+"', quantity='"+ str(order['quantity'])+"', status='"+order['status']+"' WHERE id='"+str(order_id)+"'")
+        self.cursor.execute("UPDATE orders set item='"+order['item']
+                            +"', quantity='"+ str(order['quantity'])+"', status='"
+                            + order['status']+"' WHERE id='"+str(order_id)+"'")
         rows_updated = self.cursor.rowcount
         self.connection.close()
         if rows_updated > 0:
@@ -122,7 +133,7 @@ od.quantity as quantity, od.status as status \
 
     def delete_order(self, order_id):
         """ delete order. """
-        self.connection = self.db.connect_db()
+        self.connection = self._db.connect_db()
         self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         self.cursor.execute("DELETE FROM orders WHERE id='"+str(order_id)+"'")
         rows_deleted = self.cursor.rowcount

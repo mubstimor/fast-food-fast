@@ -1,13 +1,11 @@
-""" Defines modules for the app """
+""" Defines operations to database for the app """
 import psycopg2
 import psycopg2.extras
-from pprint import pprint
 from environs import Env
-from psycopg2 import pool
 
-class DatabaseConnection:
+class DatabaseConnection(object):
     """ handles database connections. """
-    
+
     def __init__(self):
         """ initialise connection to db. """
         env = Env()
@@ -24,77 +22,60 @@ class DatabaseConnection:
         self.DATABASE_TEST_USER = env.str("DATABASE_TEST_USER")
         self.DATABASE_TEST_PASSWORD = env.str("DATABASE_TEST_PASSWORD")
         self.DATABASE_TEST_HOST = env.str("DATABASE_TEST_HOST")
+        self.connection = None
+        self.cursor = None
 
 
     def connect_db(self):
-        try:            
-            if self.APP_SETTINGS== "TESTING":
+        """ establish connection to database depending on app settings. """
+        try:
+            if self.APP_SETTINGS == "TESTING":
                 self.connection = psycopg2.connect(self.DATABASE_TEST_URL)
-            elif self.APP_SETTINGS== "DEVELOPMENT":
+            elif self.APP_SETTINGS == "DEVELOPMENT":
                 self.connection = psycopg2.connect(self.DATABASE_URL)
-            elif self.APP_SETTINGS== "PRODUCTION":
+            elif self.APP_SETTINGS == "PRODUCTION":
                 self.connection = psycopg2.connect(self.DATABASE_URL, sslmode='require')
-                 
+
             self.connection.autocommit = True
             return self.connection
-        except AttributeError as ae:
-            pprint("Can't connect to database" + ae)
+        except AttributeError as _ae:
+            print("Can't connect to database" + _ae)
 
     def create_all_tables(self):
         """ create all tables. """
         commands = (
-        """
-        CREATE TABLE IF NOT EXISTS fooditems (
-            item_id serial PRIMARY KEY,
-            name varchar,
-            category varchar,
-            price integer NOT NULL
-        )
-        """,
-        """ CREATE TABLE IF NOT EXISTS users (
-                id serial PRIMARY KEY,
+            """
+            CREATE TABLE IF NOT EXISTS fooditems (
+                item_id serial PRIMARY KEY,
                 name varchar,
-                email varchar,
-                password varchar,
-                gender varchar,
-                user_type varchar DEFAULT 'Customer'
-                )
-        """,
-        """
-        CREATE TABLE IF NOT EXISTS orders (
-                id serial PRIMARY KEY,
-                item integer,
-                quantity integer,
-                status varchar,
-                user_id integer,
-                FOREIGN KEY (item)
-                    REFERENCES fooditems (item_id)
-                    ON UPDATE CASCADE ON DELETE CASCADE,
-                FOREIGN KEY (user_id)
-                    REFERENCES users (id)
-                    ON UPDATE CASCADE ON DELETE CASCADE
-        )
-        """)
-        try:
-            self.connection = self.connect_db()
-            self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor) 
-            for command in commands:
-                self.cursor.execute(command)
-            self.connection.close()
-        except (psycopg2.DatabaseError) as error:
-            print(error)
-
-    def drop_all_tables(self):
-        """ delete all tables. """
-        commands = (
-        """
-        DROP TABLE IF EXISTS fooditems CASCADE
-        """,
-        """ DROP TABLE IF EXISTS users CASCADE
-        """,
-        """
-        DROP TABLE IF EXISTS orders CASCADE
-        """)
+                category varchar,
+                price integer NOT NULL
+            )
+            """,
+            """ CREATE TABLE IF NOT EXISTS users (
+                    id serial PRIMARY KEY,
+                    name varchar,
+                    email varchar,
+                    password varchar,
+                    gender varchar,
+                    user_type varchar DEFAULT 'Customer'
+                    )
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS orders (
+                    id serial PRIMARY KEY,
+                    item integer,
+                    quantity integer,
+                    status varchar,
+                    user_id integer,
+                    FOREIGN KEY (item)
+                        REFERENCES fooditems (item_id)
+                        ON UPDATE CASCADE ON DELETE CASCADE,
+                    FOREIGN KEY (user_id)
+                        REFERENCES users (id)
+                        ON UPDATE CASCADE ON DELETE CASCADE
+            )
+            """)
         try:
             self.connection = self.connect_db()
             self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -104,18 +85,27 @@ class DatabaseConnection:
         except (psycopg2.DatabaseError) as error:
             print(error)
 
-
-    def drop_connection(self):
-        """ drop single connection """
-        # if self.pg_pool:
-        #     self.pg_pool.putconn(self.connection)
-        print("connection closed")
+    def drop_all_tables(self):
+        """ delete all tables. """
+        commands = (
+            """
+            DROP TABLE IF EXISTS fooditems CASCADE
+            """,
+            """ DROP TABLE IF EXISTS users CASCADE
+            """,
+            """
+            DROP TABLE IF EXISTS orders CASCADE
+            """)
+        try:
+            self.connection = self.connect_db()
+            self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            for command in commands:
+                self.cursor.execute(command)
+            self.connection.close()
+        except (psycopg2.DatabaseError) as error:
+            print(error)
 
     def close_connection(self):
         """ drop all connection """
         self.cursor.close()
         self.connection.close()
-        # if self.pg_pool:
-        #     self.pg_pool.closeall
-        #     print("pg connections closed")
-

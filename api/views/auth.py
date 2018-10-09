@@ -1,8 +1,9 @@
-from flasgger import swag_from
+""" manage signup and login functions of the auth module. """
+from flask import request, jsonify
 from email_validator import validate_email, EmailNotValidError
 from api.models.user import User
 from api import app
-from api.views.decorators import *
+from api.views.decorators import create_access_token
 
 USER = User()
 
@@ -52,9 +53,9 @@ def create_user():
     if not request.json or not 'email' in request.json:
         return jsonify({'error': True, "message": "Add 'email' parameter to request"}), 400
     try:
-        v = validate_email(request.json['email'])
-    except EmailNotValidError as e:
-        return jsonify({'error': True, "message": str(e)}), 400
+        validate_email(request.json['email'])
+    except EmailNotValidError as _e:
+        return jsonify({'error': True, "message": str(_e)}), 400
     if request.json['gender'] not in gender:
         return jsonify({'error': True, "message": "Add 'gender' parameter to request"}), 400
 
@@ -82,7 +83,7 @@ def auth_user():
             required: true
             type: string
             description: sign in a registered user
-            
+
             schema:
               id: Auth
               properties:

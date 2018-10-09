@@ -9,10 +9,11 @@ class UserViewTest(unittest.TestCase):
     def setUp(self):
         """ set default values for class. """
         self.app = app.test_client()
-        self.db = DatabaseConnection()
-        self.db.create_all_tables()
+        self._db = DatabaseConnection()
+        self._db.create_all_tables()
         self.app.testing = True
-        self.user = {"name": "John Doe", "email": "john@example.com", "password": "1234", "gender":"male", "user_type":""}
+        self.user = {"name": "John Doe", "email": "john@example.com",
+                     "password": "1234", "gender":"male", "user_type":""}
 
     def test_create_user(self):
         """ test create user method """
@@ -42,8 +43,10 @@ class UserViewTest(unittest.TestCase):
     def test_user_login(self):
         """ test user login method """
         request = self.app.post('/api/v1/auth/signup',
-                                json={"name": "Jack Jones", "email": "jack@example.com",
-                                      "password": "1234", "gender":"male", "user_type":""})
+                                json={"name": "Jack Jones",
+                                      "email": "jack@example.com",
+                                      "password": "1234", "gender":"male",
+                                      "user_type":""})
         request = self.app.post('/api/v1/auth/login', \
         json={"email": "jack@example.com", "password": "1234"})
         self.assertEqual(True, request.json['ok'])
@@ -53,7 +56,8 @@ class UserViewTest(unittest.TestCase):
         request = self.app.post('/api/v1/auth/signup',
                                 json=self.user)
         request = self.app.post('/api/v1/auth/login',
-                                json={"email": "john@example.com", "password": "12345"})
+                                json={"email": "john@example.com",
+                                      "password": "12345"})
         self.assertEqual(False, request.json['ok'])
 
     def test_invalid_user_login_email(self):
@@ -94,8 +98,7 @@ class UserViewTest(unittest.TestCase):
 
     def tearDown(self):
         """ undo effects of tests. """
-        self.db.drop_all_tables()
-        self.db.close_connection()
+        self._db.drop_all_tables()
 
 if __name__ == "__main__":
     unittest.main()

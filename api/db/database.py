@@ -3,30 +3,77 @@ import psycopg2
 import psycopg2.extras
 from pprint import pprint
 from environs import Env
+from psycopg2 import pool
 
 class DatabaseConnection:
     """ handles database connections. """
     
     def __init__(self):
         """ initialise connection to db. """
+        env = Env()
+        env.read_env()
+        self.DATABASE_URL = env.str("DATABASE_URL")
+        self.APP_SETTINGS = env.str("APP_SETTINGS")
+        self.DATABASE_HOST = env.str("DATABASE_HOST")
+        self.DATABASE_USER = env.str("DATABASE_USER")
+        self.DATABASE_PASSWORD = env.str("DATABASE_PASSWORD")
+        self.DATABASE_NAME = env.str("DATABASE_NAME")
+        self.DATABASE_TEST = env.str("DATABASE_TEST")
+        self.DATABASE_PORT = env.str("DATABASE_PORT")
+
+        # try:            
+        #     if APP_SETTINGS== "TESTING":
+        #         self.connection = psycopg2.connect("postgres://postgres:pgadmin@localhost:5432/fastfoodfast_test")
+        #     elif APP_SETTINGS== "DEVELOPMENT":
+        #         self.connection = psycopg2.connect(DATABASE_URL)
+        #     elif APP_SETTINGS== "PRODUCTION":
+        #         self.connection = psycopg2.connect(DATABASE_URL, sslmode='require')
+                 
+        #     self.connection.autocommit = True
+        #     self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        # except AttributeError as ae:
+        #     pprint("Can't connect to database" + ae)
         try:
-            env = Env()
-            env.read_env()
-            DATABASE_URL = env.str("DATABASE_URL")
-            APP_SETTINGS = env.str("APP_SETTINGS")
-            
-            if APP_SETTINGS== "TESTING":
-                self.connection = psycopg2.connect("postgres://postgres:pgadmin@localhost:5432/fastfoodfast_test")
-            elif APP_SETTINGS== "DEVELOPMENT":
-                self.connection = psycopg2.connect(env.str("DATABASE_URL"))
-            elif APP_SETTINGS== "PRODUCTION":
-                if self.connection is None:
-                    self.connection = psycopg2.connect(DATABASE_URL, sslmode='require')
-            
+            if self.APP_SETTINGS== "TESTING":
+                self.pg_pool = psycopg2.pool.SimpleConnectionPool(1, 20, user=self.DATABASE_USER, password=self.DATABASE_PASSWORD,
+                                                            host=self.DATABASE_HOST, port=self.DATABASE_PORT, database=self.DATABASE_TEST)
+            elif self.APP_SETTINGS== "DEVELOPMENT":
+                self.pg_pool = psycopg2.pool.SimpleConnectionPool(1, 20, user=self.DATABASE_USER, password=self.DATABASE_PASSWORD,
+                                                            host=self.DATABASE_HOST, port=self.DATABASE_PORT, database=self.DATABASE_NAME)
+            elif self.APP_SETTINGS== "PRODUCTION":
+                self.pg_pool = psycopg2.pool.SimpleConnectionPool(1, 20, user=self.DATABASE_USER, password=self.DATABASE_PASSWORD,
+                                                            host=self.DATABASE_HOST, port=self.DATABASE_PORT, database=self.DATABASE_NAME)
+            if self.pg_pool:
+                print("connection pool created successfully")
+            self.connection = self.pg_pool.getconn()
             self.connection.autocommit = True
             self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        except AttributeError as ae:
-            pprint("Can't connect to database" + ae)
+            # return (self.connection, self.cursor)
+
+        except psycopg2.DatabaseError as e:
+            print(e)
+
+    def get_db(self):
+        """ get connection to database """
+        try:
+            if self.APP_SETTINGS== "TESTING":
+                self.pg_pool = psycopg2.pool.SimpleConnectionPool(1, 20, user=self.DATABASE_USER, password=self.DATABASE_PASSWORD,
+                                                            host=self.DATABASE_HOST, port=self.DATABASE_PORT, database=self.DATABASE_TEST)
+            elif self.APP_SETTINGS== "DEVELOPMENT":
+                self.pg_pool = psycopg2.pool.SimpleConnectionPool(1, 20, user=self.DATABASE_USER, password=self.DATABASE_PASSWORD,
+                                                            host=self.DATABASE_HOST, port=self.DATABASE_PORT, database=self.DATABASE_NAME)
+            elif self.APP_SETTINGS== "PRODUCTION":
+                self.pg_pool = psycopg2.pool.SimpleConnectionPool(1, 20, user=self.DATABASE_USER, password=self.DATABASE_PASSWORD,
+                                                            host=self.DATABASE_HOST, port=self.DATABASE_PORT, database=self.DATABASE_NAME)
+            if self.pg_pool:
+                print("connection pool created successfully")
+            self.connection = self.pg_pool.getconn()
+            self.connection.autocommit = True
+            self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            return (self.connection, self.cursor)
+
+        except psycopg2.DatabaseError as e:
+            print(e)
 
     def create_all_tables(self):
         """ create all tables. """
@@ -86,8 +133,18 @@ class DatabaseConnection:
         except (psycopg2.DatabaseError) as error:
             print(error)
 
+
+    def drop_connection(self):
+        """ drop single connection """
+        if self.pg_pool:
+            self.pg_pool.putconn(self.connection)
+        print("connection closed")
+
     def close_connection(self):
-        """ drop connection """
-        self.cursor.close()
-        self.connection.close()
+        """ drop all connection """
+        # self.cursor.close()
+        # self.connection.close()
+        if self.pg_pool:
+            self.pg_pool.closeall
+            print("pg connections closed")
 

@@ -16,7 +16,6 @@ class FoodItem(DatabaseConnection):
         item['name'] = str(item_data['name'])
         item['price'] = int(item_data['price'])
         item['category'] = str(item_data['category'])
-       
         self.cursor.execute("INSERT INTO fooditems(name, category, price) \
         VALUES('"+ item['name'] + "','"+ item['category'] + "','"+ str(item['price']) +"') RETURNING item_id")
         item_id = self.cursor.fetchone()[0]
@@ -27,6 +26,7 @@ class FoodItem(DatabaseConnection):
         """ retrieve item with similar name"""
         self.cursor.execute("SELECT * FROM fooditems where name='"+name+"'")
         rows_found = self.cursor.rowcount
+        
         if rows_found > 0:
             return True
         else:
@@ -81,5 +81,5 @@ class FoodItem(DatabaseConnection):
         self.cursor.close()
         self.connection.close()
 
-menu = FoodItem()
-menu.close_menu_connection()
+# menu = FoodItem()
+# menu.close_menu_connection()

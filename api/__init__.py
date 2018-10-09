@@ -3,6 +3,7 @@ import datetime
 from flask import Flask
 from flasgger import Swagger
 from environs import Env
+from api.db.database import DatabaseConnection
 
 app = Flask(__name__, instance_relative_config=True)
 

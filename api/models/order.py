@@ -115,5 +115,5 @@ od.quantity as quantity, od.status as status \
         self.connection.close()
 
 
-order = Order()
-order.close_order_connection()
+# order = Order()
+# order.close_order_connection()

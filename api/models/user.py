@@ -109,5 +109,5 @@ class User(DatabaseConnection):
         self.cursor.close()
         self.connection.close()
 
-user = User()
-user.close_user_connection()
+# user = User()
+# user.close_user_connection()

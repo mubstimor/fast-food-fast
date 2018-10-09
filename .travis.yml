@@ -5,6 +5,9 @@ language: python
 python:
   - 3.6
 
+services:
+  # - postgresql
+
 env:
   - export APP_SETTINGS="TESTING"
 
@@ -16,19 +19,16 @@ addons:
     repo_token:
       secure: "d+dccm3DDJnuOfdvFCswDZUs0KLNTY0LutweQWX4XxAgjgl/br3LqnrlnrsuBrw4AKiQSxXmnr/CsGUx1vgVDpO0j5i2pDIEwHFEjrby8aNCm5B1mv+q7El+RQu5hnjCmtReheJO/bIKRm8Mb7NqZJPZ5sbsPT1KBMatkU0QAAe7NEPgOUcmVvr7/iL4r9XZtoclJODAHQTBz1l4XXTiSg3JXahHE+TbQ8znjV+Tl2L1xybgyZePDCrPrDhlGqjJMaqojKMg1xLriVldBZlUQamvYSBuSNclWwxHNG7j7VQHkyGwfsef/4ti4KlibnBFmFC3TbWvIzFF/hsMCGv7PHDcyrVsPgYH6MGrsBCygtWa9VGHL1De4H87XCCBuIw6NYuxEgEOPaEiEhD9FYJiGyqowXq05yH2JYsvm2mpvNkLnenQ3YAyfuCg+kJaC0t8osyZaaFjp8vJYVO/AHN3SC6h7vUS3G6XqWipXDIx1xFuP+zLJGOs3/KLwI+/8Ae3sej1168pvKw/xmEx14g+/iCNI3PlP9jI66a6M4xb7jFjOx5685BrXDgIFWpbF7C7eB4PFun3pzChl71+EyXB2j5IRXunTuHgFqK5TWkYAORkwYz/OsZn+rZclY1RuJatvGVaeyq/t5MEauB4+Y4zy5f6MWJNflcZiM0rkITibJY="
 
-before_script:  # code coverage tool
+before_script:
+  # - psql -c 'create database fastfoodfast_test;' -U postgres  
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 
 script:
-#  - pylint --output-format=text *.py
   - pytest
   - coverage run --source api --branch -m unittest discover
-  # - coverage erase
-  # - coverage run test_api.py && coverage html
   - coverage report -m
-  # submit the reports
   - coveralls
 
 after_script:
@@ -41,6 +41,6 @@ deploy:
     secure: IB3WzvLTka2MAk/kczOdNsBnY4wGfoD4/PpoOKbaX6rpBmKFDQRsljo7I9TaB6epo5UNoK9Bf2SIFbBtC1IdCA7BCx/DkhBBzMNOrwGLVCXkyRuuXWL+wfpTJNqV4l10wgVnWv5h+qYcqLzW9IDYHyJXBIyQKHBlWUOv5uBWZWCQEQc68HeUTCsUXuMk2LDEfpQSRHzeFZMYRbW5eN0C2EVoyrUYs1NXTbyivhYb+akKVbps7z3LLdzUdqhWz6eStXEZ4xIxCmmzGAmHmJMTNhHIrpjsFVm5jCjmDND36vDkSBhtVAgGMZiA82+Ce/88y3tVCv889HIlIjFu3WrjwUSlh8PXgsifPYHjd/6PEp1t+L3Ov6vMnAglMbw4qT2Xgplq9OzVuvkN5KFO3zuGnGkxyMT79ZeS3xK4uE0fGgFjS1ZXFg+KKQ7DD2EtcgPBFFm7J3KX+Qs5KiFpr0VMQ8kLEQV12sdxFYxwvXKZ3ZL59eOXAUaQjaEqoERQqyrq3+qb40kZpXkyW8OIit1GGo/mehRaeHpCtHk2Zq0NLGLpumFqOcP0raw6OE6Hhn1MwhjJ7X63clVSdsQXR7U1xZPwHQzGiR5BbBHu7h48RAv3z/2WlomZvP2cbWk8zTLR931YjUqKP0qOFDkb5iYlAOnoAV+eFUXnywN9spL31eM=
   strategy: git
   app: tims-fast-food
-  on: ft-jwt-auth-160788533
+  on: bg-heroku-deployment
 
 

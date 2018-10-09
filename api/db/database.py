@@ -50,7 +50,8 @@ class DatabaseConnection:
                 print("connection pool created successfully")
             self.connection = self.pg_pool.getconn()
             self.connection.autocommit = True
-            self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            self.cursor = self.connection.cursor()
+            # self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
             # return (self.connection, self.cursor)
 
         except psycopg2.DatabaseError as e:

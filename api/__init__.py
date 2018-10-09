@@ -25,3 +25,5 @@ ENV.read_env()
 app.config['SECRET_KEY'] = ENV.str("JWT_SECRET_KEY")
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(days=1)
 
+_db = DatabaseConnection()
+_db.create_all_tables()

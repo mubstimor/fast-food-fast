@@ -45,7 +45,7 @@ class Order(object):
         self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         self.cursor.execute("SELECT od.id as id, menu.name as item, od.quantity as quantity, cu.name as user_id, od.status as status \
                             FROM orders as od, users as cu, fooditems as menu \
-                            WHERE od.id=cu.id and od.id=menu.item_id and od.status !='cancelled'")
+                            WHERE od.user_id=cu.id and od.id=menu.item_id and od.status !='cancelled'")
         orderitems = self.cursor.fetchall()
         orders = []
         for item in orderitems:

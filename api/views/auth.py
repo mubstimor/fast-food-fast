@@ -1,7 +1,8 @@
+from flasgger import swag_from
+from email_validator import validate_email, EmailNotValidError
 from api.models.user import User
 from api import app
 from api.views.decorators import *
-from flasgger import swag_from
 
 USER = User()
 
@@ -48,8 +49,10 @@ def create_user():
             description: New user created
     """
     gender = ('male', 'female')
-    if not request.json or not 'email' in request.json:
-        return jsonify({'error': True, "message": "Add 'email' parameter to reuest"}), 400
+    try:
+        v = validate_email(request.json['email'])
+    except EmailNotValidError as e:
+        return jsonify({'error': True, "message": str(e)}), 400
     if request.json['gender'] not in gender:
         return jsonify({'error': True, "message": "Add 'gender' parameter to reuest"}), 400
 

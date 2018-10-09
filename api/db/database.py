@@ -20,6 +20,9 @@ class DatabaseConnection:
         self.DATABASE_NAME = env.str("DATABASE_NAME")
         self.DATABASE_TEST = env.str("DATABASE_TEST")
         self.DATABASE_PORT = env.str("DATABASE_PORT")
+        self.DATABASE_TEST_USER = env.str("DATABASE_TEST_USER")
+        self.DATABASE_TEST_PASSWORD = env.str("DATABASE_TEST_PASSWORD")
+        self.DATABASE_TEST_HOST = env.str("DATABASE_TEST_HOST")
 
         # try:            
         #     if APP_SETTINGS== "TESTING":
@@ -35,8 +38,8 @@ class DatabaseConnection:
         #     pprint("Can't connect to database" + ae)
         try:
             if self.APP_SETTINGS== "TESTING":
-                self.pg_pool = psycopg2.pool.SimpleConnectionPool(1, 20, user=self.DATABASE_USER, password=self.DATABASE_PASSWORD,
-                                                            host=self.DATABASE_HOST, port=self.DATABASE_PORT, database=self.DATABASE_TEST)
+                self.pg_pool = psycopg2.pool.SimpleConnectionPool(1, 20, user=self.DATABASE_TEST_USER, password=self.DATABASE_TEST_PASSWORD,
+                                                            host=self.DATABASE_TEST_HOST, port=self.DATABASE_PORT, database=self.DATABASE_TEST)
             elif self.APP_SETTINGS== "DEVELOPMENT":
                 self.pg_pool = psycopg2.pool.SimpleConnectionPool(1, 20, user=self.DATABASE_USER, password=self.DATABASE_PASSWORD,
                                                             host=self.DATABASE_HOST, port=self.DATABASE_PORT, database=self.DATABASE_NAME)

@@ -131,12 +131,3 @@ od.quantity as quantity, od.status as status \
             return "order was deleted"
         else:
             return "unable to delete order"
-
-    def close_order_connection(self):
-        """ close db conn """
-        self.cursor.close()
-        self.connection.close()
-
-
-# order = Order()
-# order.close_order_connection()

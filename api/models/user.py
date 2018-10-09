@@ -126,11 +126,4 @@ class User(object):
             return {"error": False, "message":"user updated to admin"}
         else:
             return {"error": True, "message":"unable to elevate user to admin"}
-        
-    def close_user_connection(self):
-        """ close db conn """
-        self.cursor.close()
-        self.connection.close()
 
-# user = User()
-# user.close_user_connection()

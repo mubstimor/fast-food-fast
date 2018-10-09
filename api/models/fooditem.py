@@ -7,7 +7,6 @@ class FoodItem(object):
     """docstring for FoodItem"""
     def __init__(self):
         """ define connections to food items table. """
-        # DatabaseConnection.__init__(self)
         self.db = DatabaseConnection()
            
     
@@ -93,11 +92,3 @@ class FoodItem(object):
             return "fooditem was deleted"
         else:
             return "unable to delete item"
-
-    def close_menu_connection(self):
-        """ close db conn """
-        self.cursor.close()
-        self.connection.close()
-
-# menu = FoodItem()
-# menu.close_menu_connection()

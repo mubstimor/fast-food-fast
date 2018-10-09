@@ -1,3 +1,5 @@
 [run]
 source = api
 
+[report]
+omit = *api/db/database.py*

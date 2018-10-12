@@ -7,6 +7,7 @@ from flask import request, jsonify
 from functools import wraps
 from api import app
 
+app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 JWT = JWTManager(app)
 
 @JWT.unauthorized_loader

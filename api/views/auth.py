@@ -3,7 +3,7 @@ from flask import request, jsonify
 from email_validator import validate_email, EmailNotValidError
 from api.models.user import User
 from api import app
-from api.views.decorators import create_access_token
+from api.views.decorators import create_access_token, set_access_cookies
 from flask_cors import CORS, cross_origin
 
 USER = User()
@@ -108,6 +108,7 @@ def auth_user():
         user = {}
         user['token'] = access_token
         user['role'] = data['role']
+        set_access_cookies(user, access_token)
         return jsonify({'ok': True, 'data': user, 'message': 'login successful'}), 200
     else:
         return jsonify({'ok': False, 'message': 'invalid username or password'}), 401

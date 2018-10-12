@@ -9,6 +9,7 @@ from flask_cors import CORS, cross_origin
 USER = User()
 
 @app.route('/api/v1/auth/signup', methods=['POST'])
+@cross_origin()
 def create_user():
     """
         Register a new user

@@ -107,6 +107,7 @@ def auth_user():
         access_token = create_access_token(identity=data)
         user = {}
         user['token'] = access_token
-        return jsonify({'ok': True, 'data': user}), 200
+        user['role'] = data['role']
+        return jsonify({'ok': True, 'data': user, 'message': 'login successful'}), 200
     else:
         return jsonify({'ok': False, 'message': 'invalid username or password'}), 401

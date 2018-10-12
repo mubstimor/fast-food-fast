@@ -1,0 +1,34 @@
+Create a menu item
+---
+tags:
+  - MENU
+produces:
+  - application/json
+parameters:
+  - in: body
+    name: body
+    category: body
+    price: body
+    schema:
+        id: Menu
+        required:
+        - name
+        - category
+        - price
+        properties:
+        name:
+            type: string
+            description: description of food item
+            default: 1
+        category:
+            type: string
+            description: class to which the item belongs
+            default: Foods
+        price:
+            type: integer
+            description: monetary worth of item
+            default: 3000
+   
+responses:
+  201:
+    description: A new menu item has been added.

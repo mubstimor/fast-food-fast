@@ -1,15 +1,62 @@
 """ Test class for Order"""
 import unittest
 from api import app
+from api.db.database import DatabaseConnection
 
 class OrderViewTest(unittest.TestCase):
     """ class defines test methods."""
+
+    def _set_up_user(self):
+        """ get user token """
+        request = self.app.post('/api/v1/auth/signup',
+                                json={"name": "Jack Decker",
+                                      "email": "jack@example.com",
+                                      "password": "1234",
+                                      "gender":"male", "user_type":""})
+        request = self.app.post('/api/v1/auth/login',
+                                json={"email": "jack@example.com",
+                                      "password": "1234"})
+        user_token = "Bearer " +str(request.json['data']['token'])
+        return user_token
+
+    def _set_up_admin_token(self):
+        """ test admin token """
+        request = self.app.post('/api/v1/auth/signup',
+                                json={"name": "James Adkins",
+                                      "email": "james@example.com",
+                                      "password": "1234",
+                                      "gender":"male", "user_type":"Admin"})
+        request = self.app.post('/api/v1/auth/login',
+                                json={"email": "james@example.com",
+                                      "password": "1234"})
+        admin_token = "Bearer " + str(request.json['data']['token'])
+        return admin_token
+
+    def _set_up_dummy_order_and_user_data(self):
+        """ create dummy fooditem & user """
+        admin_token = self._set_up_admin_token()
+        fooditem = {"name": "Millet", "category": "Foods", "price":7000}
+        self.app.post('/api/v1/menu', json=fooditem,
+                      headers={"Authorization": admin_token})
+        user = {"name": "James Adkins", "email": "james@example.com",
+                "password": "1234",
+                "gender":"male", "user_type":"Admin"}
+        self.app.post('/api/v1/auth/signup', json=user)
+        return
 
     def setUp(self):
         """ set default values for class. """
         self.app = app.test_client()
         self.app.testing = True
-        self.order = {"user_id": 1, "item": "chips", "quantity":1}
+        self._db = DatabaseConnection()
+        self._db.create_all_tables()
+        self.default_orders_url = "/api/v1/orders"
+        self.user_orders_url = "/api/v1/users/orders"
+        self.indexed_orders_url = "/api/v1/orders/"
+        self.default_order = {"item": 1, "quantity":1}
+        self.client_token = self._set_up_user()
+        self.admin_token = self._set_up_admin_token()
+        self._set_up_dummy_order_and_user_data()
 
     def test_index_page(self):
         """ define test methods for index page. """
@@ -18,97 +65,167 @@ class OrderViewTest(unittest.TestCase):
 
     def test_create_order(self):
         """ test post method """
-        request = self.app.post('/api/v1/orders', json=self.order)
+        request = self.app.post(self.user_orders_url,
+                                json=self.default_order,
+                                headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 201)
         self.assertEqual(request.headers['Content-Type'], 'application/json')
-        self.assertEqual("chips", request.json['order']['item'])
-        self.assertEqual(1, request.json['order']['quantity'])
+        self.assertEqual("Order successfully created", request.json['message'])
+
+    def test_create_already_existing_order(self):
+        """ test create duplicate order """
+        request = self.app.post(self.user_orders_url, json=self.default_order,
+                                headers={"Authorization": self.client_token})
+        request = self.app.post(self.user_orders_url, json=self.default_order,
+                                headers={"Authorization": self.client_token})
+        self.assertEqual(request.status_code, 409)
+        self.assertEqual(request.headers['Content-Type'], 'application/json')
+        self.assertEqual("Order already exists", request.json['error'])
 
     def test_create_order_without_item_in_request(self):
         """ test post method by not including item in request """
-        del self.order['item']
-        request = self.app.post('/api/v1/orders', json=self.order)
+        del self.default_order['item']
+        request = self.app.post(self.user_orders_url, \
+        json=self.default_order, headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 400)
 
     def test_create_order_with_invalid_quantity(self):
         """ test post method by including an invalid quantity value."""
-        self.order['quantity'] = "abafhh"
-        request = self.app.post('/api/v1/orders', json=self.order)
-        self.assertEqual(request.status_code, 400)
-
-    def test_create_order_with_invalid_userid(self):
-        """ test post method by including an invalid user id."""
-        self.order['user_id'] = "sdd"
-        request = self.app.post('/api/v1/orders', json=self.order)
+        self.default_order['quantity'] = "abafhh"
+        request = self.app.post(self.user_orders_url, json=self.user_orders_url,
+                                headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 400)
 
     def test_retrieve_order(self):
-        """ test fetch method """
-        self.order['user_id'] = 7
-        self.test_create_order()
-        request = self.app.get('/api/v1/orders/1')
+        """ test get single order """
+        request = self.app.post(self.user_orders_url, \
+        json=self.default_order, headers={"Authorization": self.client_token})
+        created_order_id = int(request.json['id'])
+        new_order_link = self.indexed_orders_url + str(created_order_id)
+        request = self.app.get(new_order_link,
+                               headers={"Authorization": self.admin_token})
         self.assertEqual(request.status_code, 200)
-        self.assertEqual(1, request.json['order']['id'])
+        self.assertEqual(created_order_id, request.json['order']['id'])
 
     def test_retrieve_unavailableorder(self):
-        """ test fetch method by passing an index that's not available """
-        self.order['user_id'] = 8
-        self.test_create_order()
-        request = self.app.get('/api/v1/orders/89')
+        """ test fetch order method by passing an index that's not available """
+        new_order_link = self.indexed_orders_url + "3"
+        request = self.app.get(new_order_link,
+                               headers={"Authorization": self.admin_token})
         self.assertEqual(request.status_code, 404)
+        self.assertEqual("Order not found", request.json['order'])
 
     def test_get_all_orders(self):
         """ test get all orders method """
-        self.order['user_id'] = 9
-        self.test_create_order()
-        request = self.app.get('/api/v1/orders')
+        request = self.app.post(self.user_orders_url,
+                                json=self.default_order,
+                                headers={"Authorization": self.client_token})
+        request = self.app.get(self.default_orders_url,
+                               headers={"Authorization": self.admin_token})
         self.assertEqual(request.status_code, 200)
         self.assertGreater(len(request.json['orders']), 0)
 
-    def test_update_order(self):
-        """ test update method """
-        self.order['user_id'] = 10
-        self.test_create_order()
-        request = self.app.put('/api/v1/orders/1', \
-        json={"status":"accepted"})
+    def test_retrieve_all_user_orders(self):
+        """ test get all user orders method """
+        request = self.app.post(self.user_orders_url, \
+        json=self.default_order, headers={"Authorization": self.client_token})
+        request = self.app.get(self.user_orders_url,
+                               headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 200)
-        self.assertEqual(1, request.json['order']['id'])
-        self.assertEqual("accepted", request.json['order']['status'])
+        self.assertGreater(len(request.json['myorders']), 0)
+
+    def test_get_empty_orders_list(self):
+        """ test get all orders method """
+        request = self.app.get(self.default_orders_url,
+                               headers={"Authorization": self.admin_token})
+        self.assertEqual(request.status_code, 200)
+        self.assertEqual("No orders available", request.json['orders'])
+
+    def test_update_order(self):
+        """ test update order status """
+        request = self.app.post(self.user_orders_url, \
+        json=self.default_order, headers={"Authorization": self.client_token})
+        created_order_id = int(request.json['id'])
+        new_order_link = self.indexed_orders_url + str(created_order_id)
+        request = self.app.put(new_order_link, \
+        json={"status":"processing"}, headers={"Authorization": self.admin_token})
+        self.assertEqual(request.status_code, 200)
+        self.assertEqual("processing", request.json['order']['status'])
+
+    def test_update_unavailable_order(self):
+        """ test update order status of unavailable order"""
+        request = self.app.post(self.user_orders_url, \
+        json=self.default_order, headers={"Authorization": self.client_token})
+        created_order_id = int(request.json['id']) + 3
+        new_order_link = self.indexed_orders_url + str(created_order_id)
+        request = self.app.put(new_order_link, \
+        json={"status":"processing"}, headers={"Authorization": self.admin_token})
+        self.assertEqual(request.status_code, 200)
+        self.assertEqual("unable to update order", request.json['order'])
 
     def test_update_user_order(self):
         """ test update user order method """
-        self.order['user_id'] = 2
-        self.test_create_order()
-        request = self.app.put('api/v1/users/orders/2', \
-        json={"user_id": "7", "item": "Rice + Chapatti", "quantity":"4", "status":"pending"})
+        request = self.app.post(self.user_orders_url, \
+        json=self.default_order, headers={"Authorization": self.client_token})
+        created_order_id = int(request.json['id'])
+        new_order_link = "api/v1/users/orders/" + str(created_order_id)
+        request = self.app.put(new_order_link, \
+                               json={"item": 1, "quantity":3, "status":"new"},
+                               headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 200)
-        self.assertEqual(2, request.json['order']['id'])
-        self.assertEqual("Rice + Chapatti", request.json['order']['item'])
+        self.assertEqual(3, request.json['order']['quantity'])
 
-    def test_retrieve_user_order(self):
-        """ test get user orders method """
-        self.order['user_id'] = 1
-        self.test_create_order()
-        request = self.app.get('/api/v1/users/myorders/1')
+    def test_update_unavailable_user_order(self):
+        """ test update unavailable user order """
+        request = self.app.post(self.user_orders_url, \
+        json=self.default_order, headers={"Authorization": self.client_token})
+        created_order_id = int(request.json['id']) + 4
+        new_order_link = "api/v1/users/orders/" + str(created_order_id)
+        request = self.app.put(new_order_link,
+                               json={"item": 1, "quantity":4, "status":"new"},
+                               headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 200)
-        self.assertEqual(1, request.json['myorders'][0]['user_id'])
+        self.assertEqual("unable to update order", request.json['order'])
 
     def test_update_order_with_invalid_status_value(self):
         """ test update method by including a wrong status value """
-        request = self.app.put('/api/v1/orders/1', \
-        json={"status":"unknown"})
+        request = self.app.post(self.user_orders_url,
+                                json={"item": 1, "quantity":2, "status":"new"},
+                                headers={"Authorization": self.client_token})
+        created_order_id = int(request.json['id'])
+        new_order_link = self.indexed_orders_url + str(created_order_id)
+        request = self.app.put(new_order_link,
+                               json={"status":"unknown"},
+                               headers={"Authorization": self.admin_token})
         self.assertEqual(request.status_code, 400)
 
     def test_delete_order(self):
-        """ test delete method """
-        request = self.app.delete('/api/v1/orders/1')
+        """ test delete single order """
+        request = self.app.post(self.user_orders_url,
+                                json=self.default_order,
+                                headers={"Authorization": self.client_token})
+        created_order_id = int(request.json['id'])
+        new_order_link = self.indexed_orders_url + str(created_order_id)
+        request = self.app.delete(new_order_link,
+                                  headers={"Authorization": self.admin_token})
         self.assertEqual(request.status_code, 200)
-        self.assertEqual("Order was deleted", request.json['result'])
+        self.assertEqual("order was deleted", request.json['result'])
 
     def test_delete_unavailable_order(self):
         """ test delete method for an unavailable resource """
-        request = self.app.delete('/api/v1/orders/1')
-        self.assertEqual(request.status_code, 404)
+        request = self.app.post(self.user_orders_url,
+                                json=self.default_order,
+                                headers={"Authorization": self.client_token})
+        unavailable_order_id = int(request.json['id']) + 2
+        unavailable_order_link = self.indexed_orders_url + str(unavailable_order_id)
+        request = self.app.delete(unavailable_order_link,
+                                  headers={"Authorization": self.admin_token})
+        self.assertEqual(request.status_code, 200)
+        self.assertEqual("unable to delete order", request.json['result'])
+
+    def tearDown(self):
+        """ undo effects of tests. """
+        self._db.drop_all_tables()
 
 if __name__ == "__main__":
     unittest.main()

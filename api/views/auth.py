@@ -4,6 +4,7 @@ from email_validator import validate_email, EmailNotValidError
 from api.models.user import User
 from api import app
 from api.views.decorators import create_access_token
+from flask_cors import CORS, cross_origin
 
 USER = User()
 
@@ -71,6 +72,7 @@ def create_user():
 
 
 @app.route('/api/v1/auth/login', methods=['POST', 'OPTIONS'])
+@cross_origin()
 def auth_user():
     """
         Authenticate user

@@ -70,7 +70,7 @@ def create_user():
         return jsonify({'user': post_user, "message": "User successfully created."}), 201
 
 
-@app.route('/api/v1/auth/login', methods=['POST'])
+@app.route('/api/v1/auth/login', methods=['POST', 'OPTIONS'])
 def auth_user():
     """
         Authenticate user

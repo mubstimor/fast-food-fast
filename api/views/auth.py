@@ -108,7 +108,8 @@ def auth_user():
         user = {}
         user['token'] = access_token
         user['role'] = data['role']
-        set_access_cookies(user, access_token)
-        return jsonify({'ok': True, 'data': user, 'message': 'login successful'}), 200
+        response = jsonify({'ok': True, 'data': user, 'message': 'login successful'})
+        set_access_cookies(response, access_token)
+        return response, 200
     else:
         return jsonify({'ok': False, 'message': 'invalid username or password'}), 401

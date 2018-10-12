@@ -63,13 +63,13 @@ def create_user():
 
     user = USER.check_if_user_exists(request.json['email'])
     if user:
-        return jsonify({'error': 'user already exists'}), 409
+        return jsonify({'message': 'user already exists', 'error':True}), 409
     else:
         try:
             post_user = USER.create_user(request.json)
         except KeyError:
             return jsonify({'error': True, "message": "Missing/Invalid parameters in request"}), 400
-        return jsonify({'user': post_user, "message": "User successfully created."}), 201
+        return jsonify({'user': post_user, "message": "User successfully created.", "error": False}), 201
 
 
 @app.route('/api/v1/auth/login', methods=['POST', 'OPTIONS'])

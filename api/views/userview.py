@@ -1,3 +1,5 @@
+""" handles routes for user actions. """
+from flask_cors import CORS, cross_origin
 from api.models.user import User
 from api.models.order import Order
 from api import app
@@ -8,6 +10,7 @@ ORDER = Order()
 
 @app.route('/api/v1/users/orders', methods=['GET'])
 @jwt_required
+@cross_origin()
 def get_user_orders():
     """
     Get orders for a specific user.

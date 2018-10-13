@@ -1,3 +1,5 @@
+""" managaes access operations on order objects. """
+from flask_cors import cross_origin
 from api.models.order import Order
 from api import app
 from api.views.decorators import *
@@ -6,6 +8,7 @@ ORDER = Order()
 
 @app.route('/api/v1/orders', methods=['GET'])
 @admin_token_required
+@cross_origin()
 def get_all_orders():
     """
     Endpoint for returning list of orders
@@ -25,6 +28,7 @@ def get_all_orders():
   
 @app.route('/api/v1/orders/<int:order_id>', methods=['GET'])
 @admin_token_required
+@cross_origin()
 def get_order(order_id):
     """
     Get single order
@@ -51,6 +55,7 @@ def get_order(order_id):
   
 @app.route('/api/v1/orders/<int:order_id>', methods=['PUT'])
 @admin_token_required
+@cross_origin()
 def update_order(order_id):
     """
         Update a single order's status
@@ -80,6 +85,7 @@ def update_order(order_id):
 
 @app.route('/api/v1/orders/<int:order_id>', methods=['DELETE'])
 @admin_token_required
+@cross_origin()
 def delete_order(order_id):
     """ delete requested resource from list. """
     return jsonify({'result': ORDER.delete_order(order_id)})

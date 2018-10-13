@@ -8,7 +8,7 @@ ORDER = Order()
 
 @app.route('/api/v1/orders', methods=['GET', 'OPTIONS'])
 @admin_token_required
-# @cross_origin()
+@cross_origin()
 def get_all_orders():
     """
     Endpoint for returning list of orders
@@ -20,6 +20,7 @@ def get_all_orders():
       200:
         description: All available orders
     """
+    get_jwt_identity()
     orders = ORDER.fetch_all_orders()
     if orders:
         return jsonify({'orders': orders})

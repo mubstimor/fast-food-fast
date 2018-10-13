@@ -8,7 +8,7 @@ ORDER = Order()
 
 @app.route('/api/v1/orders', methods=['GET', 'OPTIONS'])
 @admin_token_required
-@cross_origin()
+# @cross_origin()
 def get_all_orders():
     """
     Endpoint for returning list of orders
@@ -25,7 +25,7 @@ def get_all_orders():
         return jsonify({'orders': orders})
     else:
         return jsonify({'orders': "No orders available"})
-  
+
 @app.route('/api/v1/orders/<int:order_id>', methods=['GET'])
 @admin_token_required
 @cross_origin()

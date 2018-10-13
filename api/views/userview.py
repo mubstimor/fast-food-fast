@@ -71,11 +71,11 @@ def create_order():
             description: New order created
         """
     if not request.json or not 'item' in request.json:
-        return jsonify({'error': 'Missing Item parameter in request'}), 400
+        return jsonify({'message': 'Missing Item parameter in request', 'error': True}), 400
     try:
         request.json['quantity'] = int(request.json['quantity'])
     except ValueError:
-        return jsonify({'error': 'Bad request'}), 400
+        return jsonify({'message': 'Invalid quantity value', 'error': True}), 400
 
     current_user = get_jwt_identity()
     logged_in_user = current_user['id']
@@ -84,11 +84,11 @@ def create_order():
                                         request.json['item'],
                                         request.json['quantity'])
     if order:
-        return jsonify({'error': 'Order already exists'}), 409
+        return jsonify({'message': 'Order already exists', 'error': True}), 409
     else:
         create_user_order = ORDER.create_order(logged_in_user, request.json)
         if create_user_order:
             return jsonify({"message":"Order successfully created",
-                            'id': create_user_order}), 201
+                            'id': create_user_order, 'error': False}), 201
         else:
             return jsonify({'error': True, "message":"Unable to support request"}), 400

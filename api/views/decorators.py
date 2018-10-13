@@ -27,8 +27,9 @@ def admin_token_required(_f):
         verify_jwt_in_request()
         claims = get_jwt_identity()
         pprint("RECEIVING")
-        pprint(claims['role'])
-        if claims['role'] != "Admin":
+        pprint(claims)
+        pprint(str(claims['role']))
+        if str(claims['role']) != "Admin":
             return jsonify({"msg": "Admins only!"}), 403
         else:
             return _f(*args, **kwargs)

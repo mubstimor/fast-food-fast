@@ -7,7 +7,8 @@ from api.views.decorators import *
 ORDER = Order()
 
 @app.route('/api/v1/orders', methods=['GET', 'OPTIONS'])
-@admin_token_required
+# @admin_token_required
+@jwt_required
 @cross_origin()
 def get_all_orders():
     """

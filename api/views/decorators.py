@@ -25,7 +25,7 @@ def admin_token_required(_f):
         """ check role = admin in user token. """
         verify_jwt_in_request()
         claims = get_jwt_identity()
-        if claims['role'] != 'Admin':
+        if claims['role'] != "Admin":
             return jsonify({"msg": "Admins only!"}), 403
         else:
             return _f(*args, **kwargs)

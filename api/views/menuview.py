@@ -1,3 +1,5 @@
+""" manages routes to menu items. """
+from flask_cors import cross_origin
 from api import app
 from api.models.fooditem import FoodItem
 from api.views.decorators import *
@@ -6,6 +8,7 @@ FOODITEM = FoodItem()
 
 @app.route('/api/v1/menu', methods=['POST'])
 @admin_token_required
+@cross_origin()
 def create_fooditem():
     """
         Create a new menu item
@@ -66,6 +69,7 @@ def create_fooditem():
         return jsonify({'fooditem': FOODITEM.create_item(request.json)}), 201
 
 @app.route('/api/v1/menu', methods=['GET'])
+@cross_origin()
 def get_all_fooditems():
     """
     Get available menu

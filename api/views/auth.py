@@ -1,10 +1,11 @@
 """ manage signup and login functions of the auth module. """
 from flask import request, jsonify
+from flask_cors import cross_origin
 from email_validator import validate_email, EmailNotValidError
 from api.models.user import User
 from api import app
 from api.views.decorators import create_access_token, set_access_cookies
-from flask_cors import CORS, cross_origin
+
 
 USER = User()
 

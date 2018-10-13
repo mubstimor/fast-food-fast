@@ -80,8 +80,9 @@ def create_order():
     current_user = get_jwt_identity()
     logged_in_user = current_user['id']
 
-    order = ORDER.check_if_order_exists(logged_in_user , \
-                                        request.json['item'], request.json['quantity'])
+    order = ORDER.check_if_order_exists(logged_in_user ,
+                                        request.json['item'],
+                                        request.json['quantity'])
     if order:
         return jsonify({'error': 'Order already exists'}), 409
     else:

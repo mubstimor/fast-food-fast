@@ -68,7 +68,7 @@ def create_fooditem():
     else:
         return jsonify({'fooditem': FOODITEM.create_item(request.json)}), 201
 
-@app.route('/api/v1/menu', methods=['GET'])
+@app.route('/api/v1/menu', methods=['GET', 'OPTIONS'])
 @cross_origin()
 def get_all_fooditems():
     """

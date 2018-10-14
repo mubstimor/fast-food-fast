@@ -30,17 +30,6 @@ def get_fooditem(item_id):
     item = FOODITEM.get_item(item_id)
     return jsonify({'fooditem': item})
 
-@app.route('/api/v1/menu/<int:item_id>', methods=['PUT'])
-@admin_token_required
-def update_fooditem(item_id):
-    """ update food item with put request. """
-    return jsonify({'fooditem': FOODITEM.update_item(item_id, request.json)})
-
-@app.route('/api/v1/menu/<int:item_id>', methods=['DELETE'])
-def delete_fooditem(item_id):
-    """ delete requested resource from list. """
-    return jsonify({'result': FOODITEM.delete_item(item_id)})
-
 @app.route('/api/v1/users', methods=['GET'])
 def get_all_users():
     """ A route to return all of the available users. """

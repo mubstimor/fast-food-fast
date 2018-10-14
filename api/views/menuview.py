@@ -85,3 +85,21 @@ def create_fooditem():
         return jsonify({'fooditem': FOODITEM.create_item(request.json),
                         'error': False,
                         'message': 'Item successfully created.'}), 201
+
+@app.route('/api/v1/menu/<int:item_id>', methods=['PUT'])
+@admin_token_required
+@cross_origin()
+def update_fooditem(item_id):
+    """ update food item with put request. """
+    return jsonify({'fooditem': FOODITEM.update_item(item_id, request.json),
+                    'message': 'Menu Item updated',
+                    'error': False})
+
+@app.route('/api/v1/menu/<int:item_id>', methods=['DELETE'])
+@admin_token_required
+@cross_origin()
+def delete_fooditem(item_id):
+    """ delete requested resource from list. """
+    return jsonify({'result': FOODITEM.delete_item(item_id),
+                    'message': 'Item deleted',
+                    'error': False})

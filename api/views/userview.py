@@ -116,7 +116,8 @@ def update_user_order(order_id):
 
 @app.route('/api/v1/users/orders/cancel/<int:order_id>', methods=['PUT'])
 @jwt_required
+@cross_origin()
 def cancel_user_order(order_id):
-    """ cancel user with put request. """
+    """ cancel user order with put request. """
     return jsonify({'order': ORDER.cancel_user_order(order_id, request.json),
-                    'error': False, 'message': 'Order Updated Successfully'})
+                    'error': False, 'message': 'Order Cancelled Successfully'})

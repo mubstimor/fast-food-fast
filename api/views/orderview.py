@@ -31,7 +31,7 @@ def get_all_orders():
         return jsonify({'orders': "No orders available", 'error': False})
 
 @app.route('/api/v1/orders/<int:order_id>', methods=['GET'])
-@admin_token_required
+@jwt_required
 @cross_origin()
 def get_order(order_id):
     """
@@ -51,6 +51,10 @@ def get_order(order_id):
       200:
         description: The requested order
     """
+    user = get_jwt_identity()
+    if user['role'] != 'Admin':
+        return jsonify({'message': "Unauthorised to access this area", 'error': True}), 403
+
     order = ORDER.get_order(order_id)
     if order:
         return jsonify({'order': order})

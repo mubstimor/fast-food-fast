@@ -106,3 +106,10 @@ def create_order():
                             'id': create_user_order, 'error': False}), 201
         else:
             return jsonify({'error': True, "message":"Unable to support request"}), 400
+
+@app.route('/api/v1/users/orders/<int:order_id>', methods=['PUT'])
+@jwt_required
+def update_user_order(order_id):
+    """ update order details with put request. """
+    return jsonify({'order': ORDER.update_user_order(order_id, request.json),
+                    'error': False, 'message': 'Order Updated Successfully'})

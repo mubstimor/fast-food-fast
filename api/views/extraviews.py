@@ -18,8 +18,3 @@ def get_user(user_id):
     """ Get a specific user with given id."""
     user = USER.get_user(user_id)
     return jsonify({'user': user})
-
-@app.route('/api/v1/users/orders/<int:order_id>', methods=['PUT'])
-def update_user_order(order_id):
-    """ update order details with put request. """
-    return jsonify({'order': ORDER.update_user_order(order_id, request.json)})

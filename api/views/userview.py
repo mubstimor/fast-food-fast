@@ -113,3 +113,10 @@ def update_user_order(order_id):
     """ update order details with put request. """
     return jsonify({'order': ORDER.update_user_order(order_id, request.json),
                     'error': False, 'message': 'Order Updated Successfully'})
+
+@app.route('/api/v1/users/orders/cancel/<int:order_id>', methods=['PUT'])
+@jwt_required
+def cancel_user_order(order_id):
+    """ cancel user with put request. """
+    return jsonify({'order': ORDER.cancel_user_order(order_id, request.json),
+                    'error': False, 'message': 'Order Updated Successfully'})

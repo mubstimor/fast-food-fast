@@ -149,6 +149,22 @@ class Order(object):
         else:
             return "unable to update order"
 
+    def cancel_user_order(self, order_id, order_data):
+        """ cancel user order """
+        self.connection = self._db.connect_db()
+        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        order = order_data
+        order['status'] = str(order_data['status'])
+        self.cursor.execute("UPDATE orders set status='"
+                            + order['status']+"' WHERE id='"+str(order_id)+"'")
+        rows_updated = self.cursor.rowcount
+        self.connection.close()
+        if rows_updated > 0:
+            order['id'] = order_id
+            return order
+        else:
+            return "unable to update order"
+
     def delete_order(self, order_id):
         """ delete order. """
         self.connection = self._db.connect_db()

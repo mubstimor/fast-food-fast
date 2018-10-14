@@ -87,19 +87,27 @@ def create_fooditem():
                         'message': 'Item successfully created.'}), 201
 
 @app.route('/api/v1/menu/<int:item_id>', methods=['PUT'])
-@admin_token_required
+@jwt_required
 @cross_origin()
 def update_fooditem(item_id):
     """ update food item with put request. """
+    user = get_jwt_identity()
+    if user['role'] != 'Admin':
+        return jsonify({'message': "Unauthorised to access this area", 'error': True}), 403
+
     return jsonify({'fooditem': FOODITEM.update_item(item_id, request.json),
                     'message': 'Menu Item updated',
                     'error': False})
 
 @app.route('/api/v1/menu/<int:item_id>', methods=['DELETE'])
-@admin_token_required
+@jwt_required
 @cross_origin()
 def delete_fooditem(item_id):
     """ delete requested resource from list. """
+    user = get_jwt_identity()
+    if user['role'] != 'Admin':
+        return jsonify({'message': "Unauthorised to access this area", 'error': True}), 403
+
     return jsonify({'result': FOODITEM.delete_item(item_id),
                     'message': 'Item deleted',
                     'error': False})

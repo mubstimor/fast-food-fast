@@ -86,6 +86,28 @@ def create_fooditem():
                         'error': False,
                         'message': 'Item successfully created.'}), 201
 
+@app.route('/api/v1/menu/<int:item_id>', methods=['GET'])
+def get_fooditem(item_id):
+    """
+    Get single menu item
+    ---
+    tags:
+      - MENU
+    produces:
+      - application/json
+    parameters:
+      - in: path
+        name: item_id
+        type: int
+        description: item_id to be retrieved
+        required: false
+    responses:
+      200:
+        description: The requested menu item
+    """
+    item = FOODITEM.get_item(item_id)
+    return jsonify({'fooditem': item})
+    
 @app.route('/api/v1/menu/<int:item_id>', methods=['PUT'])
 @jwt_required
 @cross_origin()

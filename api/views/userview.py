@@ -33,10 +33,24 @@ def get_user_orders():
     """
     current_user = get_jwt_identity()
     get_orders = ORDER.fetch_user_orders(current_user['id'])
-    if get_user_orders:
+    if get_orders:
         return jsonify({'myorders': get_orders})
     else:
         return jsonify({"message":"no orders available for current user"})
+
+@app.route('/api/v1/users/orders/<int:order_id>', methods=['GET'])
+@jwt_required
+@cross_origin()
+def get_single_user_order(order_id):
+    current_user = get_jwt_identity()
+    get_order = ORDER.fetch_user_order(order_id, current_user['id'])
+    if get_order:
+        return jsonify({'order': get_order, 'error': False,
+                        'message': 'order retrieved.'})
+    else:
+        return jsonify({"message":"no orders available for current user",
+                        'error': False })
+
 
 
 @app.route('/api/v1/users/orders', methods=['POST'])

@@ -77,6 +77,24 @@ class Order(object):
         self.connection.close()
         return orders
 
+    def fetch_user_order(self, order_id, user_id):
+        """ retrieve order of a user based on order id & user id. """
+        self.connection = self._db.connect_db()
+        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        self.cursor.execute("SELECT od.id as id, menu.name as item, \
+                            od.quantity as quantity, od.status as status \
+                            FROM orders as od, fooditems as menu \
+                            WHERE od.item=menu.item_id and od.status !='cancelled' \
+                            and od.user_id='"+str(user_id)+"' and od.id='"+str(order_id)+"'")
+        order_item = self.cursor.fetchone()
+        rows_found = self.cursor.rowcount
+        self.connection.close()
+        if rows_found > 0:
+            order = {"id": order_item['id'], "item": order_item['item'],
+                     "quantity": order_item['quantity'], "status": order_item['status']
+                     }
+            return order
+
     def get_order(self, order_id):
         """ retrieve order with given id. """
         self.connection = self._db.connect_db()

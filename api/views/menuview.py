@@ -82,4 +82,6 @@ def create_fooditem():
     if item:
         return jsonify({'message': 'Menu Item already exists', 'error': True}), 409
     else:
-        return jsonify({'fooditem': FOODITEM.create_item(request.json), 'error': False}), 201
+        return jsonify({'fooditem': FOODITEM.create_item(request.json),
+                        'error': False,
+                        'message': 'Item successfully created.'}), 201

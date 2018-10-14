@@ -88,8 +88,10 @@ def update_order(order_id):
         """
     status = ("processing", "cancelled", "complete")
     if request.json['status'] not in status:
-        return jsonify({'error': 'Missing status parameter in request'}), 400
-    return jsonify({'order': ORDER.update_order(order_id, request.json)})
+        return jsonify({'message': 'Missing status parameter in request',
+                        'error': True}), 400
+    return jsonify({'order': ORDER.update_order(order_id, request.json),
+                    'message': 'Order successfully updated', 'error': False})
 
 @app.route('/api/v1/orders/<int:order_id>', methods=['DELETE'])
 @admin_token_required

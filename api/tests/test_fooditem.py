@@ -43,7 +43,7 @@ class FoodItemViewTest(unittest.TestCase):
                                 headers={"Authorization": self.bearer_token})
         self.assertEqual(request.status_code, 409)
         self.assertEqual(request.headers['Content-Type'], 'application/json')
-        self.assertEqual("Menu Item already exists", request.json['error'])
+        self.assertEqual("Menu Item already exists", request.json['message'])
 
     def test_create_menuItemWithInvalidPrice(self):
         """ test post method by including an invalid price value."""

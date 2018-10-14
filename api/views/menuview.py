@@ -76,10 +76,10 @@ def create_fooditem():
     try:
         request.json['price'] = int(request.json['price'])
     except ValueError:
-        return jsonify({'error': 'Invalid price value'}), 400
+        return jsonify({'message': 'Invalid price value', 'error': True}), 400
 
     item = FOODITEM.check_if_item_exists(request.json['name'])
     if item:
-        return jsonify({'error': 'Menu Item already exists'}), 409
+        return jsonify({'message': 'Menu Item already exists', 'error': True}), 409
     else:
-        return jsonify({'fooditem': FOODITEM.create_item(request.json)}), 201
+        return jsonify({'fooditem': FOODITEM.create_item(request.json), 'error': False}), 201

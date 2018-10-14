@@ -7,7 +7,7 @@ from api.views.decorators import *
 ORDER = Order()
 
 @app.route('/api/v1/orders', methods=['GET'])
-@admin_token_required
+@jwt_required
 @cross_origin()
 def get_all_orders():
     """
@@ -20,12 +20,15 @@ def get_all_orders():
       200:
         description: All available orders
     """
-    get_jwt_identity()
+    user = get_jwt_identity()
+    if user['role'] != 'Admin':
+        return jsonify({'message': "Unauthorised to access this area", 'error': True}), 403
+
     orders = ORDER.fetch_all_orders()
     if orders:
-        return jsonify({'orders': orders})
+        return jsonify({'orders': orders, 'error': False})
     else:
-        return jsonify({'orders': "No orders available"})
+        return jsonify({'orders': "No orders available", 'error': False})
 
 @app.route('/api/v1/orders/<int:order_id>', methods=['GET'])
 @admin_token_required

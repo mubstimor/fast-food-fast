@@ -33,25 +33,18 @@ def get_user_orders():
     """
     current_user = get_jwt_identity()
     get_orders = ORDER.fetch_user_orders(current_user['id'])
-    if get_orders:
-        return jsonify({'myorders': get_orders})
-    else:
-        return jsonify({"message":"no orders available for current user"})
+    return jsonify({'myorders': get_orders})
 
 @app.route('/api/v1/users/orders/<int:order_id>', methods=['GET'])
 @jwt_required
 @cross_origin()
 def get_single_user_order(order_id):
+    """ get single client's order, 
+    check both user id and the order id passed."""
     current_user = get_jwt_identity()
     get_order = ORDER.fetch_user_order(order_id, current_user['id'])
-    if get_order:
-        return jsonify({'order': get_order, 'error': False,
-                        'message': 'order retrieved.'})
-    else:
-        return jsonify({"message":"no orders available for current user",
-                        'error': False })
-
-
+    return jsonify({'order': get_order, 'error': False,
+                    'message': 'order retrieved.'})
 
 @app.route('/api/v1/users/orders', methods=['POST'])
 @jwt_required
@@ -94,18 +87,15 @@ def create_order():
     current_user = get_jwt_identity()
     logged_in_user = current_user['id']
 
-    order = ORDER.check_if_order_exists(logged_in_user ,
+    order = ORDER.check_if_order_exists(logged_in_user,
                                         request.json['item'],
                                         request.json['quantity'])
     if order:
         return jsonify({'message': 'Order already exists', 'error': True}), 409
     else:
         create_user_order = ORDER.create_order(logged_in_user, request.json)
-        if create_user_order:
-            return jsonify({"message":"Order successfully created",
-                            'id': create_user_order, 'error': False}), 201
-        else:
-            return jsonify({'error': True, "message":"Unable to support request"}), 400
+        return jsonify({"message":"Order successfully created",
+                        'id': create_user_order, 'error': False}), 201
 
 @app.route('/api/v1/users/orders/<int:order_id>', methods=['PUT'])
 @jwt_required

@@ -92,9 +92,10 @@ class OrderViewTest(unittest.TestCase):
     def test_create_order_with_invalid_quantity(self):
         """ test post method by including an invalid quantity value."""
         self.default_order['quantity'] = "abafhh"
-        request = self.app.post(self.user_orders_url, json=self.user_orders_url,
+        request = self.app.post(self.user_orders_url, json=self.default_order,
                                 headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 400)
+        self.assertEqual("Invalid quantity value", request.json['message'])
 
     def test_retrieve_order(self):
         """ test get single order """
@@ -106,6 +107,17 @@ class OrderViewTest(unittest.TestCase):
                                headers={"Authorization": self.admin_token})
         self.assertEqual(request.status_code, 200)
         self.assertEqual(created_order_id, request.json['order']['id'])
+
+    def test_retrieve_order_with_client_token(self):
+        """ test get single order with a client token """
+        request = self.app.post(self.user_orders_url, \
+        json=self.default_order, headers={"Authorization": self.client_token})
+        created_order_id = int(request.json['id'])
+        new_order_link = self.indexed_orders_url + str(created_order_id)
+        request = self.app.get(new_order_link,
+                               headers={"Authorization": self.client_token})
+        self.assertEqual(request.status_code, 403)
+        self.assertEqual("Unauthorised to access this area", request.json['message'])
 
     def test_retrieve_unavailableorder(self):
         """ test fetch order method by passing an index that's not available """
@@ -125,6 +137,16 @@ class OrderViewTest(unittest.TestCase):
         self.assertEqual(request.status_code, 200)
         self.assertGreater(len(request.json['orders']), 0)
 
+    def test_get_all_orders_with_client_token(self):
+        """ test get all orders with client token """
+        request = self.app.post(self.user_orders_url,
+                                json=self.default_order,
+                                headers={"Authorization": self.client_token})
+        request = self.app.get(self.default_orders_url,
+                               headers={"Authorization": self.client_token})
+        self.assertEqual(request.status_code, 403)
+        self.assertEqual("Unauthorised to access this area", request.json['message'])
+
     def test_retrieve_all_user_orders(self):
         """ test get all user orders method """
         request = self.app.post(self.user_orders_url, \
@@ -133,6 +155,17 @@ class OrderViewTest(unittest.TestCase):
                                headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 200)
         self.assertGreater(len(request.json['myorders']), 0)
+
+    def test_retrieve_single_user_order(self):
+        """ test get a single user order """
+        request = self.app.post(self.user_orders_url, \
+        json=self.default_order, headers={"Authorization": self.client_token})
+        created_order_id = int(request.json['id'])
+        new_order_link = self.user_orders_url + "/" + str(created_order_id)
+        request = self.app.get(new_order_link,
+                               headers={"Authorization": self.client_token})
+        self.assertEqual(request.status_code, 200)
+        self.assertGreater(len(request.json['order']), 0)
 
     def test_get_empty_orders_list(self):
         """ test get all orders method """
@@ -174,6 +207,18 @@ class OrderViewTest(unittest.TestCase):
                                headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 200)
         self.assertEqual(3, request.json['order']['quantity'])
+
+    def test_cancel_user_order(self):
+        """ test cancel user order """
+        request = self.app.post(self.user_orders_url, \
+        json=self.default_order, headers={"Authorization": self.client_token})
+        created_order_id = int(request.json['id'])
+        new_order_link = "api/v1/users/orders/cancel/" + str(created_order_id)
+        request = self.app.put(new_order_link, \
+                               json={"status":"cancelled"},
+                               headers={"Authorization": self.client_token})
+        self.assertEqual(request.status_code, 200)
+        self.assertEqual("Order Cancelled Successfully", request.json['message'])
 
     def test_update_unavailable_user_order(self):
         """ test update unavailable user order """
@@ -222,6 +267,34 @@ class OrderViewTest(unittest.TestCase):
                                   headers={"Authorization": self.admin_token})
         self.assertEqual(request.status_code, 200)
         self.assertEqual("unable to delete order", request.json['result'])
+
+    def test_update_menuitem_with_client_token(self):
+        """ test update food item """
+        request = self.app.post('/api/v1/menu', \
+                                json={"name": "Liver",
+                                      "category": "Foods", "price":8000},
+                                headers={"Authorization": self.admin_token})
+        created_item_id = int(request.json['fooditem']['id'])
+        item_url = "/api/v1/menu/" + str(created_item_id)
+        request = self.app.put(item_url,
+                               json={"name": "Fish Fillet",
+                                     "category": "Foods", "price":9000},
+                               headers={"Authorization": self.client_token})
+        self.assertEqual(request.status_code, 403)
+        self.assertEqual("Unauthorised to access this area", request.json['message'])
+
+    def test_delete_menuitem_with_client_token(self):
+        """ test delete method """
+        request = self.app.post('/api/v1/menu',
+                                json={"name": "Hot Chocolate",
+                                      "category": "Beverages", "price":8000},
+                                headers={"Authorization": self.admin_token})
+        created_item_id = int(request.json['fooditem']['id'])
+        item_url = "/api/v1/menu/" + str(created_item_id)
+        request = self.app.delete(item_url,
+                                  headers={"Authorization":self.client_token})
+        self.assertEqual(request.status_code, 403)
+        self.assertEqual("Unauthorised to access this area", request.json['message'])
 
     def tearDown(self):
         """ undo effects of tests. """

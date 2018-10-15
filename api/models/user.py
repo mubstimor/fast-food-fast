@@ -44,16 +44,6 @@ class User(object):
         if rows_found > 0:
             return True
 
-    def get_user_data_from(self, email):
-        """ retrieve user data with similar email"""
-        self.connection = self._db.connect_db()
-        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        self.cursor.execute("SELECT * FROM users where email='"+email+"'")
-        useritem = self.cursor.fetchone()
-        user = {"id": useritem['id'], "email": useritem['email'], "role": useritem['user_type']}
-        self.connection.close()
-        return user
-
     def fetch_all_users(self):
         """ retrieve all users from db """
         self.connection = self._db.connect_db()
@@ -82,26 +72,6 @@ class User(object):
         else:
             return "not found"
 
-    def login(self, user_data):
-        """ check user login """
-        self.connection = self._db.connect_db()
-        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        user = user_data
-        user['email'] = str(user_data['email'])
-        user['password'] = str(user_data['password'])
-        self.cursor.execute("SELECT * FROM users where email='"+user['email']+"'")
-        rows_found = self.cursor.rowcount
-        self.connection.close()
-        if rows_found > 0:
-            userdata = self.cursor.fetchone()
-            login_status = check_password_hash(userdata['password'], user['password'])
-            if login_status:
-                return True
-            else:
-                return False
-        else:
-            return False
-
     def authenticate(self, user_data):
         """ check user login """
         self.connection = self._db.connect_db()
@@ -110,24 +80,10 @@ class User(object):
         user['email'] = str(user_data['email'])
         user['password'] = str(user_data['password'])
         self.cursor.execute("SELECT * FROM users where email='"+user['email']+"'")
-        rows_found = self.cursor.rowcount
-        if rows_found > 0:
-            userdata = self.cursor.fetchone()
-            self.connection.close()
-            login_status = check_password_hash(userdata['password'], user['password'])
-            if login_status:
-                user = {"id": userdata['id'], "email": userdata['email'],
-                        "role": userdata['user_type']}
-                return user
-
-    def assign_admin_privileges(self, user_id):
-        """ elevate user to admin """
-        self.connection = self._db.connect_db()
-        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        self.cursor.execute("UPDATE users set user_type='Admin' WHERE id='"+str(user_id)+"'")
-        rows_updated = self.cursor.rowcount
+        userdata = self.cursor.fetchone()
         self.connection.close()
-        if rows_updated > 0:
-            return {"error": False, "message":"user updated to admin"}
-        else:
-            return {"error": True, "message":"unable to elevate user to admin"}
+        login_status = check_password_hash(userdata['password'], user['password'])
+        if login_status:
+            user = {"id": userdata['id'], "email": userdata['email'],
+                    "role": userdata['user_type']}
+            return user

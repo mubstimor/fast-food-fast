@@ -3,3 +3,6 @@ source = api
 
 [report]
 omit = *api/db/database.py*
+        *api/frontend/views.py*
+        *api/tests/*.py*
+        *api/views/decorators.py*

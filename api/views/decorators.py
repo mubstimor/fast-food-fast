@@ -1,14 +1,12 @@
 """ define decorators to be used to protect endpoints. """
+from functools import wraps
 from flask_jwt_extended import (create_access_token, create_refresh_token,
-                                jwt_required, set_access_cookies,
+                                jwt_required,
                                 get_jwt_identity, JWTManager, get_jwt_claims,
                                 verify_jwt_in_request)
 from flask import request, jsonify
-from functools import wraps
-from pprint import pprint
 from api import app
 
-# app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 JWT = JWTManager(app)
 
 @JWT.unauthorized_loader
@@ -25,11 +23,7 @@ def admin_token_required(_f):
     def decorated(*args, **kwargs):
         """ check role = admin in user token. """
         verify_jwt_in_request()
-        # claims = get_jwt_identity()
         claims = get_jwt_claims()
-        pprint("RECEIVING")
-        pprint(claims)
-        pprint(str(claims['roles']))
         if str(claims['roles']) != "Admin":
             return jsonify({"msg": "Admins only!"}), 403
         else:

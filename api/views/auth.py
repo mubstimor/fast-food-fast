@@ -4,7 +4,7 @@ from flask_cors import cross_origin
 from email_validator import validate_email, EmailNotValidError
 from api.models.user import User
 from api import app
-from api.views.decorators import create_access_token, set_access_cookies
+from api.views.decorators import create_access_token
 
 
 USER = User()
@@ -53,24 +53,22 @@ def create_user():
             description: New user created
     """
     gender = ('male', 'female')
-    if not request.json or not 'email' in request.json:
-        return jsonify({'error': True, "message": "Add 'email' parameter to request"}), 400
     try:
         validate_email(request.json['email'])
     except EmailNotValidError as _e:
         return jsonify({'error': True, "message": str(_e)}), 400
     if request.json['gender'] not in gender:
-        return jsonify({'error': True, "message": "Add 'gender' parameter to request"}), 400
+        return jsonify({'error': True,
+                        "message": "Add 'gender' parameter to request"}), 400
 
     user = USER.check_if_user_exists(request.json['email'])
     if user:
         return jsonify({'message': 'user already exists', 'error':True}), 409
     else:
-        try:
-            post_user = USER.create_user(request.json)
-        except KeyError:
-            return jsonify({'error': True, "message": "Missing/Invalid parameters in request"}), 400
-        return jsonify({'user': post_user, "message": "User successfully created.", "error": False}), 201
+        post_user = USER.create_user(request.json)
+        return jsonify({'user': post_user,
+                        "message": "User successfully created.",
+                        "error": False}), 201
 
 
 @app.route('/api/v1/auth/login', methods=['POST', 'OPTIONS'])
@@ -102,7 +100,8 @@ def auth_user():
             description: Login successful
     """
     if not request.json or not 'password' in request.json:
-        return jsonify({'error': 'Missing password parameter in request'}), 400
+        return jsonify({
+            'error':'Missing password parameter in request'}), 400
     access_token = ""
     data = USER.authenticate(request.json)
     if data:
@@ -110,8 +109,9 @@ def auth_user():
         user = {}
         user['token'] = access_token
         user['role'] = data['role']
-        response = jsonify({'ok': True, 'data': user, 'message': 'login successful'})
-        # set_access_cookies(response, access_token)
+        response = jsonify({'ok': True, 'data': user,
+                            'message': 'login successful'})
         return response, 200
     else:
-        return jsonify({'ok': False, 'message': 'invalid username or password'}), 401
+        return jsonify({'ok': False,
+                        'message': 'invalid username or password'}), 401

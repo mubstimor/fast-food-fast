@@ -92,10 +92,3 @@ def update_order(order_id):
                         'error': True}), 400
     return jsonify({'order': ORDER.update_order(order_id, request.json),
                     'message': 'Order successfully updated', 'error': False})
-
-@app.route('/api/v1/orders/<int:order_id>', methods=['DELETE'])
-@admin_token_required
-@cross_origin()
-def delete_order(order_id):
-    """ delete requested resource from list. """
-    return jsonify({'result': ORDER.delete_order(order_id)})

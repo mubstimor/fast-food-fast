@@ -74,28 +74,6 @@ class UserViewTest(unittest.TestCase):
                                 json={"email": "mubstimor@gmail.com"})
         self.assertEqual(request.status_code, 400)
 
-    def test_get_user(self):
-        """ test get user method """
-        request = self.app.post('/api/v1/auth/signup',
-                                json=self.user)
-        created_user_id = int(request.json['user']['id'])
-        user_url = "/api/v1/users/" + str(created_user_id)
-        request = self.app.get(user_url)
-        self.assertEqual(request.status_code, 200)
-
-    def test_retrieve_unavailableuser(self):
-        """ test fetch user method by passing an index that's not available """
-        request = self.app.get('/api/v1/users/13')
-        self.assertEqual("not found", request.json['user'])
-
-    def test_get_all_users(self):
-        """ test get user method """
-        request = self.app.post('/api/v1/auth/signup',
-                                json=self.user)
-        request = self.app.get('/api/v1/users')
-        self.assertEqual(request.status_code, 200)
-        self.assertGreater(len(request.json['users']), 0)
-
     def tearDown(self):
         """ undo effects of tests. """
         self._db.drop_all_tables()

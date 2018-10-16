@@ -49,9 +49,9 @@ class Order(object):
         orderitems = self.cursor.fetchall()
         orders = []
         for item in orderitems:
-            order = {"order_id": item['id'], "item": item['item'],
-                     "quantity": item['quantity'], "status": item['status'],
-                     "customer": item['user_id']}
+            order = self.order_json(item['id'], item['item'],
+                                    item['quantity'], item['status'],
+                                    item['user_id'])
             orders.append(order)
         self.connection.close()
         return orders
@@ -86,8 +86,9 @@ class Order(object):
         order_item = self.cursor.fetchone()
         self.connection.close()
         order = {"id": order_item['id'], "item": order_item['item'],
-                    "quantity": order_item['quantity'], "status": order_item['status']
-                    }
+                 "quantity": order_item['quantity'], 
+                 "status": order_item['status']
+                }
         return order
 
     def get_order(self, order_id):
@@ -101,13 +102,13 @@ class Order(object):
               and od.user_id=cu.id and od.id=%s;
              ;"""
         self.cursor.execute(sql, (str(order_id)))
-        order_item = self.cursor.fetchone()
+        item = self.cursor.fetchone()
         rows_found = self.cursor.rowcount
         self.connection.close()
         if rows_found > 0:
-            order = {"id": order_item['id'], "item": order_item['item'],
-                     "quantity": order_item['quantity'], "status": order_item['status'],
-                     "user_id": order_item['user_id']}
+            order = self.order_json(item['id'], item['item'],
+                                    item['quantity'], item['status'],
+                                    item['user_id'])
             return order
 
     def update_order(self, order_id, order_data):
@@ -144,28 +145,9 @@ class Order(object):
         else:
             return "unable to update order"
 
-    def cancel_user_order(self, order_id, order_data):
-        """ cancel user order """
-        self.connection = self._db.connect_db()
-        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        order = order_data
-        order['status'] = str(order_data['status'])
-        self.cursor.execute("UPDATE orders set status='"
-                            + order['status']+"' WHERE id='"+str(order_id)+"'")
-        rows_updated = self.cursor.rowcount
-        self.connection.close()
-        order['id'] = order_id
+    def order_json(self, id, item, quantity, status, user_id):
+        """ generate json for single order object. """
+        order = {"id": id, "item": item,
+                 "quantity": quantity, "status": status,
+                 "customer": user_id}
         return order
-
-    def delete_order(self, order_id):
-        """ delete order. """
-        self.connection = self._db.connect_db()
-        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        self.cursor.execute("DELETE FROM orders WHERE id='"+str(order_id)+"'")
-        rows_deleted = self.cursor.rowcount
-        self.connection.close()
-        if rows_deleted > 0:
-            return "order was deleted"
-        else:
-            return "unable to delete order"
-

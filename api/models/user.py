@@ -44,34 +44,6 @@ class User(object):
         if rows_found > 0:
             return True
 
-    def fetch_all_users(self):
-        """ retrieve all users from db """
-        self.connection = self._db.connect_db()
-        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        self.cursor.execute("SELECT * FROM users")
-        useritems = self.cursor.fetchall()
-        users = []
-        for item in useritems:
-            user = {"id": item['id'], "email": item['email']}
-            users.append(user)
-        self.connection.close()
-        return users
-
-    def get_user(self, user_id):
-        """ retrieve user with given id"""
-        self.connection = self._db.connect_db()
-        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        self.cursor.execute("SELECT * FROM users where id='"+str(user_id)+"'")
-        user_item = self.cursor.fetchone()
-        rows_found = self.cursor.rowcount
-        self.connection.close()
-        if rows_found > 0:
-            user = {"id": user_item['id'], "email": user_item['email'],
-                    "role": user_item['user_type']}
-            return user
-        else:
-            return "not found"
-
     def authenticate(self, user_data):
         """ check user login """
         self.connection = self._db.connect_db()

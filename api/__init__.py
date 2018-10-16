@@ -12,7 +12,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['CORS_HEADERS'] = 'Authorization'
 app.config['CORS_HEADERS'] = 'Origin'
 
-from api.views import views, auth, orderview, userview, menuview, extraviews
+from api.views import views, auth, orderview, userview, menuview
 app.config.from_object('config')
 
 app.config['SWAGGER'] = {

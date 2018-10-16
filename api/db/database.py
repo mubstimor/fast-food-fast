@@ -42,7 +42,7 @@ class DatabaseConnection(object):
             print("Can't connect to database" + _ae)
 
     def create_all_tables(self):
-        """ create all tables. """
+        """ create all tables in db. """
         commands = (
             """
             CREATE TABLE IF NOT EXISTS fooditems (
@@ -86,8 +86,8 @@ class DatabaseConnection(object):
             print(error)
 
     def drop_all_tables(self):
-        """ delete all tables. """
-        commands = (
+        """ drop all db tables. """
+        drop_commands = (
             """
             DROP TABLE IF EXISTS fooditems CASCADE
             """,
@@ -99,7 +99,7 @@ class DatabaseConnection(object):
         try:
             self.connection = self.connect_db()
             self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-            for command in commands:
+            for command in drop_commands:
                 self.cursor.execute(command)
             self.connection.close()
         except (psycopg2.DatabaseError) as error:

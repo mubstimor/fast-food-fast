@@ -2,7 +2,7 @@
 
 Fast-Food-Fast is a food delivery service app for a restaurant.
 
-[![Build Status](https://travis-ci.com/mubstimor/fast-food-fast.svg?branch=develop)](https://travis-ci.com/mubstimor/fast-food-fast)  [![Coverage Status](https://coveralls.io/repos/github/mubstimor/fast-food-fast/badge.svg?branch=develop&service=github)](https://coveralls.io/github/mubstimor/fast-food-fast?branch=challenge_4&service=github)  [![Code Climate](https://codeclimate.com/github/codeclimate/codeclimate/badges/gpa.svg)](https://codeclimate.com/github/mubstimor/fast-food-fast)  [![Test Coverage](https://api.codeclimate.com/v1/badges/24230611fce8192b6279/test_coverage)](https://codeclimate.com/github/mubstimor/fast-food-fast/test_coverage)
+[![Build Status](https://travis-ci.com/mubstimor/fast-food-fast.svg?branch=develop)](https://travis-ci.com/mubstimor/fast-food-fast)  [![Coverage Status](https://coveralls.io/repos/github/mubstimor/fast-food-fast/badge.svg?branch=develop&service=github)](https://coveralls.io/github/mubstimor/fast-food-fast?branch=develop&service=github)  [![Code Climate](https://codeclimate.com/github/codeclimate/codeclimate/badges/gpa.svg)](https://codeclimate.com/github/mubstimor/fast-food-fast)  [![Test Coverage](https://api.codeclimate.com/v1/badges/24230611fce8192b6279/test_coverage)](https://codeclimate.com/github/mubstimor/fast-food-fast/test_coverage)
 
 
 ### Template Link

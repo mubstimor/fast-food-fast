@@ -37,3 +37,12 @@ def add_claims_to_access_token(identity):
     else:
         return {'roles': 'Customer'}
     
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        user = get_jwt_identity()
+        if user['role'] != 'Admin':
+            return jsonify({'message': "Unauthorised to access this area",
+                            'error': True}), 403
+        return f(*args, **kwargs)
+    return decorated_function

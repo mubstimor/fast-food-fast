@@ -8,6 +8,7 @@ ORDER = Order()
 
 @app.route('/api/v1/orders', methods=['GET'])
 @jwt_required
+@admin_required
 @cross_origin()
 def get_all_orders():
     """
@@ -20,9 +21,9 @@ def get_all_orders():
       200:
         description: All available orders
     """
-    user = get_jwt_identity()
-    if user['role'] != 'Admin':
-        return jsonify({'message': "Unauthorised to access this area", 'error': True}), 403
+    # user = get_jwt_identity()
+    # if user['role'] != 'Admin':
+    #     return jsonify({'message': "Unauthorised to access this area", 'error': True}), 403
 
     orders = ORDER.fetch_all_orders()
     if orders:
@@ -32,6 +33,7 @@ def get_all_orders():
 
 @app.route('/api/v1/orders/<int:order_id>', methods=['GET'])
 @jwt_required
+@admin_required
 @cross_origin()
 def get_order(order_id):
     """
@@ -51,9 +53,9 @@ def get_order(order_id):
       200:
         description: The requested order
     """
-    user = get_jwt_identity()
-    if user['role'] != 'Admin':
-        return jsonify({'message': "Unauthorised to access this area", 'error': True}), 403
+    # user = get_jwt_identity()
+    # if user['role'] != 'Admin':
+    #     return jsonify({'message': "Unauthorised to access this area", 'error': True}), 403
 
     order = ORDER.get_order(order_id)
     if order:

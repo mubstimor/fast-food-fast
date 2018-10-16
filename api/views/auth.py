@@ -1,13 +1,16 @@
 """ manage signup and login functions of the auth module. """
 from flask import request, jsonify
+from flask_cors import cross_origin
 from email_validator import validate_email, EmailNotValidError
 from api.models.user import User
 from api import app
 from api.views.decorators import create_access_token
 
+
 USER = User()
 
 @app.route('/api/v1/auth/signup', methods=['POST'])
+@cross_origin()
 def create_user():
     """
         Register a new user
@@ -50,27 +53,26 @@ def create_user():
             description: New user created
     """
     gender = ('male', 'female')
-    if not request.json or not 'email' in request.json:
-        return jsonify({'error': True, "message": "Add 'email' parameter to request"}), 400
     try:
         validate_email(request.json['email'])
     except EmailNotValidError as _e:
         return jsonify({'error': True, "message": str(_e)}), 400
     if request.json['gender'] not in gender:
-        return jsonify({'error': True, "message": "Add 'gender' parameter to request"}), 400
+        return jsonify({'error': True,
+                        "message": "Add 'gender' parameter to request"}), 400
 
     user = USER.check_if_user_exists(request.json['email'])
     if user:
-        return jsonify({'error': 'user already exists'}), 409
+        return jsonify({'message': 'user already exists', 'error':True}), 409
     else:
-        try:
-            post_user = USER.create_user(request.json)
-        except KeyError:
-            return jsonify({'error': True, "message": "Missing/Invalid parameters in request"}), 400
-        return jsonify({'user': post_user, "message": "User successfully created."}), 201
+        post_user = USER.create_user(request.json)
+        return jsonify({'user': post_user,
+                        "message": "User successfully created.",
+                        "error": False}), 201
 
 
-@app.route('/api/v1/auth/login', methods=['POST'])
+@app.route('/api/v1/auth/login', methods=['POST', 'OPTIONS'])
+@cross_origin()
 def auth_user():
     """
         Authenticate user
@@ -98,13 +100,18 @@ def auth_user():
             description: Login successful
     """
     if not request.json or not 'password' in request.json:
-        return jsonify({'error': 'Missing password parameter in request'}), 400
+        return jsonify({
+            'error':'Missing password parameter in request'}), 400
     access_token = ""
     data = USER.authenticate(request.json)
     if data:
         access_token = create_access_token(identity=data)
         user = {}
         user['token'] = access_token
-        return jsonify({'ok': True, 'data': user}), 200
+        user['role'] = data['role']
+        response = jsonify({'ok': True, 'data': user,
+                            'message': 'login successful'})
+        return response, 200
     else:
-        return jsonify({'ok': False, 'message': 'invalid username or password'}), 401
+        return jsonify({'ok': False,
+                        'message': 'invalid username or password'}), 401

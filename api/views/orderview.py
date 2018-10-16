@@ -1,3 +1,5 @@
+""" managaes access operations on order objects. """
+from flask_cors import cross_origin
 from api.models.order import Order
 from api import app
 from api.views.decorators import *
@@ -5,7 +7,8 @@ from api.views.decorators import *
 ORDER = Order()
 
 @app.route('/api/v1/orders', methods=['GET'])
-@admin_token_required
+@jwt_required
+@cross_origin()
 def get_all_orders():
     """
     Endpoint for returning list of orders
@@ -17,14 +20,19 @@ def get_all_orders():
       200:
         description: All available orders
     """
+    user = get_jwt_identity()
+    if user['role'] != 'Admin':
+        return jsonify({'message': "Unauthorised to access this area", 'error': True}), 403
+
     orders = ORDER.fetch_all_orders()
     if orders:
-        return jsonify({'orders': orders})
+        return jsonify({'orders': orders, 'error': False})
     else:
-        return jsonify({'orders': "No orders available"})
-  
+        return jsonify({'orders': "No orders available", 'error': False})
+
 @app.route('/api/v1/orders/<int:order_id>', methods=['GET'])
-@admin_token_required
+@jwt_required
+@cross_origin()
 def get_order(order_id):
     """
     Get single order
@@ -43,6 +51,10 @@ def get_order(order_id):
       200:
         description: The requested order
     """
+    user = get_jwt_identity()
+    if user['role'] != 'Admin':
+        return jsonify({'message': "Unauthorised to access this area", 'error': True}), 403
+
     order = ORDER.get_order(order_id)
     if order:
         return jsonify({'order': order})
@@ -51,6 +63,7 @@ def get_order(order_id):
   
 @app.route('/api/v1/orders/<int:order_id>', methods=['PUT'])
 @admin_token_required
+@cross_origin()
 def update_order(order_id):
     """
         Update a single order's status
@@ -75,11 +88,14 @@ def update_order(order_id):
         """
     status = ("processing", "cancelled", "complete")
     if request.json['status'] not in status:
-        return jsonify({'error': 'Missing status parameter in request'}), 400
-    return jsonify({'order': ORDER.update_order(order_id, request.json)})
+        return jsonify({'message': 'Missing status parameter in request',
+                        'error': True}), 400
+    return jsonify({'order': ORDER.update_order(order_id, request.json),
+                    'message': 'Order successfully updated', 'error': False})
 
 @app.route('/api/v1/orders/<int:order_id>', methods=['DELETE'])
 @admin_token_required
+@cross_origin()
 def delete_order(order_id):
     """ delete requested resource from list. """
     return jsonify({'result': ORDER.delete_order(order_id)})

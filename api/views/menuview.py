@@ -1,11 +1,30 @@
+""" manages routes to menu items. """
+from flask_cors import cross_origin
 from api import app
 from api.models.fooditem import FoodItem
 from api.views.decorators import *
 
 FOODITEM = FoodItem()
 
+@app.route('/api/v1/menu', methods=['GET', 'OPTIONS'])
+@cross_origin()
+def get_all_fooditems():
+    """
+    Get available menu
+    ---
+    tags:
+      - MENU
+    produces:
+      - application/json
+    responses:
+      200:
+        description: Displays a list of available menu item
+    """
+    return jsonify({'menu': FOODITEM.fetch_all_fooditems()})
+
 @app.route('/api/v1/menu', methods=['POST'])
 @admin_token_required
+@cross_origin()
 def create_fooditem():
     """
         Create a new menu item
@@ -57,25 +76,60 @@ def create_fooditem():
     try:
         request.json['price'] = int(request.json['price'])
     except ValueError:
-        return jsonify({'error': 'Invalid price value'}), 400
+        return jsonify({'message': 'Invalid price value', 'error': True}), 400
 
     item = FOODITEM.check_if_item_exists(request.json['name'])
     if item:
-        return jsonify({'error': 'Menu Item already exists'}), 409
+        return jsonify({'message': 'Menu Item already exists', 'error': True}), 409
     else:
-        return jsonify({'fooditem': FOODITEM.create_item(request.json)}), 201
+        return jsonify({'fooditem': FOODITEM.create_item(request.json),
+                        'error': False,
+                        'message': 'Item successfully created.'}), 201
 
-@app.route('/api/v1/menu', methods=['GET'])
-def get_all_fooditems():
+@app.route('/api/v1/menu/<int:item_id>', methods=['GET'])
+def get_fooditem(item_id):
     """
-    Get available menu
+    Get single menu item
     ---
     tags:
       - MENU
     produces:
       - application/json
+    parameters:
+      - in: path
+        name: item_id
+        type: int
+        description: item_id to be retrieved
+        required: false
     responses:
       200:
-        description: Displays a list of available menu item
+        description: The requested menu item
     """
-    return jsonify({'menu': FOODITEM.fetch_all_fooditems()})
+    item = FOODITEM.get_item(item_id)
+    return jsonify({'fooditem': item})
+    
+@app.route('/api/v1/menu/<int:item_id>', methods=['PUT'])
+@jwt_required
+@cross_origin()
+def update_fooditem(item_id):
+    """ update food item with put request. """
+    user = get_jwt_identity()
+    if user['role'] != 'Admin':
+        return jsonify({'message': "Unauthorised to access this area", 'error': True}), 403
+
+    return jsonify({'fooditem': FOODITEM.update_item(item_id, request.json),
+                    'message': 'Menu Item updated',
+                    'error': False})
+
+@app.route('/api/v1/menu/<int:item_id>', methods=['DELETE'])
+@jwt_required
+@cross_origin()
+def delete_fooditem(item_id):
+    """ delete requested resource from list. """
+    user = get_jwt_identity()
+    if user['role'] != 'Admin':
+        return jsonify({'message': "Unauthorised to access this area", 'error': True}), 403
+
+    return jsonify({'result': FOODITEM.delete_item(item_id),
+                    'message': 'Item deleted',
+                    'error': False})

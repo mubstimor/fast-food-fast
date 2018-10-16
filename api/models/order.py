@@ -19,15 +19,12 @@ class Order(object):
         order['item'] = int(order_data['item'])
         order['quantity'] = str(order_data['quantity'])
         order['status'] = 'new'
-        try:
-            self.cursor.execute("INSERT INTO orders(item, quantity, status, user_id) \
-                                VALUES('"+ str(order['item']) + "','"+ order['quantity']
-                                +"', '"+ order['status']+"', '"+str(user_id)+"') RETURNING id")
-            order_id = self.cursor.fetchone()[0]
-            self.connection.close()
-            return order_id
-        except psycopg2.DatabaseError:
-            return
+        self.cursor.execute("INSERT INTO orders(item, quantity, status, user_id) \
+                            VALUES('"+ str(order['item']) + "','"+ order['quantity']
+                            +"', '"+ order['status']+"', '"+str(user_id)+"') RETURNING id")
+        order_id = self.cursor.fetchone()[0]
+        self.connection.close()
+        return order_id
 
     def check_if_order_exists(self, user_id, item, quantity):
         """ retrieve order with given id. """
@@ -47,7 +44,7 @@ class Order(object):
         self.cursor.execute("SELECT od.id as id, menu.name as item, od.quantity as quantity, \
                             cu.name as user_id, od.status as status \
                             FROM orders as od, users as cu, fooditems as menu \
-                            WHERE od.user_id=cu.id and od.id=menu.item_id \
+                            WHERE od.user_id=cu.id and od.item=menu.item_id \
                             and od.status !='cancelled'")
         orderitems = self.cursor.fetchall()
         orders = []
@@ -76,6 +73,22 @@ class Order(object):
             orders.append(order)
         self.connection.close()
         return orders
+
+    def fetch_user_order(self, order_id, user_id):
+        """ retrieve order of a user based on order id & user id. """
+        self.connection = self._db.connect_db()
+        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        self.cursor.execute("SELECT od.id as id, menu.name as item, \
+                            od.quantity as quantity, od.status as status \
+                            FROM orders as od, fooditems as menu \
+                            WHERE od.item=menu.item_id and od.status !='cancelled' \
+                            and od.user_id='"+str(user_id)+"' and od.id='"+str(order_id)+"'")
+        order_item = self.cursor.fetchone()
+        self.connection.close()
+        order = {"id": order_item['id'], "item": order_item['item'],
+                    "quantity": order_item['quantity'], "status": order_item['status']
+                    }
+        return order
 
     def get_order(self, order_id):
         """ retrieve order with given id. """
@@ -131,6 +144,19 @@ class Order(object):
         else:
             return "unable to update order"
 
+    def cancel_user_order(self, order_id, order_data):
+        """ cancel user order """
+        self.connection = self._db.connect_db()
+        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        order = order_data
+        order['status'] = str(order_data['status'])
+        self.cursor.execute("UPDATE orders set status='"
+                            + order['status']+"' WHERE id='"+str(order_id)+"'")
+        rows_updated = self.cursor.rowcount
+        self.connection.close()
+        order['id'] = order_id
+        return order
+
     def delete_order(self, order_id):
         """ delete order. """
         self.connection = self._db.connect_db()
@@ -142,3 +168,4 @@ class Order(object):
             return "order was deleted"
         else:
             return "unable to delete order"
+

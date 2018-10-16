@@ -3,9 +3,14 @@ import datetime
 from flask import Flask
 from flasgger import Swagger
 from environs import Env
+from flask_cors import CORS
 from api.db.database import DatabaseConnection
 
 app = Flask(__name__, instance_relative_config=True)
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+app.config['CORS_HEADERS'] = 'Content-Type'
+app.config['CORS_HEADERS'] = 'Authorization'
+app.config['CORS_HEADERS'] = 'Origin'
 
 from api.views import views, auth, orderview, userview, menuview, extraviews
 app.config.from_object('config')

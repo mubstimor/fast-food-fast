@@ -1,6 +1,5 @@
 """ Test class for FoodItem"""
 import unittest
-from pprint import pprint
 from api import app
 from api.db.database import DatabaseConnection
 
@@ -43,7 +42,7 @@ class FoodItemViewTest(unittest.TestCase):
                                 headers={"Authorization": self.bearer_token})
         self.assertEqual(request.status_code, 409)
         self.assertEqual(request.headers['Content-Type'], 'application/json')
-        self.assertEqual("Menu Item already exists", request.json['error'])
+        self.assertEqual("Menu Item already exists", request.json['message'])
 
     def test_create_menuItemWithInvalidPrice(self):
         """ test post method by including an invalid price value."""
@@ -58,10 +57,8 @@ class FoodItemViewTest(unittest.TestCase):
                                 json={"name": "Chips",
                                       "category": "Foods", "price":6000},
                                 headers={"Authorization": self.bearer_token})
-        pprint(request.json)
         created_item_id = int(request.json['fooditem']['id'])
         request = self.app.get('/api/v1/menu/' + str(created_item_id))
-        pprint(request.json)
         self.assertEqual(request.status_code, 200)
         self.assertEqual("Chips", request.json['fooditem']['name'])
 

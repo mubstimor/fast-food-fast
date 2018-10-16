@@ -79,11 +79,10 @@ def create_order():
         """
     if not request.json or not 'item' in request.json:
         return jsonify({'message': 'Missing Item parameter in request', 'error': True}), 400
-  
-    try:
-        request.json['quantity'] = int(request.json['quantity'])
-    except ValueError:
-        return jsonify({'message': 'Invalid quantity value', 'error': True}), 400
+
+    if not isinstance(request.json['quantity'], int):
+        return jsonify({'message': 'Invalid quantity value',
+                        'error': True}), 400
 
     current_user = get_jwt_identity()
     logged_in_user = current_user['id']
@@ -113,9 +112,3 @@ def cancel_user_order(order_id):
     return jsonify({'order': ORDER.update_order(order_id, request.json),
                     'error': False, 'message': 'Order Cancelled Successfully'})
 
-# def numerical_validator(name, value):
-#     """ validate a passed parameter if its integer or not. """
-#     try:
-#         value = int(value)
-#     except ValueError:
-#         return jsonify({'message': 'Invalid value: '+ str(value)+' for '+ name, 'error': True}), 400

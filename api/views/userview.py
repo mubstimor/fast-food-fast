@@ -79,6 +79,7 @@ def create_order():
         """
     if not request.json or not 'item' in request.json:
         return jsonify({'message': 'Missing Item parameter in request', 'error': True}), 400
+  
     try:
         request.json['quantity'] = int(request.json['quantity'])
     except ValueError:
@@ -109,5 +110,12 @@ def update_user_order(order_id):
 @cross_origin()
 def cancel_user_order(order_id):
     """ cancel user order with put request. """
-    return jsonify({'order': ORDER.cancel_user_order(order_id, request.json),
+    return jsonify({'order': ORDER.update_order(order_id, request.json),
                     'error': False, 'message': 'Order Cancelled Successfully'})
+
+# def numerical_validator(name, value):
+#     """ validate a passed parameter if its integer or not. """
+#     try:
+#         value = int(value)
+#     except ValueError:
+#         return jsonify({'message': 'Invalid value: '+ str(value)+' for '+ name, 'error': True}), 400

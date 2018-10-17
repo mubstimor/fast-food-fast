@@ -63,14 +63,25 @@ class Order(object):
         self.connection = self._db.connect_db()
         self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         self.cursor.execute("SELECT od.id as id, menu.name as item, \
+		trim(trailing ' ' from to_char(od.last_updated, 'Day')) || \
+          ', ' || \
+          trim(trailing ' ' from to_char(od.last_updated, 'Month')) || \
+          ' ' || \
+          to_char(od.last_updated, 'DD') || \
+          ', ' || \
+          to_char(od.last_updated, 'YYYY') \
+          ||' at ' || \
+          to_char(od.last_updated, 'HH24:MM') \
+           as order_date, \
                             od.quantity as quantity, od.status as status \
                             FROM orders as od, fooditems as menu \
-                            WHERE od.item=menu.item_id and od.status !='cancelled' \
+                            WHERE od.item=menu.item_id \
+                            and od.status !='cancelled' \
                             and od.user_id='"+str(user_id)+"'")
         order_items = self.cursor.fetchall()
         orders = []
         for item in order_items:
-            order = {"id": item['id'], "item": item['item'], "quantity": item['quantity'],
+            order = {"id": item['id'], "order_date": item['order_date'], "item": item['item'], "quantity": item['quantity'],
                      "status": item['status']}
             orders.append(order)
         self.connection.close()

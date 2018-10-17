@@ -80,7 +80,7 @@ class OrderViewTest(unittest.TestCase):
                                 headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 409)
         self.assertEqual(request.headers['Content-Type'], 'application/json')
-        self.assertEqual("Order already exists", request.json['message'])
+        self.assertEqual("A recent similar order already exists, would you rather simply update it?", request.json['message'])
 
     def test_create_order_without_item_in_request(self):
         """ test post method by not including item in request """
@@ -95,7 +95,6 @@ class OrderViewTest(unittest.TestCase):
         request = self.app.post(self.user_orders_url, json=self.default_order,
                                 headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 400)
-        # self.assertEqual("Invalid quantity value", request.json['message'])
 
     def test_retrieve_order(self):
         """ test get single order """

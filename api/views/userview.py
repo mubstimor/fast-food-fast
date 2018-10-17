@@ -91,7 +91,8 @@ def create_order():
                                         request.json['item'],
                                         request.json['quantity'])
     if order:
-        return jsonify({'message': 'Order already exists', 'error': True}), 409
+        return jsonify({'message': 'A recent similar order already exists, would you rather simply update it?',
+                        'error': True}), 409
     else:
         create_user_order = ORDER.create_order(logged_in_user, request.json)
         return jsonify({"message":"Order successfully created",

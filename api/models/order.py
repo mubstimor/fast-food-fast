@@ -31,7 +31,9 @@ class Order(object):
         self.connection = self._db.connect_db()
         self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         self.cursor.execute("SELECT * FROM orders where user_id='"+str(user_id) \
-                            +"' AND item='"+ str(item)+"' AND quantity='"+ str(quantity)+"'")
+                            +"' AND item='"+ str(item)
+                            +"' AND quantity='"+ str(quantity)
+                            +"' AND last_updated > current_timestamp - interval '30 minutes'")
         rows_found = self.cursor.rowcount
         self.connection.close()
         if rows_found > 0:

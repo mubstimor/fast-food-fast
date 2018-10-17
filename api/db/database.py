@@ -49,7 +49,8 @@ class DatabaseConnection(object):
                 item_id serial PRIMARY KEY,
                 name varchar,
                 category varchar,
-                price integer NOT NULL
+                price integer NOT NULL,
+                date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
             """,
             """ CREATE TABLE IF NOT EXISTS users (
@@ -58,7 +59,8 @@ class DatabaseConnection(object):
                     email varchar,
                     password varchar,
                     gender varchar,
-                    user_type varchar DEFAULT 'Customer'
+                    user_type varchar DEFAULT 'Customer',
+                    date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )
             """,
             """
@@ -68,6 +70,7 @@ class DatabaseConnection(object):
                     quantity integer,
                     status varchar,
                     user_id integer,
+                    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (item)
                         REFERENCES fooditems (item_id)
                         ON UPDATE CASCADE ON DELETE CASCADE,

@@ -74,7 +74,7 @@ def create_fooditem():
             - bearerAuth: []            
     """
     try:
-        request.json['price'] = int(request.json['price'])
+        int(request.json['price'])
     except ValueError:
         return jsonify({'message': 'Invalid price value', 'error': True}), 400
 

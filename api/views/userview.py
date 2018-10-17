@@ -80,9 +80,10 @@ def create_order():
     if not request.json or not 'item' in request.json:
         return jsonify({'message': 'Missing Item parameter in request', 'error': True}), 400
 
-    if not isinstance(request.json['quantity'], int):
-        return jsonify({'message': 'Invalid quantity value',
-                        'error': True}), 400
+    try:
+        int(request.json['quantity'])
+    except ValueError:
+        return jsonify({'message': 'Invalid quantity value', 'error': True}), 400
 
     current_user = get_jwt_identity()
     logged_in_user = current_user['id']

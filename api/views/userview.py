@@ -113,4 +113,3 @@ def cancel_user_order(order_id):
     """ cancel user order with put request. """
     return jsonify({'order': ORDER.update_order(order_id, request.json),
                     'error': False, 'message': 'Order Cancelled Successfully'})
-

@@ -108,13 +108,12 @@ class Order(object):
         """ retrieve order with given id. """
         self.connection = self._db.connect_db()
         self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        sql = """SELECT od.id as id, menu.name as item,
-             od.quantity as quantity, od.status as status, cu.name as user_id
-             FROM orders as od, fooditems as menu, users as cu
-              WHERE od.item=menu.item_id and od.status !='cancelled'
-              and od.user_id=cu.id and od.id=%s;
-             ;"""
-        self.cursor.execute(sql, (str(order_id)))
+        sql = "SELECT od.id as id, menu.name as item,\
+             od.quantity as quantity, od.status as status, cu.name as user_id \
+             FROM orders as od, fooditems as menu, users as cu \
+              WHERE od.item=menu.item_id and od.status !='cancelled' \
+              and od.user_id=cu.id and od.id='"+str(order_id)+"'"
+        self.cursor.execute(sql)
         item = self.cursor.fetchone()
         rows_found = self.cursor.rowcount
         self.connection.close()
@@ -158,9 +157,9 @@ class Order(object):
         else:
             return "unable to update order"
 
-    def order_json(self, id, item, quantity, status, user_id):
+    def order_json(self, _id, item, quantity, status, user_id):
         """ generate json for single order object. """
-        order = {"id": id, "item": item,
+        order = {"id": _id, "item": item,
                  "quantity": quantity, "status": status,
                  "customer": user_id}
         return order

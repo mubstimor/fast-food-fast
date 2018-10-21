@@ -7,8 +7,7 @@ from flask_cors import CORS
 from api.db.database import DatabaseConnection
 
 app = Flask(__name__, instance_relative_config=True)
-cors = CORS(app, resources={r"/api/*": {"origins": "*"}},
-            allow_headers="*")
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['CORS_HEADERS'] = 'Authorization'
 app.config['CORS_HEADERS'] = 'Origin'
@@ -21,7 +20,7 @@ app.config['SWAGGER'] = {
     "title": "FastFoodFast API Documentation",
     "headers": [
         ('Access-Control-Allow-Origin', '*'),
-        ('Access-Control-Allow-Methods', "GET, POST, PUT, DELETE"),
+        ('Access-Control-Allow-Methods', "GET, POST, PUT, DELETE, OPTIONS"),
         ('Access-Control-Allow-Credentials', "true"),
     ]
 }
@@ -33,3 +32,11 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(days=1)
 
 _db = DatabaseConnection()
 _db.create_all_tables()
+
+@app.after_request
+def after_request(response):
+    """ override acceptable methods """
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    return response

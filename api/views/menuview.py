@@ -117,20 +117,20 @@ def update_fooditem(item_id):
     # user = get_jwt_identity()
     # if user['role'] != 'Admin':
     #     return jsonify({'message': "Unauthorised to access this area", 'error': True}), 403
-    pprint("CALL TO UPDATE METHOD")
+    
 
     return jsonify({'fooditem': FOODITEM.update_item(item_id, request.json),
                     'message': 'Menu Item updated',
                     'error': False})
 
 @app.route('/api/v1/menu/<int:item_id>', methods=['DELETE'])
-@jwt_required
+@admin_token_required
 @cross_origin()
 def delete_fooditem(item_id):
     """ delete requested resource from list. """
-    user = get_jwt_identity()
-    if user['role'] != 'Admin':
-        return jsonify({'message': "Unauthorised to access this area", 'error': True}), 403
+    # user = get_jwt_identity()
+    # if user['role'] != 'Admin':
+    #     return jsonify({'message': "Unauthorised to access this area", 'error': True}), 403
 
     return jsonify({'result': FOODITEM.delete_item(item_id),
                     'message': 'Item deleted',

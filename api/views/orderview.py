@@ -70,21 +70,39 @@ def update_order(order_id):
         ---
         tags:
           - ORDER
+        schemes:
+          - bearer
+
+        securityDefinitions:
+          api_key:
+            type: apiKey
+            name: api_key
+            in: header
+            description: Requests should pass an api_key header.
+
+        security:
+          - api_key: []
+
         parameters:
           - in: body
             status: body
-            schema:
-              id: Order
           - in: path
             name: order_id
             required: false
             description: The ID of the order, try 1!
-            type: string
+            type: integer
+        schema:
+            id: Status
+            required:
+              - status
+            properties:
+              status:
+                  type: string
+                  description: state of order
+                  default: New
         responses:
           200:
             description: The order has been updated
-            # schema:
-            #   id: Order
         """
     status = ("processing", "cancelled", "complete")
     if request.json['status'] not in status:

@@ -62,7 +62,7 @@ def create_fooditem():
                     default: 3000
         responses:
           201:
-            description: New order created
+            description: New menu item created
         # openapi: 3.0.0
         components:
             securitySchemes:

@@ -1,4 +1,5 @@
 """ manages routes to menu items. """
+from pprint import pprint
 from flask_cors import cross_origin
 from api import app
 from api.models.fooditem import FoodItem
@@ -116,6 +117,7 @@ def update_fooditem(item_id):
     # user = get_jwt_identity()
     # if user['role'] != 'Admin':
     #     return jsonify({'message': "Unauthorised to access this area", 'error': True}), 403
+    pprint("CALL TO UPDATE METHOD")
 
     return jsonify({'fooditem': FOODITEM.update_item(item_id, request.json),
                     'message': 'Menu Item updated',

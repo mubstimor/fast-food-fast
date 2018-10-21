@@ -60,7 +60,7 @@ def get_order(order_id):
         return jsonify({'order': order})
     else:
         return jsonify({'order': 'Order not found'}), 404
-  
+
 @app.route('/api/v1/orders/<int:order_id>', methods=['PUT'])
 @admin_token_required
 @cross_origin()

@@ -243,34 +243,6 @@ class OrderViewTest(unittest.TestCase):
                                headers={"Authorization": self.admin_token})
         self.assertEqual(request.status_code, 400)
 
-    # def test_update_menuitem_with_client_token(self):
-    #     """ test update food item """
-    #     request = self.app.post('/api/v1/menu', \
-    #                             json={"name": "Liver",
-    #                                   "category": "Foods", "price":8000},
-    #                             headers={"Authorization": self.admin_token})
-    #     created_item_id = int(request.json['fooditem']['id'])
-    #     item_url = "/api/v1/menu/" + str(created_item_id)
-    #     request = self.app.put(item_url,
-    #                            json={"name": "Fish Fillet",
-    #                                  "category": "Foods", "price":9000},
-    #                            headers={"Authorization": self.client_token})
-    #     self.assertEqual(request.status_code, 403)
-    #     self.assertEqual("Unauthorised to access this area", request.json['message'])
-
-    # def test_delete_menuitem_with_client_token(self):
-    #     """ test delete method """
-    #     request = self.app.post('/api/v1/menu',
-    #                             json={"name": "Hot Chocolate",
-    #                                   "category": "Beverages", "price":8000},
-    #                             headers={"Authorization": self.admin_token})
-    #     created_item_id = int(request.json['fooditem']['id'])
-    #     item_url = "/api/v1/menu/" + str(created_item_id)
-    #     request = self.app.delete(item_url,
-    #                               headers={"Authorization":self.client_token})
-    #     self.assertEqual(request.status_code, 403)
-    #     self.assertEqual("Unauthorised to access this area", request.json['message'])
-
     def tearDown(self):
         """ undo effects of tests. """
         self._db.drop_all_tables()

@@ -63,6 +63,7 @@ def create_order():
         ---
         tags:
           - ORDER
+          
         securityDefinitions:
             bearerAuth:
                 type: bearer
@@ -88,6 +89,8 @@ def create_order():
         responses:
           201:
             description: New order created
+          400:
+            description: Bad/Missing parameters in request
         # openapi: 3.0.0
         components:
             securitySchemes:

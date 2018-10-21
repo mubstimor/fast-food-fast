@@ -17,19 +17,27 @@ def get_user_orders():
     ---
     tags:
       - ORDER
+    
+    schemes:
+      - bearer
+
+    securityDefinitions:
+      api_key:
+        type: apiKey
+        name: api_key
+        in: header
+        description: Requests should pass an api_key header.
+
+    security:
+      - api_key: []
+
     produces:
       - application/json
     responses:
       200:
         description: Displays a users order history
-    security:
-        -JWT:
-            descript: send token
-            type: apiKey
-            scheme: bearer
-            name: access-token
-            in: header
-            bearerFormat: JWT
+      401:
+        description: Auth token missing
     """
     current_user = get_jwt_identity()
     get_orders = ORDER.fetch_user_orders(current_user['id'])
@@ -55,6 +63,9 @@ def create_order():
         ---
         tags:
           - ORDER
+        securityDefinitions:
+            bearerAuth:
+                type: bearer
         parameters:
           - in: body
             item: body
@@ -66,16 +77,27 @@ def create_order():
                 - quantity
               properties:
                 item:
-                  type: string
-                  description: ordered item
-                  default: Chips
+                    type: integer
+                    description: ordered food item
+                    default: 1
                 quantity:
-                  type: integer
-                  description: number of items requested
-                  default: 1
+                    type: integer
+                    description: number of items requested
+                    default: 1
+
         responses:
           201:
             description: New order created
+        # openapi: 3.0.0
+        components:
+            securitySchemes:
+                bearerAuth:
+                    type: apiKey
+                    scheme: bearer
+                    in: header
+                    bearerFormat: JWT
+        security:
+            - bearerAuth: []            
         """
     if not request.json or not 'item' in request.json:
         return jsonify({'message': 'Missing Item parameter in request', 'error': True}), 400

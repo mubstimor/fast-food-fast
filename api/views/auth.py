@@ -5,6 +5,7 @@ from email_validator import validate_email, EmailNotValidError
 from api.models.user import User
 from api import app
 from api.views.decorators import create_access_token
+from pprint import pprint
 
 
 USER = User()
@@ -105,13 +106,22 @@ def auth_user():
     access_token = ""
     data = USER.authenticate(request.json)
     if data:
+        pprint("USER DATA")
+        pprint(data)
         access_token = create_access_token(identity=data)
         user = {}
         user['token'] = access_token
         user['role'] = data['role']
         response = jsonify({'ok': True, 'data': user,
                             'message': 'login successful'})
-        return response, 200
+        response.status_code = 200
+
+        # add token to response headers - so SwaggerUI can use it
+        response.headers.extend({'jwt-token': access_token})
+        return response
     else:
         return jsonify({'ok': False,
-                        'message': 'invalid username or password'}), 401
+                        'message': 'invalid username or password',
+                        'data':data
+                        }), 401
+

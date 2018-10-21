@@ -24,6 +24,7 @@ app.config['SWAGGER'] = {
         ('Access-Control-Allow-Credentials', "true"),
     ]
 }
+app.config['JWT_AUTH_URL_RULE'] = '/api/auth'
 SWAGGER = Swagger(app)
 ENV = Env()
 ENV.read_env()

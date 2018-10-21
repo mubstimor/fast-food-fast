@@ -109,7 +109,7 @@ def get_fooditem(item_id):
     return jsonify({'fooditem': item})
     
 @app.route('/api/v1/menu/<int:item_id>', methods=['PUT'])
-@jwt_required
+@admin_token_required
 @cross_origin()
 def update_fooditem(item_id):
     """ update food item with put request. """

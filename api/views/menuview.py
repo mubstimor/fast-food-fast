@@ -111,7 +111,7 @@ def get_fooditem(item_id):
     
 @app.route('/api/v1/menu/<int:item_id>', methods=['PUT'])
 @admin_token_required
-@cross_origin()
+@cross_origin(allow_headers=['Content-Type', 'Authorization'])
 def update_fooditem(item_id):
     """ update food item with put request. """
     # user = get_jwt_identity()

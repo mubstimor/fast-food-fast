@@ -50,7 +50,8 @@ class DatabaseConnection(object):
                 name varchar,
                 category varchar,
                 price integer NOT NULL,
-                date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                status varchar DEFAULT 'Published'
             )
             """,
             """ CREATE TABLE IF NOT EXISTS users (

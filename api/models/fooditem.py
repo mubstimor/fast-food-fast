@@ -76,8 +76,11 @@ class FoodItem(object):
         item['name'] = str(item_data['name'])
         item['price'] = int(item_data['price'])
         item['category'] = str(item_data['category'])
+        item['status'] = str(item_data['status'])
         self.cursor.execute("UPDATE fooditems set name='"+item['name']
-                            +"', category='"+item['category']+"', price='"+str(item['price'])
+                            +"', category='"+item['category']
+                            +"', price='"+str(item['price'])
+                            +"', status='"+str(item['status'])
                             +"' WHERE item_id='"+str(item_id)+"'")
         rows_updated = self.cursor.rowcount
         self.connection.close()

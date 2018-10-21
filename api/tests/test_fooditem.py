@@ -87,7 +87,8 @@ class FoodItemViewTest(unittest.TestCase):
         item_url = "/api/v1/menu/" + str(created_item_id)
         request = self.app.put(item_url,
                                json={"name": "Fish Fillet",
-                                     "category": "Foods", "price":9000},
+                                     "category": "Foods", "price":9000,
+                                     "status": "Published"},
                                headers={"Authorization": self.bearer_token})
         self.assertEqual(request.status_code, 200)
         self.assertEqual(9000, request.json['fooditem']['price'])
@@ -102,7 +103,8 @@ class FoodItemViewTest(unittest.TestCase):
         item_url = "/api/v1/menu/" + str(created_item_id)
         request = self.app.put(item_url,
                                json={"name": "Fish Fillet",
-                                     "category": "Foods", "price":9000},
+                                     "category": "Foods", "price":9000,
+                                     "status": "Published"},
                                headers={"Authorization": self.bearer_token})
         self.assertEqual(request.status_code, 200)
         self.assertEqual("unable to update item", request.json['fooditem'])

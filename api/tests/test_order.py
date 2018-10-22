@@ -202,7 +202,7 @@ class OrderViewTest(unittest.TestCase):
         created_order_id = int(request.json['id'])
         new_order_link = "api/v1/users/orders/" + str(created_order_id)
         request = self.app.put(new_order_link, \
-                               json={"name": 1, "quantity":3, "status":"new"},
+                               json={"item": 1, "quantity":3, "status":"new"},
                                headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 200)
         self.assertEqual(3, request.json['order']['quantity'])
@@ -214,7 +214,7 @@ class OrderViewTest(unittest.TestCase):
         created_order_id = int(request.json['id'])
         new_order_link = "api/v1/users/orders/cancel/" + str(created_order_id)
         request = self.app.put(new_order_link, \
-                               json={"status":"cancelled"},
+                               json={"name":"cancelled"},
                                headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 200)
         self.assertEqual("Order Cancelled Successfully", request.json['message'])
@@ -226,7 +226,7 @@ class OrderViewTest(unittest.TestCase):
         created_order_id = int(request.json['id']) + 4
         new_order_link = "api/v1/users/orders/" + str(created_order_id)
         request = self.app.put(new_order_link,
-                               json={"name": 1, "quantity":4, "status":"new"},
+                               json={"item": 1, "quantity":4, "status":"new"},
                                headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 200)
         self.assertEqual("unable to update order", request.json['order'])

@@ -62,18 +62,18 @@ def create_order():
         Allows a customer post an order
         ---
         tags:
-          - Order
+          - ORDER
         parameters:
           - in: body
             name: body
             quantity: body
-            
+
             schema:
               id: Order
               required:
                 - name
                 - quantity
-               
+
               properties:
                 name:
                     type: integer
@@ -81,7 +81,7 @@ def create_order():
                 quantity:
                     type: integer
                     description: number of items requested
-                
+
         responses:
           201:
             description: New order created

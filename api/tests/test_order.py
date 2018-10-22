@@ -53,7 +53,7 @@ class OrderViewTest(unittest.TestCase):
         self.default_orders_url = "/api/v1/orders"
         self.user_orders_url = "/api/v1/users/orders"
         self.indexed_orders_url = "/api/v1/orders/"
-        self.default_order = {"item": 1, "quantity":1}
+        self.default_order = {"name": 1, "quantity":1}
         self.client_token = self._set_up_user()
         self.admin_token = self._set_up_admin_token()
         self._set_up_dummy_order_and_user_data()
@@ -84,7 +84,7 @@ class OrderViewTest(unittest.TestCase):
 
     def test_create_order_without_item_in_request(self):
         """ test post method by not including item in request """
-        del self.default_order['item']
+        del self.default_order['name']
         request = self.app.post(self.user_orders_url, \
         json=self.default_order, headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 400)
@@ -202,7 +202,7 @@ class OrderViewTest(unittest.TestCase):
         created_order_id = int(request.json['id'])
         new_order_link = "api/v1/users/orders/" + str(created_order_id)
         request = self.app.put(new_order_link, \
-                               json={"item": 1, "quantity":3, "status":"new"},
+                               json={"name": 1, "quantity":3, "status":"new"},
                                headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 200)
         self.assertEqual(3, request.json['order']['quantity'])
@@ -226,7 +226,7 @@ class OrderViewTest(unittest.TestCase):
         created_order_id = int(request.json['id']) + 4
         new_order_link = "api/v1/users/orders/" + str(created_order_id)
         request = self.app.put(new_order_link,
-                               json={"item": 1, "quantity":4, "status":"new"},
+                               json={"name": 1, "quantity":4, "status":"new"},
                                headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 200)
         self.assertEqual("unable to update order", request.json['order'])
@@ -234,7 +234,7 @@ class OrderViewTest(unittest.TestCase):
     def test_update_order_with_invalid_status_value(self):
         """ test update method by including a wrong status value """
         request = self.app.post(self.user_orders_url,
-                                json={"item": 1, "quantity":2, "status":"new"},
+                                json={"name": 1, "quantity":2, "status":"new"},
                                 headers={"Authorization": self.client_token})
         created_order_id = int(request.json['id'])
         new_order_link = self.indexed_orders_url + str(created_order_id)

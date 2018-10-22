@@ -16,7 +16,7 @@ class Order(object):
         self.connection = self._db.connect_db()
         self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         order = order_data
-        order['item'] = int(order_data['item'])
+        order['item'] = int(order_data['name'])
         order['quantity'] = str(order_data['quantity'])
         order['status'] = 'new'
         self.cursor.execute("INSERT INTO orders(item, quantity, status, user_id) \
@@ -143,7 +143,7 @@ class Order(object):
         self.connection = self._db.connect_db()
         self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         order = order_data
-        order['item'] = str(order_data['item'])
+        order['item'] = str(order_data['name'])
         order['quantity'] = int(order_data['quantity'])
         order['status'] = str(order_data['status'])
         self.cursor.execute("UPDATE orders set item='"+order['item']

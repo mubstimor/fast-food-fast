@@ -62,48 +62,32 @@ def create_order():
         Allows a customer post an order
         ---
         tags:
-          - ORDER
-          
-        securityDefinitions:
-            bearerAuth:
-                type: bearer
+          - Order
         parameters:
           - in: body
-            item: body
+            name: body
             quantity: body
+            
             schema:
               id: Order
               required:
-                - item
+                - name
                 - quantity
+               
               properties:
-                item:
+                name:
                     type: integer
                     description: ordered food item
-                    default: 1
                 quantity:
                     type: integer
                     description: number of items requested
-                    default: 1
-
+                
         responses:
           201:
             description: New order created
-          400:
-            description: Bad/Missing parameters in request
-        # openapi: 3.0.0
-        components:
-            securitySchemes:
-                bearerAuth:
-                    type: apiKey
-                    scheme: bearer
-                    in: header
-                    bearerFormat: JWT
-        security:
-            - bearerAuth: []            
-        """
-    if not request.json or not 'item' in request.json:
-        return jsonify({'message': 'Missing Item parameter in request', 'error': True}), 400
+    """
+    if not request.json or not 'name' in request.json:
+        return jsonify({'message': 'Missing Food name parameter in request', 'error': True}), 400
 
     try:
         int(request.json['quantity'])
@@ -114,7 +98,7 @@ def create_order():
     logged_in_user = current_user['id']
 
     order = ORDER.check_if_order_exists(logged_in_user,
-                                        request.json['item'],
+                                        request.json['name'],
                                         request.json['quantity'])
     if order:
         return jsonify({'message': 'A recent similar order already exists, would you rather simply update it?',

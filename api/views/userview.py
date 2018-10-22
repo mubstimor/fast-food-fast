@@ -1,5 +1,5 @@
 """ handles routes for user actions. """
-from flask_cors import CORS, cross_origin
+from flask_cors import cross_origin
 from api.models.user import User
 from api.models.order import Order
 from api import app

@@ -128,7 +128,7 @@ class Order(object):
         self.connection = self._db.connect_db()
         self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         order = order_data
-        order['status'] = str(order_data['status'])
+        order['status'] = str(order_data['name'])
         self.cursor.execute("UPDATE orders set status='"+order['status']
                             + "' WHERE id='"+str(order_id)+"'")
         rows_updated = self.cursor.rowcount

@@ -180,7 +180,7 @@ class OrderViewTest(unittest.TestCase):
         created_order_id = int(request.json['id'])
         new_order_link = self.indexed_orders_url + str(created_order_id)
         request = self.app.put(new_order_link, \
-        json={"status":"processing"}, headers={"Authorization": self.admin_token})
+        json={"name":"processing"}, headers={"Authorization": self.admin_token})
         self.assertEqual(request.status_code, 200)
         self.assertEqual("processing", request.json['order']['status'])
 
@@ -191,7 +191,7 @@ class OrderViewTest(unittest.TestCase):
         created_order_id = int(request.json['id']) + 3
         new_order_link = self.indexed_orders_url + str(created_order_id)
         request = self.app.put(new_order_link, \
-        json={"status":"processing"}, headers={"Authorization": self.admin_token})
+        json={"name":"processing"}, headers={"Authorization": self.admin_token})
         self.assertEqual(request.status_code, 200)
         self.assertEqual("unable to update order", request.json['order'])
 
@@ -239,7 +239,7 @@ class OrderViewTest(unittest.TestCase):
         created_order_id = int(request.json['id'])
         new_order_link = self.indexed_orders_url + str(created_order_id)
         request = self.app.put(new_order_link,
-                               json={"status":"unknown"},
+                               json={"name":"unknown"},
                                headers={"Authorization": self.admin_token})
         self.assertEqual(request.status_code, 400)
 

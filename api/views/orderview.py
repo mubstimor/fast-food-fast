@@ -90,11 +90,11 @@ def update_order(order_id):
             description: The ID of the order, try 1!
             type: integer
           - in: body
-            status: body
+            name: body
             schema:
               id: Status
               properties:
-                status:
+                name:
                     type: string
                     description: state of order
                     default: New
@@ -103,7 +103,7 @@ def update_order(order_id):
             description: The order has been updated
         """
     status = ("processing", "cancelled", "complete")
-    if request.json['status'] not in status:
+    if request.json['name'] not in status:
         return jsonify({'message': 'Missing status parameter in request',
                         'error': True}), 400
     return jsonify({'order': ORDER.update_order(order_id, request.json),

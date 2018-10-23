@@ -80,7 +80,7 @@ class OrderViewTest(unittest.TestCase):
                                 headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 409)
         self.assertEqual(request.headers['Content-Type'], 'application/json')
-        self.assertEqual("A recent similar order already exists, would you rather simply update it?",
+        self.assertEqual("Order already exists, want to update it?",
                          request.json['message'])
 
     def test_create_order_without_item_in_request(self):

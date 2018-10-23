@@ -1,10 +1,11 @@
 """ managaes access operations on order objects. """
 from flask_cors import cross_origin
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask import request
 from api.models.order import Order
 from api import app
-from api.views.decorators import (request, jsonify,
-                                  admin_token_required, jwt_required,
-                                  get_jwt_identity)
+from api.views.decorators import (jsonify,
+                                  admin_token_required)
 
 ORDER = Order()
 
@@ -24,7 +25,8 @@ def get_all_orders():
     """
     user = get_jwt_identity()
     if user['role'] != 'Admin':
-        return jsonify({'message': "Unauthorised to access this area", 'error': True}), 403
+        return jsonify({'message': "Unauthorised to access this area",
+                        'error': True}), 403
 
     orders = ORDER.fetch_all_orders()
     if orders:
@@ -55,7 +57,8 @@ def get_order(order_id):
     """
     user = get_jwt_identity()
     if user['role'] != 'Admin':
-        return jsonify({'message': "Unauthorised to access this area", 'error': True}), 403
+        return jsonify({'message': "Unauthorised to access this area",
+                        'error': True}), 403
 
     order = ORDER.get_order(order_id)
     if order:

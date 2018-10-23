@@ -1,8 +1,9 @@
 """ manages routes to menu items. """
 from flask_cors import cross_origin
+from flask import request
 from api import app
 from api.models.fooditem import FoodItem
-from api.views.decorators import admin_token_required, jsonify, request
+from api.views.decorators import admin_token_required, jsonify
 
 FOODITEM = FoodItem()
 
@@ -71,7 +72,7 @@ def create_fooditem():
                     in: header
                     bearerFormat: JWT
         security:
-            - bearerAuth: []            
+            - bearerAuth: []
     """
     try:
         int(request.json['price'])

@@ -14,7 +14,8 @@ class FoodItem(object):
     def create_item(self, item_data):
         """ add item to fooditems list (menu) """
         self.connection = self._db.connect_db()
-        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        self.cursor = self.connection.cursor(
+            cursor_factory=psycopg2.extras.DictCursor)
         item = item_data
         item['name'] = str(item_data['name'])
         item['price'] = int(item_data['price'])
@@ -30,7 +31,8 @@ class FoodItem(object):
     def check_if_item_exists(self, name):
         """ retrieve item with similar name"""
         self.connection = self._db.connect_db()
-        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        self.cursor = self.connection.cursor(
+            cursor_factory=psycopg2.extras.DictCursor)
         self.cursor.execute("SELECT * FROM fooditems where name='"+name+"'")
         rows_found = self.cursor.rowcount
         self.connection.close()
@@ -42,7 +44,8 @@ class FoodItem(object):
     def fetch_all_fooditems(self):
         """ retrieve all fooditems from database """
         self.connection = self._db.connect_db()
-        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        self.cursor = self.connection.cursor(
+            cursor_factory=psycopg2.extras.DictCursor)
         self.cursor.execute("SELECT * FROM fooditems")
         fooditems = self.cursor.fetchall()
         menuitems = []
@@ -56,8 +59,10 @@ class FoodItem(object):
     def get_item(self, item_id):
         """ retrieve item with given id from database. """
         self.connection = self._db.connect_db()
-        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        self.cursor.execute("SELECT * FROM fooditems where item_id='"+str(item_id)+"'")
+        self.cursor = self.connection.cursor(
+            cursor_factory=psycopg2.extras.DictCursor)
+        self.cursor.execute(
+            "SELECT * FROM fooditems where item_id='"+str(item_id)+"'")
         item = self.cursor.fetchone()
         rows_found = self.cursor.rowcount
         self.connection.close()
@@ -71,7 +76,8 @@ class FoodItem(object):
     def update_item(self, item_id, item_data):
         """ update item details. """
         self.connection = self._db.connect_db()
-        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        self.cursor = self.connection.cursor(
+            cursor_factory=psycopg2.extras.DictCursor)
         item = item_data
         item['name'] = str(item_data['name'])
         item['price'] = int(item_data['price'])
@@ -90,8 +96,10 @@ class FoodItem(object):
     def delete_item(self, item_id):
         """ delete item. """
         self.connection = self._db.connect_db()
-        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        self.cursor.execute("DELETE FROM fooditems WHERE item_id='"+str(item_id)+"'")
+        self.cursor = self.connection.cursor(
+            cursor_factory=psycopg2.extras.DictCursor)
+        self.cursor.execute(
+            "DELETE FROM fooditems WHERE item_id='"+str(item_id)+"'")
         rows_deleted = self.cursor.rowcount
         self.connection.close()
         if rows_deleted > 0:

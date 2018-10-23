@@ -122,7 +122,8 @@ class FoodItemViewTest(unittest.TestCase):
 
     def test_delete_unavailable_menuitem(self):
         """ test delete method for an unavailable resource """
-        request = self.app.delete('/api/v1/menu/14', headers={"Authorization": self.bearer_token})
+        request = self.app.delete('/api/v1/menu/14',
+                                  headers={"Authorization": self.bearer_token})
         self.assertEqual("unable to delete item", request.json['result'])
 
     def tearDown(self):

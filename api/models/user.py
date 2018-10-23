@@ -59,10 +59,16 @@ class User(object):
         self.cursor.execute(
             "SELECT * FROM users where email='"+user['email']+"'")
         userdata = self.cursor.fetchone()
+        rows_found = self.cursor.rowcount
         self.connection.close()
-        login_status = check_password_hash(userdata['password'],
-                                           user['password'])
-        if login_status:
-            user = {"id": userdata['id'], "email": userdata['email'],
-                    "role": userdata['user_type']}
-            return user
+        if rows_found > 0:
+            login_status = check_password_hash(userdata['password'],
+                                               user['password'])
+            if login_status:
+                user = {"id": userdata['id'], "email": userdata['email'],
+                        "role": userdata['user_type'], "error": False}
+                return user
+            else:
+                return {"error": True}
+        else:
+            return {"error": True}

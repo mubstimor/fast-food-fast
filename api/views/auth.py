@@ -103,18 +103,18 @@ def auth_user():
             'error':'Missing password parameter in request'}), 400
     access_token = ""
     data = USER.authenticate(request.json)
-    if data:
+    if not data['error']:
         access_token = create_access_token(identity=data)
         user = {}
         user['token'] = access_token
         user['role'] = data['role']
-        response = jsonify({'ok': True, 'data': user,
+        response = jsonify({'ok': True, 'data': user, "error": False,
                             'message': 'login successful'})
         response.status_code = 200
         response.headers.extend({'jwt-token': access_token})
         return response
     else:
-        return jsonify({'ok': False,
+        return jsonify({'ok': False, "error": True,
                         'message': 'invalid username or password',
                         'data':data
                        }), 401

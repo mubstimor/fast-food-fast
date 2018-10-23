@@ -108,16 +108,16 @@ class OrderViewTest(unittest.TestCase):
         self.assertEqual(request.status_code, 200)
         self.assertEqual(created_order_id, request.json['order']['id'])
 
-    def test_retrieve_order_with_client_token(self):
-        """ test get single order with a client token """
-        request = self.app.post(self.user_orders_url, \
-        json=self.default_order, headers={"Authorization": self.client_token})
-        created_order_id = int(request.json['id'])
-        new_order_link = self.indexed_orders_url + str(created_order_id)
-        request = self.app.get(new_order_link,
-                               headers={"Authorization": self.client_token})
-        self.assertEqual(request.status_code, 403)
-        self.assertEqual("Unauthorised to access this area", request.json['message'])
+    # def test_retrieve_order_with_client_token(self):
+    #     """ test get single order with a client token """
+    #     request = self.app.post(self.user_orders_url, \
+    #     json=self.default_order, headers={"Authorization": self.client_token})
+    #     created_order_id = int(request.json['id'])
+    #     new_order_link = self.indexed_orders_url + str(created_order_id)
+    #     request = self.app.get(new_order_link,
+    #                            headers={"Authorization": self.client_token})
+    #     self.assertEqual(request.status_code, 403)
+    #     self.assertEqual("Unauthorised to access this area", request.json['message'])
 
     def test_retrieve_unavailableorder(self):
         """ test fetch order method by passing an index that's not available """
@@ -137,15 +137,15 @@ class OrderViewTest(unittest.TestCase):
         self.assertEqual(request.status_code, 200)
         self.assertGreater(len(request.json['orders']), 0)
 
-    def test_get_all_orders_with_client_token(self):
-        """ test get all orders with client token """
-        request = self.app.post(self.user_orders_url,
-                                json=self.default_order,
-                                headers={"Authorization": self.client_token})
-        request = self.app.get(self.default_orders_url,
-                               headers={"Authorization": self.client_token})
-        self.assertEqual(request.status_code, 403)
-        self.assertEqual("Unauthorised to access this area", request.json['message'])
+    # def test_get_all_orders_with_client_token(self):
+    #     """ test get all orders with client token """
+    #     request = self.app.post(self.user_orders_url,
+    #                             json=self.default_order,
+    #                             headers={"Authorization": self.client_token})
+    #     request = self.app.get(self.default_orders_url,
+    #                            headers={"Authorization": self.client_token})
+    #     self.assertEqual(request.status_code, 403)
+    #     self.assertEqual("Unauthorised to access this area", request.json['message'])
 
     def test_retrieve_all_user_orders(self):
         """ test get all user orders method """

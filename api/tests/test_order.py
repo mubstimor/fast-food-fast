@@ -72,7 +72,7 @@ class OrderViewTest(unittest.TestCase):
         self.assertEqual(request.headers['Content-Type'], 'application/json')
         self.assertEqual("Order successfully created", request.json['message'])
 
-    def test_create_already_existing_order(self):
+    def test_create_duplicate_order(self):
         """ test create duplicate order """
         request = self.app.post(self.user_orders_url, json=self.default_order,
                                 headers={"Authorization": self.client_token})
@@ -80,16 +80,17 @@ class OrderViewTest(unittest.TestCase):
                                 headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 409)
         self.assertEqual(request.headers['Content-Type'], 'application/json')
-        self.assertEqual("A recent similar order already exists, would you rather simply update it?", request.json['message'])
+        self.assertEqual("Order already exists, want to update it?",
+                         request.json['message'])
 
-    def test_create_order_without_item_in_request(self):
+    def test_createorderwithoutitem(self):
         """ test post method by not including item in request """
         del self.default_order['name']
         request = self.app.post(self.user_orders_url, \
         json=self.default_order, headers={"Authorization": self.client_token})
         self.assertEqual(request.status_code, 400)
 
-    def test_create_order_with_invalid_quantity(self):
+    def test_createorderwithinvalidqty(self):
         """ test post method by including an invalid quantity value."""
         self.default_order['quantity'] = "abafhh"
         request = self.app.post(self.user_orders_url, json=self.default_order,
@@ -107,7 +108,7 @@ class OrderViewTest(unittest.TestCase):
         self.assertEqual(request.status_code, 200)
         self.assertEqual(created_order_id, request.json['order']['id'])
 
-    def test_retrieve_order_with_client_token(self):
+    def test_getorderwithclienttoken(self):
         """ test get single order with a client token """
         request = self.app.post(self.user_orders_url, \
         json=self.default_order, headers={"Authorization": self.client_token})
@@ -118,7 +119,7 @@ class OrderViewTest(unittest.TestCase):
         self.assertEqual(request.status_code, 403)
         self.assertEqual("Unauthorised to access this area", request.json['message'])
 
-    def test_retrieve_unavailableorder(self):
+    def test_get_unavailableorder(self):
         """ test fetch order method by passing an index that's not available """
         new_order_link = self.indexed_orders_url + "3"
         request = self.app.get(new_order_link,
@@ -136,7 +137,7 @@ class OrderViewTest(unittest.TestCase):
         self.assertEqual(request.status_code, 200)
         self.assertGreater(len(request.json['orders']), 0)
 
-    def test_get_all_orders_with_client_token(self):
+    def test_getallordersasclient(self):
         """ test get all orders with client token """
         request = self.app.post(self.user_orders_url,
                                 json=self.default_order,
@@ -219,7 +220,7 @@ class OrderViewTest(unittest.TestCase):
         self.assertEqual(request.status_code, 200)
         self.assertEqual("Order Cancelled Successfully", request.json['message'])
 
-    def test_update_unavailable_user_order(self):
+    def test_updateunavailableuserorder(self):
         """ test update unavailable user order """
         request = self.app.post(self.user_orders_url, \
         json=self.default_order, headers={"Authorization": self.client_token})
@@ -231,7 +232,7 @@ class OrderViewTest(unittest.TestCase):
         self.assertEqual(request.status_code, 200)
         self.assertEqual("unable to update order", request.json['order'])
 
-    def test_update_order_with_invalid_status_value(self):
+    def test_updateorderwithvoidstatus(self):
         """ test update method by including a wrong status value """
         request = self.app.post(self.user_orders_url,
                                 json={"name": 1, "quantity":2, "status":"new"},

@@ -28,14 +28,14 @@ class UserViewTest(unittest.TestCase):
         self.assertEqual(request.status_code, 409)
         self.assertEqual("user already exists", request.json['message'])
 
-    def test_create_user_with_invalid_email(self):
+    def test_createuserwithinvalidemail(self):
         """ test post method by not including email in request """
         self.user['email'] = "john"
         request = self.app.post('/api/v1/auth/signup', json=self.user)
         self.assertEqual(request.status_code, 400)
 
     def test_create_user_invalid_gender(self):
-        """ test create user method by including a wrong value for gender """
+        """ test create user by including a wrong value for gender """
         self.user['gender'] = "mammal"
         request = self.app.post('/api/v1/auth/signup', json=self.user)
         self.assertEqual(request.status_code, 400)

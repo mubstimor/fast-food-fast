@@ -44,7 +44,7 @@ class FoodItemViewTest(unittest.TestCase):
         self.assertEqual(request.headers['Content-Type'], 'application/json')
         self.assertEqual("Menu Item already exists", request.json['message'])
 
-    def test_create_menuItemWithInvalidPrice(self):
+    def test_createitemwithinvalidprice(self):
         """ test post method by including an invalid price value."""
         self.fooditem['price'] = "xada"
         request = self.app.post('/api/v1/menu', json=self.fooditem,
@@ -120,9 +120,10 @@ class FoodItemViewTest(unittest.TestCase):
         self.assertEqual(request.status_code, 200)
         self.assertNotEqual("", request.json['result'])
 
-    def test_delete_unavailable_menuitem(self):
+    def test_deleteunavailableitem(self):
         """ test delete method for an unavailable resource """
-        request = self.app.delete('/api/v1/menu/14', headers={"Authorization": self.bearer_token})
+        request = self.app.delete('/api/v1/menu/14',
+                                  headers={"Authorization": self.bearer_token})
         self.assertEqual("unable to delete item", request.json['result'])
 
     def tearDown(self):

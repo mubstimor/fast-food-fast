@@ -1,10 +1,8 @@
 """ define decorators to be used to protect endpoints. """
 from functools import wraps
-from flask_jwt_extended import (create_access_token, create_refresh_token,
-                                jwt_required,
-                                get_jwt_identity, JWTManager, get_jwt_claims,
+from flask_jwt_extended import (JWTManager, get_jwt_claims,
                                 verify_jwt_in_request)
-from flask import request, jsonify
+from flask import jsonify
 from api import app
 
 JWT = JWTManager(app)
@@ -14,8 +12,9 @@ def unauthorized_response(callback):
     """ responds to missing authorisation header. """
     return jsonify({
         'ok': False,
-        'message': 'Missing Authorization Header'
-    }), 401
+        'message': 'Missing Authorization Header',
+        'callback': callback
+        }), 401
 
 def admin_token_required(_f):
     """ create token to protect admin only routes. """
@@ -32,17 +31,8 @@ def admin_token_required(_f):
 
 @JWT.user_claims_loader
 def add_claims_to_access_token(identity):
+    """ store user role as a claim in access token. """
     if identity['role'] == 'Admin':
         return {'roles': 'Admin'}
     else:
         return {'roles': 'Customer'}
-    
-def admin_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        user = get_jwt_identity()
-        if user['role'] != 'Admin':
-            return jsonify({'message': "Unauthorised to access this area",
-                            'error': True}), 403
-        return f(*args, **kwargs)
-    return decorated_function

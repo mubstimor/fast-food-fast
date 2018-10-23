@@ -1,9 +1,11 @@
 """ handles routes for user actions. """
 from flask_cors import cross_origin
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask import request
 from api.models.user import User
 from api.models.order import Order
 from api import app
-from api.views.decorators import *
+from api.views.decorators import jsonify
 
 USER = User()
 ORDER = Order()
@@ -17,7 +19,7 @@ def get_user_orders():
     ---
     tags:
       - ORDER
-    
+
     schemes:
       - bearer
 
@@ -47,7 +49,7 @@ def get_user_orders():
 @jwt_required
 @cross_origin()
 def get_single_user_order(order_id):
-    """ get single client's order, 
+    """ get single client's order,
     check both user id and the order id passed."""
     current_user = get_jwt_identity()
     get_order = ORDER.fetch_user_order(order_id, current_user['id'])
@@ -87,12 +89,14 @@ def create_order():
             description: New order created
     """
     if not request.json or not 'name' in request.json:
-        return jsonify({'message': 'Missing Food name parameter in request', 'error': True}), 400
+        return jsonify({'message': 'Missing Food name parameter in request',
+                        'error': True}), 400
 
     try:
         int(request.json['quantity'])
     except ValueError:
-        return jsonify({'message': 'Invalid quantity value', 'error': True}), 400
+        return jsonify({'message': 'Invalid quantity value',
+                        'error': True}), 400
 
     current_user = get_jwt_identity()
     logged_in_user = current_user['id']
@@ -101,7 +105,7 @@ def create_order():
                                         request.json['name'],
                                         request.json['quantity'])
     if order:
-        return jsonify({'message': 'A recent similar order already exists, would you rather simply update it?',
+        return jsonify({'message': 'Order already exists, want to update it?',
                         'error': True}), 409
     else:
         create_user_order = ORDER.create_order(logged_in_user, request.json)
@@ -121,4 +125,5 @@ def update_user_order(order_id):
 def cancel_user_order(order_id):
     """ cancel user order with put request. """
     return jsonify({'order': ORDER.update_order(order_id, request.json),
-                    'error': False, 'message': 'Order Cancelled Successfully'})
+                    'error': False,
+                    'message': 'Order Cancelled Successfully'})

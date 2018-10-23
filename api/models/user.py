@@ -14,7 +14,8 @@ class User(object):
     def create_user(self, user_data):
         """ add user to users table"""
         self.connection = self._db.connect_db()
-        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        self.cursor = self.connection.cursor(
+            cursor_factory=psycopg2.extras.DictCursor)
         user = user_data
         user['name'] = str(user_data['name'])
         user['email'] = str(user_data['email'])
@@ -23,10 +24,12 @@ class User(object):
         user['user_type'] = str(user_data['user_type'])
         if not user['user_type']:
             user['user_type'] = 'Customer'
-        self.cursor.execute("INSERT INTO users(name, email, password, gender, user_type) \
-                            VALUES('"+ user['name'] + "','"+ user['email'] +"', '"
-                            + user['password']+"', '"+ \
-                            user['gender']+"','"+user['user_type']+"') RETURNING id")
+        self.cursor.execute("INSERT INTO users(name, email, password, \
+                            gender, user_type) \
+                            VALUES('"+ user['name'] + "','"+ user['email']
+                            +"', '" + user['password']+"', '"+ \
+                            user['gender']+"','"+
+                            user['user_type']+"') RETURNING id")
         user_id = self.cursor.fetchone()[0]
         del user['password']
         user['user_type'] = 'Customer'
@@ -37,7 +40,8 @@ class User(object):
     def check_if_user_exists(self, email):
         """ retrieve item with similar email"""
         self.connection = self._db.connect_db()
-        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        self.cursor = self.connection.cursor(
+            cursor_factory=psycopg2.extras.DictCursor)
         self.cursor.execute("SELECT * FROM users where email='"+email+"'")
         rows_found = self.cursor.rowcount
         self.connection.close()
@@ -47,14 +51,17 @@ class User(object):
     def authenticate(self, user_data):
         """ check user login """
         self.connection = self._db.connect_db()
-        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        self.cursor = self.connection.cursor(
+            cursor_factory=psycopg2.extras.DictCursor)
         user = user_data
         user['email'] = str(user_data['email'])
         user['password'] = str(user_data['password'])
-        self.cursor.execute("SELECT * FROM users where email='"+user['email']+"'")
+        self.cursor.execute(
+            "SELECT * FROM users where email='"+user['email']+"'")
         userdata = self.cursor.fetchone()
         self.connection.close()
-        login_status = check_password_hash(userdata['password'], user['password'])
+        login_status = check_password_hash(userdata['password'],
+                                           user['password'])
         if login_status:
             user = {"id": userdata['id'], "email": userdata['email'],
                     "role": userdata['user_type']}

@@ -65,8 +65,9 @@ class UserViewTest(unittest.TestCase):
         request = self.app.post('/api/v1/auth/signup',
                                 json=self.user)
         request = self.app.post('/api/v1/auth/login', \
-        json={"email": "john@example.com", "password": "12345"})
+        json={"email": "james@example.com", "password": "1234"})
         self.assertEqual(False, request.json['ok'])
+        self.assertEqual(True, request.json['error'])
 
     def test_user_login_no_password(self):
         """ test login method by not including password in request """

@@ -1,9 +1,8 @@
 """ manages routes to menu items. """
-from pprint import pprint
 from flask_cors import cross_origin
 from api import app
 from api.models.fooditem import FoodItem
-from api.views.decorators import *
+from api.views.decorators import admin_token_required, jsonify, request
 
 FOODITEM = FoodItem()
 
@@ -81,7 +80,8 @@ def create_fooditem():
 
     item = FOODITEM.check_if_item_exists(request.json['name'])
     if item:
-        return jsonify({'message': 'Menu Item already exists', 'error': True}), 409
+        return jsonify({'message': 'Menu Item already exists',
+                        'error': True}), 409
     else:
         return jsonify({'fooditem': FOODITEM.create_item(request.json),
                         'error': False,
@@ -108,7 +108,7 @@ def get_fooditem(item_id):
     """
     item = FOODITEM.get_item(item_id)
     return jsonify({'fooditem': item})
-    
+
 @app.route('/api/v1/menu/<int:item_id>', methods=['PUT'])
 @admin_token_required
 @cross_origin(allow_headers=['Content-Type', 'Authorization'])
